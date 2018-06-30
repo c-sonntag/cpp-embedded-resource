@@ -1,0 +1,11 @@
+<erc>
+  <file>file1.txt</file>
+  <file compress="0">file2.txt</file>
+  <file compress="1">file3.txt</file>
+  <file compress="false">file4.txt</file>
+  <file compress="true">file5.txt</file>
+  <file>sub_dir/sub_file1.txt</file>
+  <file>sub_dir/sub_file2.txt</file>
+  <file>nop1</file>
+  <file>nop2</file>
+</erc>
