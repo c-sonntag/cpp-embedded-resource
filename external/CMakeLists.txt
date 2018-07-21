@@ -3,9 +3,10 @@
 # Under the Copyright (C) Christophe-Alexandre Sonntag (http://u4a.at)
 
 # --- EXTERNAL SETS ---
-set(EXTERNAL_ZLIB_DIR     "zlib-master")
-set(EXTERNAL_TINYXML2_DIR "tinyxml2-master-6.2.0")
-set(EXTERNAL_GTEST_DIR    "googletest-master")
+set(EXTERNAL_ZLIB_DIR       "zlib-master")
+set(EXTERNAL_TINYXML2_DIR   "tinyxml2-master-6.2.0")
+set(EXTERNAL_GTEST_DIR      "googletest-master")
+set(EXTERNAL_PICOSHA2_DIR   "picosha2-master")
 
 #
 ##
@@ -79,6 +80,19 @@ endmacro()
 set(GTEST_SOURCE               ${GTEST_SOURCE}              PARENT_SCOPE)
 set(GTEST_BUILD                ${GTEST_BUILD}               PARENT_SCOPE)
 set(PROJECT_GTEST_STATIC       ${PROJECT_GTEST_STATIC}      PARENT_SCOPE)
+
+#
+##
+#
+
+# --- EXTERNAL : PICOSHA2 ---
+set(PICOSHA2_SOURCE  "${CMAKE_CURRENT_SOURCE_DIR}/${EXTERNAL_PICOSHA2_DIR}")
+#
+macro(LINK_PRIVATE_LIB_PICOSHA2 PROJECT_TARGET)
+  target_include_directories(${PROJECT_TARGET} PRIVATE "${PICOSHA2_SOURCE}")
+endmacro()
+#
+set(PICOSHA2_SOURCE               ${PICOSHA2_SOURCE}              PARENT_SCOPE)
 
 
 
