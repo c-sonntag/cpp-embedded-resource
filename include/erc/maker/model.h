@@ -9,6 +9,7 @@ namespace erc {
     struct basic_link
     {
       bool compress = false;
+      /**< @todo bool encrypted = false;   */
       std::string path;
 
       inline basic_link() = default;

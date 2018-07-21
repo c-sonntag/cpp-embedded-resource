@@ -4,3 +4,6 @@
 [submodule "external/zlib-master"]
 	path = external/zlib-master
 	url = https://github.com/madler/zlib
+[submodule "external/picosha2-master"]
+	path = external/picosha2-master
+	url = https://github.com/okdshin/PicoSHA2.git

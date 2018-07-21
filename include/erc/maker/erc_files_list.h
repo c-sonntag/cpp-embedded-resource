@@ -7,6 +7,7 @@
 #include <erc/maker/model.h>
 
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace erc {
@@ -34,9 +35,9 @@ namespace erc {
     struct erc_files_list
     {
       std::unordered_map<std::string, file_property_found> files_found;
-      std::vector<std::string> files_not_found;
+      std::unordered_set<std::string> files_not_found;
 
-      std::vector<std::string> directories_not_found;
+      std::unordered_set<std::string> directories_not_found;
 
       erc_files_list( const erc_file_parser & erc_parsed_content );
     };

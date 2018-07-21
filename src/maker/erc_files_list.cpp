@@ -50,6 +50,15 @@ namespace erc {
       for ( const directory & d : erc_parsed_content.content.directories )
         push_directory( d );
 
+      //
+      if ( !same_file_path.empty() )
+      {
+        std::stringstream ss;
+        for ( const std::string & p : same_file_path )
+          ss << "  " << p << std::endl;
+        throw std::runtime_error( "Some file path are similars : \n" + ss.str() );
+      }
+
     }
 
     void internal_listner::push_file( const file & f, const fs::path & f_path )
@@ -63,12 +72,6 @@ namespace erc {
           fs::file_size( f_path )
         };
 
-        std::unordered_map<std::string, file_property_found>::const_iterator it(
-          base.files_found.find( f.path )
-        );
-
-       // it._M_incr()
-
         auto find_it( base.files_found.find( f.path ) );
         if ( find_it != base.files_found.end() )
         {
@@ -79,7 +82,7 @@ namespace erc {
           base.files_found.emplace( f.path, file_property_found( f, property, f_path.string() ) );
       }
       else
-        base.files_not_found.emplace_back( f.path );
+        base.files_not_found.emplace( f.path );
 
     }
 

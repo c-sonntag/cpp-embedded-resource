@@ -8,15 +8,18 @@
 namespace erc {
   namespace maker {
 
-    struct src_file_generator
+    struct src_package_generator
     {
 
+    };
 
+    struct src_file_generator
+    {
+      const file_property_found & valid_input_file;
+      const std::string generated_embedded_file_unique_identifier;
+      const std::string output_src_file;
 
-     const std::string input_file;
-     const std::string output_src_file;
-
-      src_file_generator( const std::string input_file, const std::string output_src_file );
+      src_file_generator( const file_property_found & _valid_input_file, const std::string _generated_embedded_file_unique_identifier, const std::string output_src_file );
       //src_file_generator( const erc_files_list & input_file, const std::string output_src_file );
     };
 
