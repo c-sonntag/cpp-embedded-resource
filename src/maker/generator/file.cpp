@@ -21,7 +21,7 @@ namespace erc {
     std::ostream & operator <<( std::ostream & os, const file_property & fp )
     {
       using std::endl;
-      os << "{\"" << fp.filename << "\", \"" << fp.extension << "\", " << fp.size << "}";
+      os << "{\"" << fp.filename << "\", \"" << fp.extension << "\", " << fp.size << ", " << fp.last_modification << "}";
       return os;
     }
 
@@ -156,12 +156,12 @@ namespace erc {
         //
         std::ifstream input( file_id.valid_input_file.path, std::ifstream::in | std::ifstream::binary );
         if ( !input )
-          throw std::string( "invalid <input_file> " + file_id.valid_input_file.path );
+          throw std::runtime_error( "invalid <input_file> " + file_id.valid_input_file.path );
 
         //
         std::ofstream output( output_src_file, std::ofstream::out | std::ofstream::trunc );
         if ( !output )
-          throw std::string( "can't write <output_src_file> at " + output_src_file );
+          throw std::runtime_error( "can't write <output_src_file> at " + output_src_file );
 
         //
         output << "/**" << endl
@@ -205,14 +205,14 @@ namespace erc {
         };
 
         //
-        output << "#include \"./embedded_file.h\"" << endl
-               << "const erc::embedded_file erc::generated_embedded_files::" << file_id.file_unique_identifier.hex << endl
+        output << "#include \"./package.h\"" << endl
+               << "const erc::embedded_file erc::generated_embedded_files::erc_" << file_id.file_unique_identifier.hex << endl
                << ef << ";" << endl
                << endl;
 
       }
-      catch ( const std::string & s )
-      { throw std::runtime_error( "[embedded_rc::maker::src_generator::generate_file] " + s ); }
+      catch ( const std::exception & e )
+      { throw std::runtime_error( "[embedded_rc::maker::src_generator::generate_file] " + std::string(e.what()) ); }
 
     }
 

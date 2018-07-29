@@ -58,7 +58,7 @@ namespace erc {
 
     inline hash256 src_generator::make_hash_for( const maker::file & file ) const
     {
-      return hash256( package_unique_identifier.hex + "/" + file.path );
+      return hash256( package_unique_identifier.hex + ":" + file.path );
     }
 
     // ---- ----
@@ -80,8 +80,8 @@ namespace erc {
     void src_generator::generate_into( const std::string & erc_output_directorypath )
     {
       //
-      static const fs::path erc_header_package_file( "package.hpp" );
-      static const fs::path erc_package_file( "package.hpp" );
+      static const fs::path erc_header_package_file( "package.h" );
+      static const fs::path erc_package_file( "package.cpp" );
 
       //
       const fs::path output_directorypath( erc_output_directorypath );

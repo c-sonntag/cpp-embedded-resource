@@ -61,7 +61,7 @@ namespace erc {
         //
         const XMLElement * root_erc( doc.RootElement() );
         if ( !root_erc )
-          throw std::string( "Can't find root element" );
+          throw std::runtime_error( "Can't find root element" );
 
         //
         if ( std::string( root_erc->Name() ) != "erc" )

@@ -18,7 +18,7 @@ namespace erc {
         //
         std::ofstream output( output_src_file, std::ofstream::out | std::ofstream::trunc );
         if ( !output )
-          throw std::string( "can't write <output_src_file> at " + output_src_file );
+          throw std::runtime_error( "can't write <output_src_file> at " + output_src_file );
 
         //
         output << "/**" << endl
@@ -32,30 +32,33 @@ namespace erc {
         output << "#include \"./package.h\"" << endl
                << endl
                << "namespace erc {" << endl
+               << endl
                << "  namespace generated_embedded_files {" << endl
                << "    static const erc::embedded_file * const embedded_files[]" << endl
                << "    {" << endl;
 
         //
         for ( const src_file_identifier & file_id : erc_files_identifier )
-          output << "      &" << file_id.file_unique_identifier.hex << "," << endl;
+          output << "      &erc_" << file_id.file_unique_identifier.hex << "," << endl;
 
         //
-        output << "  };" << endl
+        output << "    };" << endl
+               << "  }" << endl
+               << endl;
+
+        //
+        output << "  const erc::package generated_package::pack_" << package_unique_identifier.hex << endl
+               << "  {" << endl
+               << "    \"" << erc_package.content.package_name << "\"," << endl
+               << "    " << erc_files_identifier.size() << "," << endl
+               << "    erc::generated_embedded_files::embedded_files" << endl
+               << "  };" << endl
+               << endl
                << "}" << endl
                << endl;
-
-        //
-        output << "const erc::package erc::generated_package::" << package_unique_identifier.hex << endl
-               << "{" << endl
-               << "  \"" << erc_package.content.package_name << "\"," << endl
-               << "  " << erc_files_identifier.size() << "," << endl
-               << "  embedded_files" << endl
-               << "};" << endl
-               << endl;
       }
-      catch ( const std::string & s )
-      { throw std::runtime_error( "[embedded_rc::maker::src_generator::generate_package] " + s ); }
+      catch ( const std::exception & e )
+      { throw std::runtime_error( "[embedded_rc::maker::src_generator::generate_package] " + std::string( e.what() ) ); }
     }
 
   }

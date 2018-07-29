@@ -17,7 +17,7 @@ namespace erc {
         //
         std::ofstream output( output_src_file, std::ofstream::out | std::ofstream::trunc );
         if ( !output )
-          throw std::string( "can't write <output_src_file> at " + output_src_file );
+          throw std::runtime_error( "can't write <output_src_file> at " + output_src_file );
 
         //
         output << "/**" << endl
@@ -39,7 +39,7 @@ namespace erc {
 
         //
         for ( const src_file_identifier & file_id : erc_files_identifier )
-          output << "    const extern erc::embedded_file " << file_id.file_unique_identifier.hex << ";" << endl;
+          output << "    const extern erc::embedded_file erc_" << file_id.file_unique_identifier.hex << ";" << endl;
 
         //
         output << "  }" << endl
@@ -47,7 +47,7 @@ namespace erc {
                << "  namespace generated_package {" << endl;
 
         //
-        output << "    const extern erc::package " << package_unique_identifier.hex << ";" << endl;
+        output << "    const extern erc::package pack_" << package_unique_identifier.hex << ";" << endl;
 
         //
         // for ( const std::string & generated_package : generated_packages )
@@ -55,11 +55,12 @@ namespace erc {
 
         //
         output << "  }" << endl
+               << endl
                << "}" << endl
                << endl;
       }
-      catch ( const std::string & s )
-      { throw std::runtime_error( "[embedded_rc::maker::src_generator::generate_header_package] " + s ); }
+      catch ( const std::exception & e )
+      { throw std::runtime_error( "[embedded_rc::maker::src_generator::generate_header_package] " + std::string( e.what() ) ); }
     }
   }
 }

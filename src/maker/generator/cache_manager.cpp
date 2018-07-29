@@ -35,7 +35,7 @@ namespace erc {
         //
         std::ifstream input( erc_cache_filepath, std::ifstream::in );
         if ( !input )
-          throw std::string( "can't open <erc_cache_filepath> at " + erc_cache_filepath );
+          throw std::runtime_error( "can't open <erc_cache_filepath> at " + erc_cache_filepath );
 
         //
         char header_cstr[sizeof( current_version_header )] {0};
@@ -44,7 +44,7 @@ namespace erc {
 
         //
         if ( strncmp( header_cstr, current_version_header, sizeof( current_version_header ) ) != 0 )
-          throw std::string( "Incompatible header version" );
+          throw std::runtime_error( "Incompatible header version" );
 
         //
         const uint number_of_entries( input_for<uint>( input ) );
@@ -63,15 +63,15 @@ namespace erc {
           //
           const auto entry_already_exist_it( supplement_cache.find( entry_hash.hex ) );
           if ( entry_already_exist_it != supplement_cache.end() )
-            throw std::string( "Entry with hash(" + entry_hash.hex + ") aleady exist in cache" );
+            throw std::runtime_error( "Entry with hash(" + entry_hash.hex + ") aleady exist in cache" );
 
           //
           supplement_cache.emplace( entry_hash.hex, entry_information );
         }
 
       }
-      catch ( const std::string & s )
-      { throw std::runtime_error( "[embedded_rc::maker::src_generator::open_cache_file] " + s ); }
+      catch ( const std::exception & e )
+      { throw std::runtime_error( "[embedded_rc::maker::src_generator::open_cache_file] " + std::string( e.what() ) ); }
     }
 
     // ---- ---- ---- ----
@@ -91,7 +91,7 @@ namespace erc {
         //
         std::ofstream output( erc_cache_filepath, std::ofstream::out | std::ofstream::trunc );
         if ( !output )
-          throw std::string( "can't write <erc_cache_filepath> at " + erc_cache_filepath );
+          throw std::runtime_error( "can't write <erc_cache_filepath> at " + erc_cache_filepath );
 
         //
         output << current_version_header << "\n";
@@ -112,8 +112,8 @@ namespace erc {
         }
 
       }
-      catch ( const std::string & s )
-      { throw std::runtime_error( "[embedded_rc::maker::src_generator::save_cache_file] " + s ); }
+      catch ( const std::exception & e )
+      { throw std::runtime_error( "[embedded_rc::maker::src_generator::save_cache_file] " + std::string( e.what() ) ); }
 
     }
 
