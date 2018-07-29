@@ -1,4 +1,4 @@
-#include <erc/maker/erc_file_parser.h>
+#include <erc/maker/erc_package_file_parser.h>
 #include <erc/maker/erc_files_list.h>
 
 #include <tests_directories.h>
@@ -13,7 +13,7 @@ TEST( relative_files, good_maker_listener )
 {
 
   //
-  const erc::maker::erc_file_parser erc( tests_directories::relative_files + "composed_ressource.erc" );
+  const erc::maker::erc_package_file_parser erc( tests_directories::relative_files + "composed_ressource.erc" );
 
   //
   const erc::maker::erc_files_list files( erc );

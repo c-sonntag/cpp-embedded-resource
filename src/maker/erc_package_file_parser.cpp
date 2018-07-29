@@ -1,4 +1,4 @@
-#include <erc/maker/erc_file_parser.h>
+#include <erc/maker/erc_package_file_parser.h>
 
 #include <erc/maker/model.h>
 
@@ -17,17 +17,17 @@ namespace fs = std::experimental::filesystem;
 namespace erc {
   namespace maker {
 
-    const std::regex valid_filename( "[^\\\\/:*?!\"<>|^\n\t]+" );
-    const std::regex valid_path( "[^\\\\:*?!\"<>|^\n\t]+" );
+    static const std::regex valid_filename( "[^\\\\/:*?!\"<>|^\n\t]+" );
+    static const std::regex valid_path( "[^\\\\:*?!\"<>|^\n\t]+" );
 
     // ---- ----
 
     struct internal_parser
     {
-      const erc_file_parser & erc_parsed_content;
+      const erc_package_file_parser & erc_parsed_content;
       model & content;
 
-      internal_parser( erc_file_parser & _erc_parsed_content );
+      internal_parser( erc_package_file_parser & _erc_parsed_content );
 
       void parse_tag_package_name( const std::string & tag_text );
       void parse_tag_prefix( const std::string & tag_text );
@@ -39,7 +39,7 @@ namespace erc {
 
     // ---- ---- ---- ----
 
-    internal_parser::internal_parser( erc_file_parser & _erc_parsed_content ) :
+    internal_parser::internal_parser( erc_package_file_parser & _erc_parsed_content ) :
       erc_parsed_content( _erc_parsed_content ),
       content( _erc_parsed_content.content )
     {
@@ -47,7 +47,7 @@ namespace erc {
       using namespace tinyxml2;
 
       XMLDocument doc;
-      doc.LoadFile( erc_parsed_content.erc_file_path.c_str() );
+      doc.LoadFile( erc_parsed_content.erc_package_filepath.c_str() );
 
       XMLPrinter printer;
       doc.Print( &printer );
@@ -130,7 +130,7 @@ namespace erc {
 
       //
       if ( content.package_name.empty() )
-        content.package_name = fs::path( erc_parsed_content.erc_file_path ).stem().string();
+        content.package_name = fs::path( erc_parsed_content.erc_package_filepath ).stem().string();
     }
 
     // ---- ---- ---- ----
@@ -214,8 +214,8 @@ namespace erc {
 
     // ---- ---- ---- ----
 
-    erc_file_parser::erc_file_parser( const std::string _erc_file_path ) :
-      erc_file_path( std::move( _erc_file_path ) )
+    erc_package_file_parser::erc_package_file_parser( const std::string _erc_package_filepath ) :
+      erc_package_filepath( std::move( _erc_package_filepath ) )
     {
       try
       {
@@ -223,7 +223,7 @@ namespace erc {
       }
       catch ( const std::exception & e )
       {
-        throw std::runtime_error( "[embedded_rc::maker::erc_file_parser] errors on file '" + erc_file_path + "' : \n"
+        throw std::runtime_error( "[embedded_rc::maker::erc_package_file_parser] errors on file '" + erc_package_filepath + "' : \n"
                                   + std::string( e.what() ) );
       }
 

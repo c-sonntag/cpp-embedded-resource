@@ -17,15 +17,15 @@ namespace erc {
 
     struct internal_listner
     {
-      const erc_file_parser & erc_parsed_content;
-      const fs::path erc_file_path;
+      const erc_package_file_parser & erc_parsed_content;
+      const fs::path erc_package_filepath;
       const fs::path erc_directory_path;
 
       erc_files_list & base;
 
-      std::unordered_set<std::string> same_file_path;
+      std::unordered_set<std::string> same_filepath;
 
-      internal_listner( const erc_file_parser & _erc_parsed_content, erc_files_list & _base );
+      internal_listner( const erc_package_file_parser & _erc_parsed_content, erc_files_list & _base );
 
       void push_file( const file & f, const fs::path & f_path );
 
@@ -35,10 +35,10 @@ namespace erc {
 
     // ---- ----
 
-    internal_listner::internal_listner( const erc_file_parser & _erc_parsed_content, erc_files_list & _base ) :
+    internal_listner::internal_listner( const erc_package_file_parser & _erc_parsed_content, erc_files_list & _base ) :
       erc_parsed_content( _erc_parsed_content ),
-      erc_file_path( erc_parsed_content.erc_file_path ),
-      erc_directory_path( erc_file_path.parent_path() ),
+      erc_package_filepath( erc_parsed_content.erc_package_filepath ),
+      erc_directory_path( erc_package_filepath.parent_path() ),
       base( _base )
     {
 
@@ -51,10 +51,10 @@ namespace erc {
         push_directory( d );
 
       //
-      if ( !same_file_path.empty() )
+      if ( !same_filepath.empty() )
       {
         std::stringstream ss;
-        for ( const std::string & p : same_file_path )
+        for ( const std::string & p : same_filepath )
           ss << "  " << p << std::endl;
         throw std::runtime_error( "Some file path are similars : \n" + ss.str() );
       }
@@ -75,7 +75,7 @@ namespace erc {
         auto find_it( base.files_found.find( f.path ) );
         if ( find_it != base.files_found.end() )
         {
-          same_file_path.emplace( find_it->first );
+          same_filepath.emplace( find_it->first );
           find_it->second = file_property_found( f, property, f_path.string() );
         }
         else
@@ -110,7 +110,7 @@ namespace erc {
 
     // ---- ---- ---- ----
 
-    erc_files_list::erc_files_list( const erc_file_parser & erc_parsed_content )
+    erc_files_list::erc_files_list( const erc_package_file_parser & erc_parsed_content )
     {
 
       try
@@ -122,7 +122,7 @@ namespace erc {
       }
       catch ( const std::exception & e )
       {
-        throw std::runtime_error( "[embedded_rc::maker::erc_files_list] bad link on file '" + erc_parsed_content.erc_file_path + "' : \n"
+        throw std::runtime_error( "[embedded_rc::maker::erc_files_list] bad link on file '" + erc_parsed_content.erc_package_filepath + "' : \n"
                                   + std::string( e.what() ) );
       }
 

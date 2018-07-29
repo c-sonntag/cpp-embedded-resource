@@ -3,7 +3,7 @@
 #include <erc/types.h>
 #include <erc/file.h>
 
-#include <erc/maker/erc_file_parser.h>
+#include <erc/maker/erc_package_file_parser.h>
 #include <erc/maker/model.h>
 
 #include <unordered_map>
@@ -39,7 +39,7 @@ namespace erc {
 
       std::unordered_set<std::string> directories_not_found;
 
-      erc_files_list( const erc_file_parser & erc_parsed_content );
+      erc_files_list( const erc_package_file_parser & erc_parsed_content );
     };
 
 

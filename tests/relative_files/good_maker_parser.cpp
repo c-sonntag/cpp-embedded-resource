@@ -1,4 +1,4 @@
-#include <erc/maker/erc_file_parser.h>
+#include <erc/maker/erc_package_file_parser.h>
 
 #include <tests_directories.h>
 #include <gtest/gtest.h>
@@ -11,7 +11,7 @@ TEST( relative_files, good_maker_parser )
 {
 
   //
-  const erc::maker::erc_file_parser erc( tests_directories::relative_files + "composed_ressource.erc" );
+  const erc::maker::erc_package_file_parser erc( tests_directories::relative_files + "composed_ressource.erc" );
 
   //
   ASSERT_EQ( erc.content.files.size(), 9 );

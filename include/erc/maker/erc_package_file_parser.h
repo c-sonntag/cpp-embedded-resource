@@ -7,12 +7,12 @@
 namespace erc {
   namespace maker {
 
-    struct erc_file_parser
+    struct erc_package_file_parser
     {
-      const std::string erc_file_path;
+      const std::string erc_package_filepath;
       model content;
 
-      erc_file_parser( const std::string _erc_file_path );
+      erc_package_file_parser( const std::string _erc_package_filepath );
     };
 
   }
