@@ -206,7 +206,7 @@ namespace erc {
 
         //
         output << "#include \"./embedded_file.h\"" << endl
-               << "const erc::embedded_file erc::generated_embedded_files::" << file_id.file_unique_identifier << endl
+               << "const erc::embedded_file erc::generated_embedded_files::" << file_id.file_unique_identifier.hex << endl
                << ef << ";" << endl
                << endl;
 

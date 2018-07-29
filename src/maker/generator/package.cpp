@@ -38,7 +38,7 @@ namespace erc {
 
         //
         for ( const src_file_identifier & file_id : erc_files_identifier )
-          output << "      &" << file_id.file_unique_identifier << "," << endl;
+          output << "      &" << file_id.file_unique_identifier.hex << "," << endl;
 
         //
         output << "  };" << endl
@@ -46,7 +46,7 @@ namespace erc {
                << endl;
 
         //
-        output << "const erc::package erc::generated_package::" << package_unique_identifier << endl
+        output << "const erc::package erc::generated_package::" << package_unique_identifier.hex << endl
                << "{" << endl
                << "  \"" << erc_package.content.package_name << "\"," << endl
                << "  " << erc_files_identifier.size() << "," << endl

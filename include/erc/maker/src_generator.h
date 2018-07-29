@@ -16,27 +16,42 @@ namespace erc {
 
     struct hash256
     {
-      static constexpr size_t hash_digest_size {32};
-      byte digest[hash_digest_size] = {0};
+     public:
+      static hash256 from_hex_string( const hash_hex_string & hex );
 
-      static constexpr size_t hash_hex_size {256};
+     public:
+      static constexpr uint hash_digest_size {32};
+      byte digest[hash_digest_size];
+
+      static constexpr uint hash_hex_size {hash_digest_size * 2};
       hash_hex_string hex;
 
+     public:
       inline hash256() = default;
-      hash256( const std::string & );
+      hash256( const byte( &digested )[hash_digest_size] );
+      hash256( const byte digested[hash_digest_size] );
+
+      hash256( const std::string & data );
+
+     public:
+      void generate_hash_hex_string();
+      void generate_generate_digest();
     };
 
     // ---- ----
 
     struct file_cache_information
     {
-      uint size;
-      std::time_t last_modification;
+      uint size = 0;
+      std::time_t last_modification = 0;
 
       inline file_cache_information() = default;
-      inline file_cache_information( uint _size, std::time_t _last_modification ) :
-        size( std::move( _size ) ), last_modification( std::move( _last_modification ) )
+      inline file_cache_information( const file_property & fp ) :
+        size( fp.size ), last_modification( fp.last_modification )
       {}
+      //inline file_cache_information( uint _size, std::time_t _last_modification ) :
+      //  size( std::move( _size ) ), last_modification( std::move( _last_modification ) )
+      //{}
     };
 
     struct src_file_identifier

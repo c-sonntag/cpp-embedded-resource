@@ -39,7 +39,7 @@ namespace erc {
 
         //
         for ( const src_file_identifier & file_id : erc_files_identifier )
-          output << "    const extern erc::embedded_file " << file_id.file_unique_identifier << ";" << endl;
+          output << "    const extern erc::embedded_file " << file_id.file_unique_identifier.hex << ";" << endl;
 
         //
         output << "  }" << endl
@@ -47,7 +47,7 @@ namespace erc {
                << "  namespace generated_package {" << endl;
 
         //
-        output << "    const extern erc::package " << package_unique_identifier << ";" << endl;
+        output << "    const extern erc::package " << package_unique_identifier.hex << ";" << endl;
 
         //
         // for ( const std::string & generated_package : generated_packages )
