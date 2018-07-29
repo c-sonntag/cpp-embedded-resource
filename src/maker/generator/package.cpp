@@ -6,11 +6,7 @@
 namespace erc {
   namespace maker {
 
-    void src_generator::generate_package(
-      const std::string & generated_package_unique_identifier,
-      const std::vector<std::string> & generated_embedded_files_uniques_identifier,
-      const std::string & output_src_file
-    )
+    void src_generator::generate_package( const std::string & output_src_file )
     {
 
       //
@@ -20,30 +16,29 @@ namespace erc {
       {
 
         //
-        std::ofstream output( output_src_file, std::fstream::out | std::fstream::trunc );
+        std::ofstream output( output_src_file, std::ofstream::out | std::ofstream::trunc );
         if ( !output )
-          throw std::string( "can't write <output_file> at " + output_src_file );
+          throw std::string( "can't write <output_src_file> at " + output_src_file );
 
         //
         output << "/**" << endl
-               << "* @brief Generated file for EmbeddedResource lib" << endl
+               << "* @brief Generated file for EmbeddedResource lib." << endl
                << "* @note Package file can be found at" << endl
                << "*       " << erc_package.erc_package_filepath << endl
                << "*/" << endl
                << endl;
 
         //
-        output << "#include \"./embedded_file.h\"" << endl
-               << "#include \"./package.h\"" << endl
+        output << "#include \"./package.h\"" << endl
                << endl
-               << "namespace {" << endl
-               << "  using namespace erc::generated_embedded_files;" << endl
-               << "  const erc::embedded_file * const package_list[]" << endl
-               << "  {" << endl;
+               << "namespace erc {" << endl
+               << "  namespace generated_embedded_files {" << endl
+               << "    static const erc::embedded_file * const embedded_files[]" << endl
+               << "    {" << endl;
 
         //
-        for ( const std::string & generated_embedded_file_unique_identifier : generated_embedded_files_uniques_identifier )
-          output << "    &" << generated_embedded_file_unique_identifier << "," << endl;
+        for ( const src_file_identifier & file_id : erc_files_identifier )
+          output << "      &" << file_id.file_unique_identifier << "," << endl;
 
         //
         output << "  };" << endl
@@ -51,21 +46,16 @@ namespace erc {
                << endl;
 
         //
-        output << "const erc::manager::package erc::generated_package::" << aa << "(" << endl
-               << "  \"" << aa << "\"," << endl
-               << "  " << aa << "," << endl
-               << "  package_list" << endl
-               << ");" << endl
+        output << "const erc::package erc::generated_package::" << package_unique_identifier << endl
+               << "{" << endl
+               << "  \"" << erc_package.content.package_name << "\"," << endl
+               << "  " << erc_files_identifier.size() << "," << endl
+               << "  embedded_files" << endl
+               << "};" << endl
                << endl;
-
-
       }
       catch ( const std::string & s )
-      {
-        throw std::runtime_error( "[embedded_rc::maker::generator::src_package] " + s );
-      }
-
-
+      { throw std::runtime_error( "[embedded_rc::maker::src_generator::generate_package] " + s ); }
     }
 
   }

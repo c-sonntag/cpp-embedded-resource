@@ -3,6 +3,7 @@
 #include <erc/types.h>
 #include <string>
 #include <cstring>
+#include <chrono>
 
 namespace erc {
 
@@ -10,11 +11,13 @@ namespace erc {
   {
     std::string filename;
     std::string extension;
-    size_t size;
+    uint size;
+    std::time_t last_modification;
 
     inline file_property() = default;
-    inline file_property( std::string _filename, std::string _extension, size_t _size ) :
-      filename( _filename ), extension( std::move( _extension ) ), size( std::move( _size ) )
+    inline file_property( std::string _filename, std::string _extension, uint _size, std::time_t _last_modification ) :
+      filename( _filename ), extension( std::move( _extension ) ),
+      size( std::move( _size ) ), last_modification( std::move( _last_modification ) )
     {}
   };
 
@@ -22,7 +25,8 @@ namespace erc {
   {
     return ( lhs.filename == rhs.filename ) &&
            ( lhs.extension == rhs.extension ) &&
-           ( lhs.size == rhs.size );
+           ( lhs.size == rhs.size ) &&
+           ( lhs.last_modification == rhs.last_modification );
   }
 
   inline bool operator!=( const file_property & lhs, const file_property & rhs )
@@ -33,8 +37,8 @@ namespace erc {
   struct embedded_data_property
   {
     file_property file;
-    //size_t offset;
-    size_t size;
+    //uint offset;
+    uint size;
     //char content_hash[12];
     bool compressed;
     bool raw_data;
@@ -42,8 +46,8 @@ namespace erc {
     inline embedded_data_property() = default;
     inline embedded_data_property(
       file_property _file,
-      //size_t _offset,
-      size_t _size,
+      //uint _offset,
+      uint _size,
       bool _compressed,
       bool _raw_data ) :
       file( std::move( _file ) ),

@@ -9,6 +9,8 @@
 #include <regex>
 #include <unordered_set>
 
+#include <bits/stdc++.h>
+
 #include <experimental/filesystem>
 namespace fs = std::experimental::filesystem;
 
@@ -65,11 +67,16 @@ namespace erc {
     {
       if ( fs::exists( f_path ) )
       {
+        const uint64_t file_size( fs::file_size( f_path ) );
+        if ( file_size > UINT_MAX )
+          throw std::runtime_error( "File size reached, " + std::to_string( file_size ) + " <= " + std::to_string( UINT_MAX ) );
+
         const file_property property
         {
           f_path.filename().string(),
           f_path.extension().string(),
-          fs::file_size( f_path )
+          static_cast<uint>( file_size ),
+          fs::file_time_type::clock::to_time_t( fs::last_write_time( f_path ) )
         };
 
         auto find_it( base.files_found.find( f.path ) );
@@ -122,7 +129,7 @@ namespace erc {
       }
       catch ( const std::exception & e )
       {
-        throw std::runtime_error( "[embedded_rc::maker::erc_files_list] bad link on file '" + erc_parsed_content.erc_package_filepath + "' : \n"
+        throw std::runtime_error( "[embedded_rc::maker::erc_files_list] error on file '" + erc_parsed_content.erc_package_filepath + "' : \n"
                                   + std::string( e.what() ) );
       }
 

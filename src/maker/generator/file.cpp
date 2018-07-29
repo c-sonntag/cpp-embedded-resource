@@ -107,7 +107,6 @@ namespace erc {
       //
       const size_t size( data.size() );
 
-
       //
       os << "static const unsigned char data[" << size << "] =" << endl
          << "{" << endl;
@@ -146,11 +145,7 @@ namespace erc {
 
     // ---- ---- ---- ----
 
-    void src_generator::generate_file(
-      const file_property_found & valid_input_file,
-      const std::string & generated_embedded_file_unique_identifier,
-      const std::string & output_src_file
-    )
+    void src_generator::generate_file( const src_file_identifier & file_id, const std::string & output_src_file )
     {
 
       //
@@ -159,20 +154,20 @@ namespace erc {
       try
       {
         //
-        std::ifstream input( valid_input_file.path, std::fstream::in | std::fstream::binary );
+        std::ifstream input( file_id.valid_input_file.path, std::ifstream::in | std::ifstream::binary );
         if ( !input )
-          throw std::string( "invalid <input_file> " + valid_input_file.path );
+          throw std::string( "invalid <input_file> " + file_id.valid_input_file.path );
 
         //
-        std::ofstream output( output_src_file, std::fstream::out | std::fstream::trunc );
+        std::ofstream output( output_src_file, std::ofstream::out | std::ofstream::trunc );
         if ( !output )
-          throw std::string( "can't write <output_file> at " + output_src_file );
+          throw std::string( "can't write <output_src_file> at " + output_src_file );
 
         //
         output << "/**" << endl
                << "* @brief Generated file for EmbeddedResource lib" << endl
                << "* @note Original file can be found at" << endl
-               << "*       " << valid_input_file.path << endl
+               << "*       " << file_id.valid_input_file.path << endl
                << "*/" << endl
                << endl;
 
@@ -181,10 +176,10 @@ namespace erc {
                                          ( std::istreambuf_iterator<char>() ) );
 
         //
-        size_t packing_size( 0 );
+        uint packing_size( 0 );
 
         //
-        if ( valid_input_file.file.compress )
+        if ( file_id.valid_input_file.file.compress )
         {
           const std::string input_compressed_content( compress_string( input_content ) );
           data_block_writer( output, input_compressed_content );
@@ -199,11 +194,11 @@ namespace erc {
         //
         embedded_file ef
         {
-          valid_input_file.file.path,
+          file_id.valid_input_file.file.path,
           {
-            valid_input_file.property,
+            file_id.valid_input_file.property,
             packing_size,
-            valid_input_file.file.compress,
+            file_id.valid_input_file.file.compress,
             true /**< raw data */
           },
           nullptr /**< not important here */
@@ -211,13 +206,13 @@ namespace erc {
 
         //
         output << "#include \"./embedded_file.h\"" << endl
-               << "const erc::embedded_file erc::generated_embedded_files::" << generated_embedded_file_unique_identifier << endl
+               << "const erc::embedded_file erc::generated_embedded_files::" << file_id.file_unique_identifier << endl
                << ef << ";" << endl
                << endl;
 
       }
       catch ( const std::string & s )
-      { throw std::runtime_error( "[embedded_rc::maker::generator::src_file] " + s ); }
+      { throw std::runtime_error( "[embedded_rc::maker::src_generator::generate_file] " + s ); }
 
     }
 
