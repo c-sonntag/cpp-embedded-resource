@@ -1,14 +1,12 @@
-#include <erc/maker/generator/src_header_embedded_files.h>
+#include <erc/maker/src_generator.h>
 
 #include <fstream>
 #include <sstream>
 
 namespace erc {
   namespace maker {
-    namespace generator {
 
-
-      void src_header_embedded_files(
+      void src_generator::header_embedded_files(
         const std::vector<std::string> & generated_embedded_files_uniques_identifier,
         const std::string output_src_file
       )
@@ -47,13 +45,9 @@ namespace erc {
 
         }
         catch ( const std::string & s )
-        {
-          throw std::runtime_error( "[embedded_rc::maker::generator::src_header_embedded_files] " + s );
-        }
-
+        { throw std::runtime_error( "[embedded_rc::maker::generator::src_header_embedded_files] " + s ); }
 
       }
 
-    }
   }
 }

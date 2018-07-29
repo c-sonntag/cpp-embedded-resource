@@ -1,4 +1,4 @@
-#include <erc/maker/generator/src_package.h>
+#include <erc/maker/src_generator.h>
 
 #include <fstream>
 #include <sstream>
@@ -6,8 +6,7 @@
 namespace erc {
   namespace maker {
 
-
-    void src_package(
+    void src_generator::generate_package(
       const std::string & generated_package_unique_identifier,
       const std::vector<std::string> & generated_embedded_files_uniques_identifier,
       const std::string & output_src_file
@@ -29,7 +28,7 @@ namespace erc {
         output << "/**" << endl
                << "* @brief Generated file for EmbeddedResource lib" << endl
                << "* @note Package file can be found at" << endl
-               << "*       " << valid_input_file.path << endl
+               << "*       " << erc_package.erc_package_filepath << endl
                << "*/" << endl
                << endl;
 

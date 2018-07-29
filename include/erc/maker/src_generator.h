@@ -6,6 +6,7 @@
 #include <erc/maker/erc_files_list.h>
 
 #include <string>
+#include <vector>
 
 namespace erc {
   namespace maker {
@@ -27,6 +28,29 @@ namespace erc {
       void generate_into( const std::string & erc_output_directorypath );
 
      private:
+      void generate_header_embedded_files(
+        const std::vector<std::string> & generated_embedded_files_uniques_identifier,
+        const std::string output_src_file
+      );
+
+      void generate_header_package(
+        const std::vector<std::string> generated_packages,
+        const std::string output_src_file
+      );
+
+     private:
+      void generate_file(
+        const file_property_found & valid_input_file,
+        const std::string & generated_embedded_file_unique_identifier,
+        const std::string & output_src_file
+      );
+
+      void generate_package(
+        const std::string & generated_package_unique_identifier,
+        const std::vector<std::string> & generated_embedded_files_uniques_identifier,
+        const std::string & output_src_file
+      );
+
 
     };
 
