@@ -1,4 +1,4 @@
-#include <erc/maker/src_generator.h>
+#include <erc_maker/src_generator.h>
 
 #include <fstream>
 #include <sstream>
@@ -6,8 +6,7 @@
 #define ZLIB_CONST 1
 #include <zlib.h>
 
-namespace erc {
-  namespace maker {
+namespace erc_maker {
 
     inline const char * named_boolean_str( const bool value )
     {
@@ -18,14 +17,14 @@ namespace erc {
 
     // ---- ---- ---- ----
 
-    std::ostream & operator <<( std::ostream & os, const file_property & fp )
+    std::ostream & operator <<( std::ostream & os, const erc::file_property & fp )
     {
       using std::endl;
       os << "{\"" << fp.filename << "\", \"" << fp.extension << "\", " << fp.size << ", " << fp.last_modification << "}";
       return os;
     }
 
-    std::ostream & operator <<( std::ostream & os, const embedded_data_property & edp )
+    std::ostream & operator <<( std::ostream & os, const erc::embedded_data_property & edp )
     {
       using std::endl;
       os << "  {" << endl
@@ -35,7 +34,7 @@ namespace erc {
       return os;
     }
 
-    std::ostream & operator <<( std::ostream & os, const embedded_file & ef )
+    std::ostream & operator <<( std::ostream & os, const erc::embedded_file & ef )
     {
       using std::endl;
       os << "{" << endl
@@ -192,7 +191,7 @@ namespace erc {
         }
 
         //
-        embedded_file ef
+        erc::embedded_file ef
         {
           file_id.valid_input_file.file.path,
           {
@@ -212,9 +211,8 @@ namespace erc {
 
       }
       catch ( const std::exception & e )
-      { throw std::runtime_error( "[embedded_rc::maker::src_generator::generate_file] " + std::string(e.what()) ); }
+      { throw std::runtime_error( "[embedded_rc::erc_maker::src_generator::generate_file] " + std::string(e.what()) ); }
 
     }
 
-  }
 }

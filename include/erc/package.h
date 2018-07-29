@@ -25,9 +25,15 @@ namespace erc {
     {}
   };
 
+  const erc::package * find_package_from_package_list( const package_list & pl, const std::string & name );
+
   #if defined(ERC_MANAGER_MAIN_PACKAGE_LIST_EXIST) && (ERC_MANAGER_MAIN_PACKAGE_LIST_EXIST==1)
   extern const package_list main_package_list;
+
+  inline const erc::package * find_package( const std::string & name )
+  { return find_package_from_package_list( main_package_list, name ); }
   #endif
+
 
 }
 

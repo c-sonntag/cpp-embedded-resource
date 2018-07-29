@@ -1,6 +1,7 @@
-#include <erc/maker/erc_files_list.h>
+#include <erc_maker/erc_files_list.h>
 
-#include <erc/maker/model.h>
+#include <erc_maker/types.h>
+#include <erc_maker/model.h>
 
 #include <memory>
 #include <stdexcept>
@@ -14,8 +15,7 @@
 #include <experimental/filesystem>
 namespace fs = std::experimental::filesystem;
 
-namespace erc {
-  namespace maker {
+namespace erc_maker {
 
     struct internal_listner
     {
@@ -71,7 +71,7 @@ namespace erc {
         if ( file_size > UINT_MAX )
           throw std::runtime_error( "File size reached, " + std::to_string( file_size ) + " <= " + std::to_string( UINT_MAX ) );
 
-        const file_property property
+        const erc::file_property property
         {
           f_path.filename().string(),
           f_path.extension().string(),
@@ -129,11 +129,10 @@ namespace erc {
       }
       catch ( const std::exception & e )
       {
-        throw std::runtime_error( "[embedded_rc::maker::erc_files_list] error on file '" + erc_parsed_content.erc_package_filepath + "' : \n"
+        throw std::runtime_error( "[embedded_rc::erc_maker::erc_files_list] error on file '" + erc_parsed_content.erc_package_filepath + "' : \n"
                                   + std::string( e.what() ) );
       }
 
     }
 
-  }
 }

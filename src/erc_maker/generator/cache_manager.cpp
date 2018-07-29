@@ -1,4 +1,4 @@
-#include <erc/maker/src_generator.h>
+#include <erc_maker/src_generator.h>
 
 #include <istream>
 #include <ostream>
@@ -8,8 +8,7 @@
 #include <cstring>
 
 
-namespace erc {
-  namespace maker {
+namespace erc_maker {
 
     static const char current_version_header[] { "CacheEmbeddedResourceLib v1.0" };
 
@@ -71,7 +70,7 @@ namespace erc {
 
       }
       catch ( const std::exception & e )
-      { throw std::runtime_error( "[embedded_rc::maker::src_generator::open_cache_file] " + std::string( e.what() ) ); }
+      { throw std::runtime_error( "[embedded_rc::erc_maker::src_generator::open_cache_file] " + std::string( e.what() ) ); }
     }
 
     // ---- ---- ---- ----
@@ -113,10 +112,8 @@ namespace erc {
 
       }
       catch ( const std::exception & e )
-      { throw std::runtime_error( "[embedded_rc::maker::src_generator::save_cache_file] " + std::string( e.what() ) ); }
+      { throw std::runtime_error( "[embedded_rc::erc_maker::src_generator::save_cache_file] " + std::string( e.what() ) ); }
 
     }
 
-
-  }
 }
