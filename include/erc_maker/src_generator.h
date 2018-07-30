@@ -68,10 +68,26 @@ namespace erc_maker {
 
   struct src_generator
   {
+   private:
+    struct internal_names
+    {
+      const src_generator & sg;
+      inline internal_names( const src_generator & _sg );
+
+      std::string to_extern_erc( const src_file_identifier & sfi ) const;
+      std::string to_extern_package() const;
+
+      std::string to_file_erc( const src_file_identifier & sfi ) const;
+      std::string to_file_package_file() const;
+      std::string to_file_header_package_file() const;
+      std::string to_file_cache_package_file() const;
+    };
+
    public:
     const erc_package_file_parser & erc_package;
     const erc_files_list & erc_files;
     const hash256 package_unique_identifier;
+    const internal_names names_generator;
 
    private:
     inline hash256 make_hash_for( const erc_maker::file & file ) const;
@@ -83,7 +99,7 @@ namespace erc_maker {
     src_generator( const erc_package_file_parser & _erc_package, const erc_files_list & _erc_files );
 
    private:
-    std::vector<std::string> generates_filepath_list;
+    std::vector<std::string> generated_file_list, generated_filepath_list;
 
    private:
     void generate_file( const src_file_identifier & file_id, const std::string & output_src_file );
@@ -91,15 +107,16 @@ namespace erc_maker {
     void generate_package( const std::string & output_src_file );
 
    public:
-    void generate_into( const std::string & erc_output_directorypath );
-    const std::vector<std::string> & get_generates_filepath_list() const;
+    void generate_into( const std::string & erc_output_directorypath, bool generated_list_only = false );
+    const std::vector<std::string> & get_generated_filepath_list() const {return generated_filepath_list;}
+    const std::vector<std::string> & get_generated_file_list() const {return generated_file_list;}
 
    private:
     std::unordered_map<hash_hex_string, file_cache_information> supplement_cache;
 
    public:
-    void open_cache_file( const std::string & erc_cache_filepath );
-    void save_cache_file( const std::string & erc_cache_filepath ) const;
+    void open_cache_if_exist_into( const std::string & erc_working_directorypath );
+    void save_cache_into( const std::string & erc_working_directorypath ) const;
 
    private:
     inline bool cache_have_same_file( const src_file_identifier & file_id ) const;

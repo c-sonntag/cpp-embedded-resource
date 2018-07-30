@@ -55,6 +55,34 @@ namespace erc_maker {
 
   // ---- ---- ---- ----
 
+  inline src_generator::internal_names::internal_names( const src_generator & _sg ) :
+    sg( _sg )
+  {}
+
+  // ---- ----
+
+  std::string src_generator::internal_names::to_extern_erc( const src_file_identifier & sfi ) const
+  { return "erc_" + sfi.file_unique_identifier.hex; }
+
+  std::string src_generator::internal_names::to_extern_package() const
+  { return "pack_" + sg.package_unique_identifier.hex; }
+
+  // ---- ----
+
+  std::string src_generator::internal_names::to_file_erc( const src_file_identifier & sfi ) const
+  { return to_extern_erc( sfi ) + ".cpp"; }
+
+  std::string src_generator::internal_names::to_file_package_file() const
+  { return to_extern_package() + ".cpp"; }
+
+  std::string src_generator::internal_names::to_file_header_package_file() const
+  { return to_extern_package() + ".h"; }
+
+  std::string src_generator::internal_names::to_file_cache_package_file() const
+  { return to_extern_package() + ".cache"; }
+
+  // ---- ---- ---- ----
+
   inline hash256 src_generator::make_hash_for( const erc_maker::file & file ) const
   {
     return hash256( package_unique_identifier.hex + ":" + file.path );
@@ -65,7 +93,8 @@ namespace erc_maker {
   src_generator::src_generator( const erc_package_file_parser & _erc_package, const erc_files_list & _erc_files ) :
     erc_package( std::move( _erc_package ) ),
     erc_files( std::move( _erc_files ) ),
-    package_unique_identifier( erc_package.content.package_name )
+    package_unique_identifier( erc_package.content.package_name ),
+    names_generator( *this )
   {
 
     //
@@ -76,41 +105,67 @@ namespace erc_maker {
 
   // ---- ----
 
-  void src_generator::generate_into( const std::string & erc_output_directorypath )
+  inline std::string generic_string_path( const fs::path & p )
   {
+    std::string p_str( p.string() );
+    std::replace( p_str.begin(), p_str.end(), '\\', '/' );
+    return p_str;
+  }
+
+  void src_generator::generate_into( const std::string & erc_output_directorypath, bool generated_list_only )
+  {
+
     //
-    static const fs::path erc_header_package_file( "package.h" );
-    static const fs::path erc_package_file( "package.cpp" );
+    generated_file_list.clear();
+    generated_filepath_list.clear();
 
     //
     const fs::path output_directorypath( erc_output_directorypath );
+
+    //
+    bool erc_files_have_changement = false;
 
     //
     for ( const src_file_identifier & file_id : erc_files_identifier )
     {
 
       //
-      const fs::path erc_embedded_file( "erc_" + file_id.file_unique_identifier.hex + ".cpp" );
-      const fs::path erc_embedded_filepath( erc_output_directorypath / erc_embedded_file );
-      generates_filepath_list.emplace_back( erc_embedded_filepath.string() );
+      const std::string erc_embedded_file_str( names_generator.to_file_erc( file_id ) );
+      const fs::path erc_embedded_filepath( output_directorypath / fs::path( erc_embedded_file_str ) );
+      generated_file_list.emplace_back( erc_embedded_file_str );
+      generated_filepath_list.emplace_back( generic_string_path( erc_embedded_filepath ) );
 
-      //
-      const bool embedded_file_already_exist( fs::exists( erc_embedded_filepath ) );
-      const bool last_embedded_file_is_different_or_unknown( cache_have_same_file( file_id ) );
-
-      //
-      if ( last_embedded_file_is_different_or_unknown || !embedded_file_already_exist )
-        generate_file( file_id, erc_embedded_filepath.string() );
+      if ( !generated_list_only )
+      {
+        if ( !cache_have_same_file( file_id ) || !fs::exists( erc_embedded_filepath ) )
+        {
+          generate_file( file_id, erc_embedded_filepath.string() );
+          erc_files_have_changement = true;
+        }
+      }
     }
 
     //
-    const fs::path erc_header_package_filepath( erc_output_directorypath / erc_header_package_file );
-    generate_header_package( erc_header_package_filepath.string() );
+    {
+      const std::string erc_header_package_file_str( names_generator.to_file_header_package_file() );
+      const fs::path erc_header_package_filepath( output_directorypath / fs::path( erc_header_package_file_str ) );
+      generated_file_list.emplace_back( erc_header_package_file_str );
+      generated_filepath_list.emplace_back( generic_string_path( erc_header_package_filepath ) );
+      if ( !generated_list_only )
+        if ( !fs::exists( erc_header_package_filepath ) || erc_files_have_changement )
+          generate_header_package( erc_header_package_filepath.string() );
+    }
 
     //
-    const fs::path erc_package_filepath( erc_output_directorypath / erc_package_file );
-    generates_filepath_list.emplace_back( erc_package_filepath.string() );
-    generate_package( erc_package_filepath.string() );
+    {
+      const std::string erc_package_file_str( names_generator.to_file_package_file() );
+      const fs::path erc_package_filepath( output_directorypath / fs::path( erc_package_file_str ) );
+      generated_file_list.emplace_back( erc_package_file_str );
+      generated_filepath_list.emplace_back( generic_string_path( erc_package_filepath ) );
+      if ( !generated_list_only )
+        if ( !fs::exists( erc_package_filepath ) || erc_files_have_changement )
+          generate_package( erc_package_filepath.string() );
+    }
   }
 
   // ---- ----

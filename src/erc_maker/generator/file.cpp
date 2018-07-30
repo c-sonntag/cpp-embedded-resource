@@ -204,8 +204,8 @@ namespace erc_maker {
         };
 
         //
-        output << "#include \"./package.h\"" << endl
-               << "const erc::embedded_file erc::generated_embedded_files::erc_" << file_id.file_unique_identifier.hex << endl
+        output << "#include \"./" << names_generator.to_file_header_package_file() << "\"" << endl
+               << "const erc::embedded_file erc::generated_embedded_files::" << names_generator.to_extern_erc(file_id) << endl
                << ef << ";" << endl
                << endl;
 

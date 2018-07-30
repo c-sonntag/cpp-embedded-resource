@@ -28,7 +28,7 @@ namespace erc_maker {
              << endl;
 
       //
-      output << "#include \"./package.h\"" << endl
+      output << "#include \"./" << names_generator.to_file_header_package_file() << "\"" << endl
              << endl
              << "namespace erc {" << endl
              << endl
@@ -38,7 +38,7 @@ namespace erc_maker {
 
       //
       for ( const src_file_identifier & file_id : erc_files_identifier )
-        output << "      &erc_" << file_id.file_unique_identifier.hex << "," << endl;
+        output << "      &" << names_generator.to_extern_erc( file_id ) << "," << endl;
 
       //
       output << "    };" << endl
@@ -46,7 +46,7 @@ namespace erc_maker {
              << endl;
 
       //
-      output << "  const erc::package generated_package::pack_" << package_unique_identifier.hex << endl
+      output << "  const erc::package generated_package::" << names_generator.to_extern_package() << endl
              << "  {" << endl
              << "    \"" << erc_package.content.package_name << "\"," << endl
              << "    " << erc_files_identifier.size() << "," << endl

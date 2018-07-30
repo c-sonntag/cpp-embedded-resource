@@ -41,7 +41,7 @@ add_definitions("-D_TESTS_DIRECTORY_PATH=\"${CMAKE_CURRENT_LIST_DIR}\"")
 # --- TARGETS PATH ---
 set(SRC_PATH ".")
 set(HEADER_PATH ".")
-F
+
 # --- TARGETS FILES ---
 file(GLOB_RECURSE TARGET_SRC_FILES "${SRC_PATH}/*.cpp" "${SRC_PATH}/*.c")
 file(GLOB_RECURSE TARGET_HEADER_FILES "${HEADER_PATH}/*.h" "${HEADER_PATH}/*.hpp")
@@ -53,6 +53,7 @@ include_directories(${HEADER_PATH})
 ## TESTS C++
 #
 
+
 # --- BUILD TESTS PROGRAM ---
 add_executable(${PROJECT_NAME} ${TARGET_SRC_FILES} ${TARGET_HEADER_FILES})
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
@@ -61,4 +62,25 @@ LINK_PRIVATE_LIB_GTEST(${PROJECT_NAME})
 # --- INSTALL TESTS PROGRAM ---
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION "bin")
 
+
+#
+## FIND_PACKAGE ERC (without installation)
+#
+
+#message(STATUS "$<TARGET_FILE:embedded_resource_packager>")
+#get_property(ERC_BINARY_PACKAGER TARGET ${PROJECT_EMBEDDEDRESOURCE_PROGRAM} PROPERTY LOCATION)
+
+add_dependencies(${PROJECT_NAME} ${PROJECT_EMBEDDEDRESOURCE_PROGRAM})
+#set(ERC_BINARY_PACKAGER $<TARGET_FILE:${PROJECT_EMBEDDEDRESOURCE_PROGRAM}>)
+include("EmbeddedResource")
+
+#
+## ERC PACKAGE
+#
+
+message(STATUS ${ERC_BINARY_PACKAGER})
+
+if(EXISTS ${ERC_BINARY_PACKAGER})
+  erc_add_ressource(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/relative_files/composed_ressource.erc")
+endif()
 
