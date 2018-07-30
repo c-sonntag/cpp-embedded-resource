@@ -209,7 +209,7 @@ namespace erc_maker {
              << "namespace erc {" << endl
              << "  namespace generated_embedded_files {" << endl
              << "    const extern erc::embedded_file " << names_generator.to_extern_erc( file_id ) << ";" << endl
-             << "    const extern erc::embedded_file " << names_generator.to_extern_erc( file_id ) << endl
+             << "    const erc::embedded_file " << names_generator.to_extern_erc( file_id ) << endl
              << ef << ";" << endl
              << "  }" << endl
              << "}" << endl

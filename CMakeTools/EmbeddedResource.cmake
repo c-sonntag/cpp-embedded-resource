@@ -44,7 +44,22 @@ function(ERC_ADD_RESSOURCE target_name input_erc_xml_package_filepath)
   #set(work_directory "erc_generation")
   #file(MAKE_DIRECTORY "${work_relative_directory}/")
   #set(work_relative_directory "erc_generation")
-  set(erc_target "${target_name}_erc_generation")
+
+  #
+  ##
+  get_filename_component(input_erc_xml_package_filepath_realpath "${input_erc_xml_package_filepath}" REALPATH)
+  string(SHA256 input_erc_xml_package_filepath_realpath_hash ${input_erc_xml_package_filepath_realpath})
+  set(erc_target "erc_package_${input_erc_xml_package_filepath_realpath_hash}")
+
+  #set(erc_target_special_chars ".")
+  #set(erc_target ${input_erc_xml_package_filepath})
+  #string(REPLACE ":"  "${erc_target_special_chars}" erc_target ${erc_target})
+  #string(REPLACE "/"  "${erc_target_special_chars}" erc_target ${erc_target})
+  #string(REPLACE "\\" "${erc_target_special_chars}" erc_target ${erc_target})
+  #string(REPLACE "."  "${erc_target_special_chars}" erc_target ${erc_target})
+
+  #set(erc_target "${target_name}_erc_generation")
+
   #set(erc_target "${input_erc_xml_package_filepath}")
   set(work_absolute_directory "${CMAKE_CURRENT_BINARY_DIR}/embedded_rc_generation")
   file(MAKE_DIRECTORY ${work_absolute_directory})
@@ -132,7 +147,7 @@ function(ERC_ADD_RESSOURCE target_name input_erc_xml_package_filepath)
   #set(build_files_relative_path)
   #PREPEND(build_files_relative_path ${work_relative_directory} ${build_files})
   message(STATUS "  files_path :  ${files_path}\n")
-  message(STATUS "  files_path_to_build :  ${files_path_to_build}\n")
+  #message(STATUS "  files_path_to_build :  ${files_path_to_build}\n")
 
   #
   ##
@@ -199,7 +214,7 @@ function(ERC_ADD_RESSOURCE target_name input_erc_xml_package_filepath)
     COMMAND ${ERC_BINARY_PACKAGER}
     ARGS ${erc_args_current_xml_pakage}
     #ARGS "--input-package" ${input_erc_xml_package_filepath} "--work-dir" ${work_absolute_directory}
-    #BYPRODUCTS ${files_path}
+    BYPRODUCTS ${files_path}
     #SOURCES ${files_path_to_build}
     #WORKING_DIRECTORY ${work_absolute_directory}
     # SOURCES ${build_files_path}
@@ -223,8 +238,11 @@ function(ERC_ADD_RESSOURCE target_name input_erc_xml_package_filepath)
   # )
 
   #
-  set_source_files_properties( ${files_path} PROPERTIES GENERATED OFF )
-  set_source_files_properties( ${files_path_to_build} PROPERTIES GENERATED ON )
+  #set_source_files_properties( ${files_path} PROPERTIES GENERATED OFF )
+  #set_source_files_properties( ${files_path_to_build} PROPERTIES GENERATED ON )
+
+  #set_source_files_properties( ${files_path} PROPERTIES GENERATED ON )
+
   #set_property(CACHE ${files_path} PROPERTY )
 
   #

@@ -82,5 +82,6 @@ message(STATUS ${ERC_BINARY_PACKAGER})
 
 if(EXISTS ${ERC_BINARY_PACKAGER})
   erc_add_ressource(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/relative_files/composed_ressource.erc")
+  erc_add_ressource(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/relative_files/composed_ressourcebis.erc")
 endif()
 

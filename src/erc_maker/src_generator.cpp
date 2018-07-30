@@ -157,7 +157,7 @@ namespace erc_maker {
       const fs::path erc_header_package_filepath( output_directorypath / fs::path( erc_header_package_file_str ) );
 
       //
-      const bool need_generate( !fs::exists( erc_header_package_filepath ) || erc_files_have_changement );
+      const bool need_generate( !fs::exists( erc_header_package_filepath ) );
       rapport.insert( erc_header_package_file_str, generic_string_path( erc_header_package_filepath ), need_generate );
 
       //
