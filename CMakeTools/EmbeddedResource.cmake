@@ -34,63 +34,68 @@ function(ERC_ADD_RESSOURCE target_name input_erc_xml_package_filepath)
 
   #
   ##
-  get_filename_component(input_erc_xml_package_filepath_realpath "${input_erc_xml_package_filepath}" REALPATH)
-  string(SHA256 input_erc_xml_package_filepath_realpath_hash ${input_erc_xml_package_filepath_realpath})
-  set(erc_target "erc_package_${input_erc_xml_package_filepath_realpath_hash}")
-  #
-  set(work_absolute_directory "${CMAKE_CURRENT_BINARY_DIR}/embedded_rc_generation")
+  set(work_absolute_directory "${CMAKE_CURRENT_BINARY_DIR}/embedded_resource_generation")
   file(MAKE_DIRECTORY ${work_absolute_directory})
 
   #
   ##
-  macro( erc_execute_process output_var )
-    set(${output_var})
-    set(${output_var}_result)
-    set(${output_var}_result_error_msg)
-    execute_process(
-      COMMAND           ${ERC_BINARY_PACKAGER}
-      ARGS              ${ARGN}
-      OUTPUT_VARIABLE   ${output_var}
-      RESULT_VARIABLE   ${output_var}_result
-      ERROR_VARIABLE    ${output_var}_result_error_msg
-      WORKING_DIRECTORY ${work_absolute_directory}
+  set(erc_cmake_target_information)
+  set(erc_cmake_target_information_result)
+  set(erc_cmake_target_information_result_error_msg)
+  execute_process(
+    COMMAND           ${ERC_BINARY_PACKAGER}
+    ARGS              "--input-package" ${input_erc_xml_package_filepath}
+                      "--work-dir" ${work_absolute_directory}
+                      "--get-for-cmake-target"
+    OUTPUT_VARIABLE   erc_cmake_target_information
+    RESULT_VARIABLE   erc_cmake_target_information_result
+    ERROR_VARIABLE    erc_cmake_target_information_result_error_msg
+    WORKING_DIRECTORY ${work_absolute_directory}
+  )
+  #
+  if(NOT ${erc_cmake_target_information_result} EQUAL "0")
+    message(FATAL_ERROR
+      "[ERC_ADD_RESSOURCE]\n"
+      "  ERC_BINARY_PACKAGER Can't get information of package to make target\n"
+      "  ProgramPath : ${ERC_BINARY_PACKAGER}\n"
+      "  Argument    : ${ARGN}\n"
+      "  ErrorResult : ${erc_cmake_target_information_result}\n"
+      "  ErrorMessage: ${erc_cmake_target_information_result_error_msg}\n"
+      "  Message     : ${erc_cmake_target_information}\n"
+      "\n"
     )
-    #
-    if(NOT ${${output_var}_result} EQUAL "0")
-      message(FATAL_ERROR
-        "[ERC_ADD_RESSOURCE]\n"
-        "  ERC_BINARY_PACKAGER can't return '${output_var}'\n"
-        "  ProgramPath : ${ERC_BINARY_PACKAGER}\n"
-        "  Argument    : ${ARGN}\n"
-        "  ErrorResult : ${${output_var}_result}\n"
-        "  ErrorMessage: ${${output_var}_result_error_msg}\n"
-        "  Message     : ${${output_var}}\n"
-        "\n"
-      )
-      return()
-    endif()
-  endmacro()
+    return()
+  endif()
 
   #
   ##
-  erc_execute_process(
-    files_path
-      "--input-package" ${input_erc_xml_package_filepath}
-      "--work-dir" ${work_absolute_directory}
-      "--return-build-files-path" "--cmake-list"
-  )
-  erc_execute_process(
-    files_path_to_build
-      "--input-package" ${input_erc_xml_package_filepath}
-      "--work-dir" ${work_absolute_directory}
-      "--return-build-files-path" "--return-only-generated" "--cmake-list"
-  )
+  #get_filename_component(input_erc_xml_package_filepath_realpath "${input_erc_xml_package_filepath}" REALPATH)
+  #string(SHA256 input_erc_xml_package_filepath_realpath_hash ${input_erc_xml_package_filepath_realpath})
+  #set(erc_target "erc_package_${input_erc_xml_package_filepath_realpath_hash}")
 
-  set( erc_args_current_xml_pakage
-    "--input-package" ${input_erc_xml_package_filepath}
-    "--work-dir" ${work_absolute_directory}
-   )
+  #
+  ##
+  string( REGEX MATCH "Package:([^\n]+)" erc_target "${erc_cmake_target_information}")
+  set(erc_target "erc_${CMAKE_MATCH_1}")
+  string( REGEX MATCH "Files:([^\n]+)" files_path "${erc_cmake_target_information}")
+  set(files_path ${CMAKE_MATCH_1})
 
+  #message(STATUS "erc_cmake_target_information : ${erc_cmake_target_information}")
+  ##message(STATUS "erc_target : ${erc_target} ---")
+  ##message(STATUS "files_path : ${files_path} ---")
+
+  #
+  if(NOT erc_target OR NOT files_path)
+    message(FATAL_ERROR
+      "[ERC_ADD_RESSOURCE]\n"
+      "  ERC_BINARY_PACKAGER Not returns good information of package to make target\n"
+      "\n"
+    )
+    return()
+  endif()
+
+  #
+  ##
   add_custom_target(
     ${erc_target} ALL
     COMMAND ${ERC_BINARY_PACKAGER}

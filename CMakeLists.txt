@@ -53,7 +53,7 @@ include_directories(${HEADER_PATH})
 # --- BUILD OPTIONS  ---
 SET(EMBEDDEDRESOURCE_BUILD_TOOLS ON CACHE BOOL "Build tools for EmbeddedResource library")
 SET(EMBEDDEDRESOURCE_BUILD_EXAMPLES ON CACHE BOOL "Build examples for EmbeddedResource library")
-SET(EMBEDDEDRESOURCE_BUILD_TESTS ON CACHE BOOL "Build tests for EmbeddedResource library")
+SET(EMBEDDEDRESOURCE_BUILD_TESTS ON CACHE BOOL "Build tests for EmbeddedResource library (need second cmake/make compile time)")
 
 #
 ##

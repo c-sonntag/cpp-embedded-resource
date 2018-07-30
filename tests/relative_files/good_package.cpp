@@ -30,7 +30,6 @@ TEST( relative_files, good_package )
   for ( unsigned int i( 0 ); i < package.size; ++i )
   {
     const erc::embedded_file & ef( *embedded_files[i] );
-
     std::cout << "File id(" << i << ") : " << std::endl
               << "  Path(" << ef.path << ")" << std::endl
               << "  Compressed(" << std::boolalpha << ef.property.compressed << ") Raw(" << std::boolalpha << ef.property.raw_data << ")  Size(" << std::boolalpha << ef.property.size << ")" << std::endl

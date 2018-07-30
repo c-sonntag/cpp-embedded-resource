@@ -67,7 +67,10 @@ namespace erc_maker {
   // ---- ----
 
   inline hash256 generate_package_identifier( const erc_package_file_parser & erc_package )
-  { return erc_package.erc_package_absolute_filepath; }
+  {
+    //return erc_package.erc_package_absolute_filepath;
+    return erc_package.content.package_name;
+  }
 
   // ---- ----
 
