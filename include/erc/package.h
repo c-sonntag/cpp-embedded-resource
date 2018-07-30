@@ -15,24 +15,33 @@ namespace erc {
     {}
   };
 
-  struct package_list
+  struct package_manager
   {
-    const erc::package & package;
-    const package_list * const next;
-
-    inline package_list( const erc::package & _package, const package_list * const _next ) :
-      package( std::move( _package ) ), next( std::move( _next ) )
-    {}
+   public:
+    static void push( const package & );
+    static const package * get( const std::string & name );
   };
 
-  const erc::package * find_package_from_package_list( const package_list & pl, const std::string & name );
+  //struct package_list
+  //{
+  //  const erc::package & package;
+  //  const package_list * const next;
+  //
+  //  inline package_list( const erc::package & _package, const package_list * const _next ) :
+  //    package( std::move( _package ) ), next( std::move( _next ) )
+  //  {}
+  //};
 
-  #if defined(ERC_MANAGER_MAIN_PACKAGE_LIST_EXIST) && (ERC_MANAGER_MAIN_PACKAGE_LIST_EXIST==1)
-  extern const package_list main_package_list;
 
-  inline const erc::package * find_package( const std::string & name )
-  { return find_package_from_package_list( main_package_list, name ); }
-  #endif
+
+  //const erc::package * find_package_from_package_list( const package_list & pl, const std::string & name );
+  //
+  //#if defined(ERC_MANAGER_MAIN_PACKAGE_LIST_EXIST) && (ERC_MANAGER_MAIN_PACKAGE_LIST_EXIST==1)
+  //extern const package_list main_package_list;
+  //
+  //inline const erc::package * find_package( const std::string & name )
+  //{ return find_package_from_package_list( main_package_list, name ); }
+  //#endif
 
 
 }

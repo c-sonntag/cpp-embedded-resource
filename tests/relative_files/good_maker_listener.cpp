@@ -25,11 +25,11 @@ TEST( relative_files, good_maker_listener )
   //
   const struct { std::string path; erc::file_property property; } desired_files_found[7]
   {
-    {"file1.txt",             { "file1.txt",     ".txt", 5, 0 }},
-    {"file2.txt",             { "file2.txt",     ".txt", 5, 0 }},
-    {"file3.txt",             { "file3.txt",     ".txt", 3, 0 }},
-    {"file4.txt",             { "file4.txt",     ".txt", 8, 0 }},
-    {"file5.txt",             { "file5.txt",     ".txt", 9, 0 }},
+    {"file1.txt",             { "file1.txt",     ".txt", 5,  0 }},
+    {"file2.txt",             { "file2.txt",     ".txt", 5,  0 }},
+    {"file3.txt",             { "file3.txt",     ".txt", 3,  0 }},
+    {"file4.txt",             { "file4.txt",     ".txt", 8,  0 }},
+    {"file5.txt",             { "file5.txt",     ".txt", 9,  0 }},
     {"sub_dir/sub_file1.txt", { "sub_file1.txt", ".txt", 11, 0 }},
     {"sub_dir/sub_file2.txt", { "sub_file2.txt", ".txt", 12, 0 }},
   };

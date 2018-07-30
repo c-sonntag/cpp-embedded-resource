@@ -7,17 +7,16 @@
 #include <string>
 #include <exception>
 
-namespace erc {
-  namespace generated_package {
-    const extern erc::package pack_a380b06818441f84d1128a138b88a65d13f2842f6c7cfda9c37df77776160a47;
-  }
-}
 
 TEST( relative_files, good_package )
 {
 
   //
-  const erc::package & package( erc::generated_package::pack_a380b06818441f84d1128a138b88a65d13f2842f6c7cfda9c37df77776160a47 );
+  const erc::package * const package_p( erc::package_manager::get("composed_ressource") );
+  ASSERT_NE( package_p, nullptr );
+
+  //
+  const erc::package & package(*package_p);
 
   //
   ASSERT_EQ( package.name, "composed_ressource" );

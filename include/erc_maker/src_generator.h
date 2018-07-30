@@ -98,7 +98,6 @@ namespace erc_maker {
 
       std::string to_file_erc( const src_file_identifier & sfi ) const;
       std::string to_file_package_file() const;
-      std::string to_file_header_package_file() const;
       std::string to_file_cache_package_file() const;
     };
 

@@ -173,7 +173,7 @@ endif()
 # endif()
 
 # --- BUILDS TESTS ---
-if(${EMBEDDEDRESOURCE_BUILD_TESTS})
+if(${EMBEDDEDRESOURCE_BUILD_TESTS} AND EXISTS ${ERC_BINARY_PACKAGER})
   add_subdirectory("tests/")
 endif()
 

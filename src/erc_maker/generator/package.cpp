@@ -28,18 +28,16 @@ namespace erc_maker {
              << endl;
 
       //
-      output << "#include \"./" << names_generator.to_file_header_package_file() << "\"" << endl
+      output << "#include <erc/package.h>" << endl
              << endl
              << "namespace erc {" << endl
              << endl
-             << "  namespace generated_embedded_files {" << endl
-             << endl;
+             << "  namespace generated_embedded_files {" << endl;
 
       for ( const src_file_identifier & file_id : erc_files_identifier )
         output << "    const extern erc::embedded_file " << names_generator.to_extern_erc( file_id ) << ";" << endl;
 
-      output << endl
-             << "    static const erc::embedded_file * const embedded_files[]" << endl
+      output << "    static const erc::embedded_file * const embedded_files[]" << endl
              << "    {" << endl;
 
       //
@@ -48,18 +46,21 @@ namespace erc_maker {
 
       //
       output << "    };" << endl
-             << endl
              << "  }" << endl
              << endl;
 
       //
-      output << "  const erc::package generated_package::" << names_generator.to_extern_package() << endl
-             << "  {" << endl
-             << "    \"" << erc_package.content.package_name << "\"," << endl
-             << "    " << erc_files_identifier.size() << "," << endl
-             << "    erc::generated_embedded_files::embedded_files" << endl
-             << "  };" << endl
-             << endl
+      output << "  namespace generated_package {" << endl
+             << "   static const erc::package " << names_generator.to_extern_package() << endl
+             << "   {" << endl
+             << "     \"" << erc_package.content.package_name << "\"," << endl
+             << "     " << erc_files_identifier.size() << "," << endl
+             << "     erc::generated_embedded_files::embedded_files" << endl
+             << "   };" << endl
+             << "   static struct initializer {" << endl
+             << "     inline initializer() { erc::package_manager::push(" << names_generator.to_extern_package() << "); }" << endl
+             << "   } _mypack;" << endl
+             << "  }" << endl
              << "}" << endl
              << endl;
     }

@@ -92,9 +92,6 @@ namespace erc_maker {
   std::string src_generator::internal_names::to_file_package_file() const
   { return to_extern_package() + ".cpp"; }
 
-  std::string src_generator::internal_names::to_file_header_package_file() const
-  { return to_extern_package() + ".h"; }
-
   std::string src_generator::internal_names::to_file_cache_package_file() const
   { return to_extern_package() + ".cache"; }
 
@@ -150,20 +147,6 @@ namespace erc_maker {
 
     //
     bool erc_files_have_changement( rapport.nb_generated > 0 );
-
-    {
-      //
-      const std::string erc_header_package_file_str( names_generator.to_file_header_package_file() );
-      const fs::path erc_header_package_filepath( output_directorypath / fs::path( erc_header_package_file_str ) );
-
-      //
-      const bool need_generate( !fs::exists( erc_header_package_filepath ) );
-      rapport.insert( erc_header_package_file_str, generic_string_path( erc_header_package_filepath ), need_generate );
-
-      //
-      if ( !generated_list_only && need_generate )
-        generate_header_package( erc_header_package_filepath.string() );
-    }
 
     {
       //
