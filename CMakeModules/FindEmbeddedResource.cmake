@@ -65,3 +65,13 @@ find_package_handle_standard_args(ERC REQUIRED_VARS ERC_INCLUDE_DIRS ERC_LIBRARI
 ##
 include(${ERC_CMAKE_TOOLS_DIRS})
 
+#
+##
+set(EmbeddedResource_INCLUDE_DIR           ${ERC_INCLUDE_DIR})
+set(EmbeddedResource_INCLUDE_DIRS          ${ERC_INCLUDE_DIRS})
+set(EmbeddedResource_DIRECTORIES           ${ERC_DIRECTORIES})
+set(EmbeddedResource_LIBRARIES             ${ERC_LIBRARIES})
+set(EmbeddedResource_DEFINITIONS           ${ERC_DEFINITIONS})
+set(EmbeddedResource_BINARY_PACKAGER       ${ERC_BINARY_PACKAGER})
+set(EmbeddedResource_ERC_CMAKE_TOOLS_DIRS  ${ERC_CMAKE_TOOLS_DIRS})
+

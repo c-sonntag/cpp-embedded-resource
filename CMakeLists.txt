@@ -73,6 +73,17 @@ set(CMAKE_CXX_STANDARD 14)
 
 
 #
+## Independant
+#
+
+# --- INSTALL INCLUDE ---
+install(DIRECTORY "${HEADER_PATH}/." DESTINATION "include")
+
+# --- INSTALL CMakeTools ---
+install(DIRECTORY "CMakeTools/." DESTINATION "CMakeTools")
+
+
+#
 ## ERC LIB
 #
 
@@ -120,14 +131,6 @@ install(TARGETS ${PROJECT_EMBEDDEDRESOURCE_MAKER}
         ARCHIVE DESTINATION "lib")
 
 #
-## ERC & ERC_MAKER LIB
-#
-
-# --- INSTALL INCLUDE ---
-install(DIRECTORY "${HEADER_PATH}/." DESTINATION "include")
-
-
-#
 ## EMBEDDED_RESOURCE_PACKAGER PROGRAM
 #
 
@@ -147,7 +150,7 @@ install(TARGETS ${PROJECT_EMBEDDEDRESOURCE_PROGRAM} RUNTIME DESTINATION "bin")
 
 
 #
-##
+## For subproject like tests
 #
 
 set(PROJECT_EMBEDDEDRESOURCE_HEADER_PATH "${CMAKE_CURRENT_LIST_DIR}/${HEADER_PATH}")
