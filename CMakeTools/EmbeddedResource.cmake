@@ -33,11 +33,11 @@ function(ERC_ADD_RESSOURCE target_name input_erc_xml_package_filepath)
     return()
   endif()
 
-  #
-  ##
-  message(STATUS "[ERC_ADD_RESSOURCE]]")
-  message(STATUS "  target_name : ${target_name}")
-  message(STATUS "  input_erc_xml_package_filepath : ${input_erc_xml_package_filepath}")
+  ## #
+  ## ##
+  ## message(STATUS "[ERC_ADD_RESSOURCE]]")
+  ## message(STATUS "  target_name : ${target_name}")
+  ## message(STATUS "  input_erc_xml_package_filepath : ${input_erc_xml_package_filepath}")
 
   #
   ##
@@ -45,7 +45,8 @@ function(ERC_ADD_RESSOURCE target_name input_erc_xml_package_filepath)
   #file(MAKE_DIRECTORY "${work_relative_directory}/")
   #set(work_relative_directory "erc_generation")
   set(erc_target "${target_name}_erc_generation")
-  set(work_absolute_directory "${CMAKE_CURRENT_BINARY_DIR}/erc_generation")
+  #set(erc_target "${input_erc_xml_package_filepath}")
+  set(work_absolute_directory "${CMAKE_CURRENT_BINARY_DIR}/embedded_rc_generation")
   file(MAKE_DIRECTORY ${work_absolute_directory})
 
   #
@@ -83,40 +84,55 @@ function(ERC_ADD_RESSOURCE target_name input_erc_xml_package_filepath)
 
   #
   ##
-  set(build_files_path)
-  set(build_files_path_result)
-  set(build_files_path_result_error_msg)
-  execute_process(
-    COMMAND ${ERC_BINARY_PACKAGER}
-    ARGS
+  macro( erc_execute_process output_var )
+    set(${output_var})
+    set(${output_var}_result)
+    set(${output_var}_result_error_msg)
+    execute_process(
+      COMMAND           ${ERC_BINARY_PACKAGER}
+      ARGS              ${ARGN}
+      OUTPUT_VARIABLE   ${output_var}
+      RESULT_VARIABLE   ${output_var}_result
+      ERROR_VARIABLE    ${output_var}_result_error_msg
+      WORKING_DIRECTORY ${work_absolute_directory}
+    )
+    #
+    if(NOT ${${output_var}_result} EQUAL "0")
+      message(FATAL_ERROR
+        "[ERC_ADD_RESSOURCE]\n"
+        "  ERC_BINARY_PACKAGER can't return '${output_var}'\n"
+        "  ProgramPath : ${ERC_BINARY_PACKAGER}\n"
+        "  Argument    : ${ARGN}\n"
+        "  ErrorResult : ${${output_var}_result}\n"
+        "  ErrorMessage: ${${output_var}_result_error_msg}\n"
+        "  Message     : ${${output_var}}\n"
+        "\n"
+      )
+      return()
+    endif()
+  endmacro()
+
+  #
+  ##
+  erc_execute_process(
+    files_path
       "--input-package" ${input_erc_xml_package_filepath}
       "--work-dir" ${work_absolute_directory}
       "--return-build-files-path" "--cmake-list"
-    OUTPUT_VARIABLE build_files_path
-    RESULT_VARIABLE build_files_path_result
-    ERROR_VARIABLE build_files_path_result_error_msg
-    WORKING_DIRECTORY ${work_absolute_directory}
-)
-
-  #
-  if(NOT ${build_files_path_result} EQUAL "0")
-    message(FATAL_ERROR
-      "[ERC_ADD_RESSOURCE]\n"
-      "  ERC_BINARY_PACKAGER can't return 'build-files-path'\n"
-      "  ProgramPath : ${ERC_BINARY_PACKAGER}\n"
-      "  Message     : ${build_files_path}\n"
-      "  ErrorResult : ${build_files_path_result}\n"
-      "  ErrorMessage: ${build_files_path_result_error_msg}\n"
-      "\n"
-    )
-    return()
-  endif()
+  )
+  erc_execute_process(
+    files_path_to_build
+      "--input-package" ${input_erc_xml_package_filepath}
+      "--work-dir" ${work_absolute_directory}
+      "--return-build-files-path" "--return-only-generated" "--cmake-list"
+  )
 
   #
   #separate_arguments(build_files)
   #set(build_files_relative_path)
   #PREPEND(build_files_relative_path ${work_relative_directory} ${build_files})
-  #message(STATUS "  build_files :  ${build_files} ")
+  message(STATUS "  files_path :  ${files_path}\n")
+  message(STATUS "  files_path_to_build :  ${files_path_to_build}\n")
 
   #
   ##
@@ -137,21 +153,94 @@ function(ERC_ADD_RESSOURCE target_name input_erc_xml_package_filepath)
 
   #
   ##
+  ## add_custom_target(
+  ##   ${erc_target} ALL
+  ##   COMMAND ${ERC_BINARY_PACKAGER}
+  ##   ARGS "--input-package" ${input_erc_xml_package_filepath} "--work-dir" ${work_absolute_directory}
+  ##   BYPRODUCTS ${build_files_path}
+  ##   WORKING_DIRECTORY ${work_absolute_directory}
+  ##   # SOURCES ${build_files_path}
+  ##   # DEPENDS ${input_erc_xml_package_filepath}
+  ##   VERBATIM
+  ## )
+
+  #
+  ##
+#  add_custom_target(
+#    ${erc_target} ALL
+#    #DEPENDS ${build_files_path}
+#    BYPRODUCTS ${build_files_path}
+#    COMMAND ${ERC_BINARY_PACKAGER}
+#    ARGS "--input-package" ${input_erc_xml_package_filepath} "--work-dir" ${work_absolute_directory}
+#    WORKING_DIRECTORY ${work_absolute_directory}
+#    VERBATIM
+#  )
+
+
+  ## add_custom_command (
+  ##    OUTPUT erc_gen ${files_path}
+  ##    BYPRODUCTS ${files_path}
+  ##    COMMAND ${ERC_BINARY_PACKAGER}
+  ##    ARGS "--input-package" ${input_erc_xml_package_filepath} "--work-dir" ${work_absolute_directory}
+  ##    WORKING_DIRECTORY ${work_absolute_directory}
+  ##    VERBATIM
+  ##    COMMENT "Generating EmbeddedResource from ${input_erc_xml_package_filepath}"
+  ## )
+
+  #add_library(${erc_target} STATIC)
+
+  set( erc_args_current_xml_pakage
+    "--input-package" ${input_erc_xml_package_filepath}
+    "--work-dir" ${work_absolute_directory}
+   )
+
   add_custom_target(
     ${erc_target} ALL
     COMMAND ${ERC_BINARY_PACKAGER}
-    ARGS "--input-package" ${input_erc_xml_package_filepath} "--work-dir" ${work_absolute_directory}
-    BYPRODUCTS ${build_files_path}
-    WORKING_DIRECTORY ${work_absolute_directory}
-    SOURCES ${build_files_path}
+    ARGS ${erc_args_current_xml_pakage}
+    #ARGS "--input-package" ${input_erc_xml_package_filepath} "--work-dir" ${work_absolute_directory}
+    #BYPRODUCTS ${files_path}
+    #SOURCES ${files_path_to_build}
+    #WORKING_DIRECTORY ${work_absolute_directory}
+    # SOURCES ${build_files_path}
     # DEPENDS ${input_erc_xml_package_filepath}
+    COMMENT "Executing EmbeddedResource for file : ${input_erc_xml_package_filepath}"
     VERBATIM
   )
 
-  #
-  add_dependencies(${erc_target} ${PROJECT_EMBEDDEDRESOURCE_PROGRAM})
+  # add_custom_command(
+  #   TARGET ${target_name} PRE_BUILD
+  #  # TARGET ${erc_target} PRE_BUILD
+  #  # OUTPUT ${files_path}
+  #   COMMAND ${ERC_BINARY_PACKAGER}
+  #   ARGS ${erc_args_current_xml_pakage}
+  #   #ARGS "--input-package" ${input_erc_xml_package_filepath} "--work-dir" ${work_absolute_directory}
+  #   # BYPRODUCTS ${files_path}
+  #   WORKING_DIRECTORY ${work_absolute_directory}
+  #   # SOURCES ${files_path}
+  #   # DEPENDS ${input_erc_xml_package_filepath}
+  #   VERBATIM
+  # )
 
-  #target_sources(${target_name} PRIVATE ${build_files_path})
+  #
+  set_source_files_properties( ${files_path} PROPERTIES GENERATED OFF )
+  set_source_files_properties( ${files_path_to_build} PROPERTIES GENERATED ON )
+  #set_property(CACHE ${files_path} PROPERTY )
+
+  #
+  target_sources(${target_name} PUBLIC ${files_path})
+
+
+  #add_dependencies(${erc_target} ${PROJECT_EMBEDDEDRESOURCE_PROGRAM})
+
+  #
+  #target_sources(${erc_target} PRIVATE ${files_path})
+  #add_dependencies(${erc_target}_lib ${erc_target})
+  #add_dependencies(${erc_target} ${PROJECT_EMBEDDEDRESOURCE_PROGRAM})
+
+  #
+
+  #target_sources(${target_name} PRIVATE ${files_path})
   #add_dependencies(${target_name} ${erc_target})
 
 
@@ -162,14 +251,14 @@ function(ERC_ADD_RESSOURCE target_name input_erc_xml_package_filepath)
   ##   PRE_BUILD
   ##   COMMAND ${ERC_BINARY_PACKAGER}
   ##   ARGS "--input-package" ${input_erc_xml_package_filepath} "--work-dir" ${work_absolute_directory}
-  ##   # BYPRODUCTS ${build_files_path}
+  ##   # BYPRODUCTS ${files_path}
   ##   WORKING_DIRECTORY ${work_absolute_directory}
   ##   MAIN_DEPENDENCY ${input_erc_xml_package_filepath}
   ##   VERBATIM
   ## )
   ##
   ## #add_dependencies(${target_name} ${input_erc_xml_package_filepath})
-  ## #target_sources(${target_name} PRIVATE ${build_files_path})
+  ## #target_sources(${target_name} PRIVATE ${files_path})
 
   #
   # WORKING_DIRECTORY ${work_absolute_directory}
@@ -185,7 +274,7 @@ function(ERC_ADD_RESSOURCE target_name input_erc_xml_package_filepath)
   #
   ##
 
-  #add_library("${target_name}_erc" STATIC ${build_files_path})
+  #add_library("${target_name}_erc" STATIC ${files_path})
   #add_dependencies(${target_name} ${target_name}_call_generate_embedded_files)
 
 

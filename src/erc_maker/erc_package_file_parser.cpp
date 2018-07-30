@@ -1,15 +1,13 @@
 #include <erc_maker/erc_package_file_parser.h>
 
 #include <erc_maker/model.h>
+#include <erc_maker/file_system.h>
 
 #include <memory>
 #include <stdexcept>
 #include <list>
 #include <string>
 #include <regex>
-
-#include <experimental/filesystem>
-namespace fs = std::experimental::filesystem;
 
 #include <tinyxml2.h>
 
@@ -214,7 +212,7 @@ namespace erc_maker {
   // ---- ---- ---- ----
 
   erc_package_file_parser::erc_package_file_parser( const std::string _erc_package_filepath ) :
-    erc_package_filepath( std::move( _erc_package_filepath ) )
+    erc_package_filepath( generic_string_path( std::move( _erc_package_filepath ) ) )
   {
     try
     {

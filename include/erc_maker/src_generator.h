@@ -68,6 +68,20 @@ namespace erc_maker {
 
   struct src_generator
   {
+   public:
+    struct generation_rapport
+    {
+      struct file_added { std::string file; bool generated; file_added() = default; };
+
+      inline void insert( const std::string & file, const std::string & filepath, bool generated );
+      inline void reset();
+
+      std::vector<file_added> file_list;
+      std::vector<file_added> filepath_list;
+      uint nb_generated = 0;
+      uint nb_passed = 0;
+    };
+
    private:
     struct internal_names
     {
@@ -99,7 +113,7 @@ namespace erc_maker {
     src_generator( const erc_package_file_parser & _erc_package, const erc_files_list & _erc_files );
 
    private:
-    std::vector<std::string> generated_file_list, generated_filepath_list;
+    generation_rapport rapport;
 
    private:
     void generate_file( const src_file_identifier & file_id, const std::string & output_src_file );
@@ -108,8 +122,7 @@ namespace erc_maker {
 
    public:
     void generate_into( const std::string & erc_output_directorypath, bool generated_list_only = false );
-    const std::vector<std::string> & get_generated_filepath_list() const {return generated_filepath_list;}
-    const std::vector<std::string> & get_generated_file_list() const {return generated_file_list;}
+    const generation_rapport & get_rapport() const {return rapport;}
 
    private:
     std::unordered_map<hash_hex_string, file_cache_information> supplement_cache;

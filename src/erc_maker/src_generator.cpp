@@ -1,12 +1,10 @@
 #include <erc_maker/src_generator.h>
+#include <erc_maker/file_system.h>
 
 #include <cstring>
 #include <stdexcept>
 
 #include <picosha2.h>
-
-#include <experimental/filesystem>
-namespace fs = std::experimental::filesystem;
 
 namespace erc_maker {
 
@@ -52,6 +50,25 @@ namespace erc_maker {
       digest[i] = static_cast<byte>( byte_converted );
     }
   }
+
+  // ---- ---- ---- ----
+
+  inline void src_generator::generation_rapport::insert( const std::string & file, const std::string & filepath, bool generated )
+  {
+    file_list.emplace_back( file_added{file, generated} );
+    filepath_list.emplace_back( file_added{filepath, generated} );
+    if ( generated ) ++nb_generated;
+    else             ++nb_passed;
+  }
+
+  inline void src_generator::generation_rapport::reset()
+  {
+    file_list.clear();
+    filepath_list.clear();
+    nb_generated = 0;
+    nb_passed = 0;
+  }
+
 
   // ---- ---- ---- ----
 
@@ -105,25 +122,14 @@ namespace erc_maker {
 
   // ---- ----
 
-  inline std::string generic_string_path( const fs::path & p )
-  {
-    std::string p_str( p.string() );
-    std::replace( p_str.begin(), p_str.end(), '\\', '/' );
-    return p_str;
-  }
-
   void src_generator::generate_into( const std::string & erc_output_directorypath, bool generated_list_only )
   {
 
     //
-    generated_file_list.clear();
-    generated_filepath_list.clear();
+    rapport.reset();
 
     //
     const fs::path output_directorypath( erc_output_directorypath );
-
-    //
-    bool erc_files_have_changement = false;
 
     //
     for ( const src_file_identifier & file_id : erc_files_identifier )
@@ -132,39 +138,45 @@ namespace erc_maker {
       //
       const std::string erc_embedded_file_str( names_generator.to_file_erc( file_id ) );
       const fs::path erc_embedded_filepath( output_directorypath / fs::path( erc_embedded_file_str ) );
-      generated_file_list.emplace_back( erc_embedded_file_str );
-      generated_filepath_list.emplace_back( generic_string_path( erc_embedded_filepath ) );
 
-      if ( !generated_list_only )
-      {
-        if ( !cache_have_same_file( file_id ) || !fs::exists( erc_embedded_filepath ) )
-        {
-          generate_file( file_id, erc_embedded_filepath.string() );
-          erc_files_have_changement = true;
-        }
-      }
+      //
+      const bool need_generate( !cache_have_same_file( file_id ) || !fs::exists( erc_embedded_filepath ) );
+      rapport.insert( erc_embedded_file_str, generic_string_path( erc_embedded_filepath ), need_generate );
+
+      //
+      if ( !generated_list_only && need_generate )
+        generate_file( file_id, erc_embedded_filepath.string() );
     }
 
     //
+    bool erc_files_have_changement( rapport.nb_generated > 0 );
+
     {
+      //
       const std::string erc_header_package_file_str( names_generator.to_file_header_package_file() );
       const fs::path erc_header_package_filepath( output_directorypath / fs::path( erc_header_package_file_str ) );
-      generated_file_list.emplace_back( erc_header_package_file_str );
-      generated_filepath_list.emplace_back( generic_string_path( erc_header_package_filepath ) );
-      if ( !generated_list_only )
-        if ( !fs::exists( erc_header_package_filepath ) || erc_files_have_changement )
-          generate_header_package( erc_header_package_filepath.string() );
+
+      //
+      const bool need_generate( !fs::exists( erc_header_package_filepath ) || erc_files_have_changement );
+      rapport.insert( erc_header_package_file_str, generic_string_path( erc_header_package_filepath ), need_generate );
+
+      //
+      if ( !generated_list_only && need_generate )
+        generate_header_package( erc_header_package_filepath.string() );
     }
 
-    //
     {
+      //
       const std::string erc_package_file_str( names_generator.to_file_package_file() );
       const fs::path erc_package_filepath( output_directorypath / fs::path( erc_package_file_str ) );
-      generated_file_list.emplace_back( erc_package_file_str );
-      generated_filepath_list.emplace_back( generic_string_path( erc_package_filepath ) );
-      if ( !generated_list_only )
-        if ( !fs::exists( erc_package_filepath ) || erc_files_have_changement )
-          generate_package( erc_package_filepath.string() );
+
+      //
+      const bool need_generate( !fs::exists( erc_package_filepath ) || erc_files_have_changement );
+      rapport.insert( erc_package_file_str, generic_string_path( erc_package_filepath ), need_generate );
+
+      //
+      if ( !generated_list_only && need_generate )
+        generate_package( erc_package_filepath.string() );
     }
   }
 

@@ -11,16 +11,20 @@ void help()
             << "By Christophe Sonntag" << std::endl
             << std::endl
             << "   ./embedded_resource_packager  " << std::endl
-            << "             [-h|--help] |" << std::endl
-            << "             [--input-package <erc_xml_package_filepath>]" << std::endl
-            << "             [--work-dir <directory_path>]" << std::endl
-            << "             ([--return-build-files | --return-build-files-path] [--cmake-list])" << std::endl
+            << "      [-h|--help] |" << std::endl
+            << "      [--input-package <erc_xml_package_filepath>]" << std::endl
+            << "      [--work-dir <directory_path>]" << std::endl
+            << "      (" << std::endl
+            << "         [--return-build-files | --return-build-files-path]" << std::endl
+            << "         [--return-only-generated] [--cmake-list]" << std::endl
+            << "      )" << std::endl
             << "" << std::endl
             << "   -h|--help : Print this message" << std::endl
             << "  --input-package <erc_xml_package_filepath> : ERC Package to be parsed and evaluate" << std::endl
             << "  --work-dir <directory_path>                : Directory to generate files" << std::endl
             << "  --return-build-files                       : Return only file generation in stdout" << std::endl
             << "  --return-build-files-path                  : Return only filepath generation in stdout" << std::endl
+            << "  --return-only-generated                    : Return only new file ganerated (need cache)" << std::endl
             << "  --cmake-list                               : Format generation to cmake list with the \";\"" << std::endl
             << std::endl;
 }
@@ -31,8 +35,9 @@ struct ParseCommand
  public:
   std::string input_package;
   std::string work_dir;
-  bool return_build_files = false;
-  bool return_build_files_path = false;
+  bool return_files = false;
+  bool return_files_path = false;
+  bool return_only_generated = false;
   bool cmake_list = false;
 
  private:
@@ -70,9 +75,11 @@ struct ParseCommand
         else if ( argument == "--work-dir" )
           option = Option::WorkDir;
         else if ( argument == "--return-build-files" )
-          return_build_files = true;
+          return_files = true;
         else if ( argument == "--return-build-files-path" )
-          return_build_files_path = true;
+          return_files_path = true;
+        else if ( argument == "--return-only-generated" )
+          return_only_generated = true;
         else if ( argument == "--cmake-list" )
           cmake_list = true;
       }
@@ -86,8 +93,8 @@ struct ParseCommand
       throw std::runtime_error( "Need '--input-package' and '--work-dir' params" );
 
     //
-    if ( return_build_files_path && return_build_files )
-      throw std::runtime_error( "Need only one between '--return-build-files' and '--return-build-files-path' params" );
+    if ( return_files_path && return_files )
+      throw std::runtime_error( "Need only one between '--return-files' and '--return-files-path' params" );
   }
 };
 
@@ -106,35 +113,49 @@ int main( int argc, char * argv[] )
       const erc_maker::erc_files_list files( erc );
       erc_maker::src_generator generator( erc, files );
 
-      if ( args.return_build_files || args.return_build_files_path )
+      if ( args.return_files || args.return_files_path )
       {
         //
+        if ( args.return_only_generated )
+        {
+          try { generator.open_cache_if_exist_into( args.work_dir ); }
+          catch ( ... ) {}
+        }
+
+        //
         generator.generate_into( args.work_dir, true );
-        const std::vector<std::string> & generated_list(
-          args.return_build_files ?
-          generator.get_generated_file_list() :
-          generator.get_generated_filepath_list()
+        const erc_maker::src_generator::generation_rapport & rapport( generator.get_rapport() );
+
+        //
+        const auto & generated_list(
+          args.return_files ? rapport.file_list : rapport.filepath_list
         );
 
         //
         bool first_passing( false );
         if ( args.cmake_list )
         {
-          for ( const std::string & f : generated_list )
+          for ( const auto & f : generated_list )
           {
-            std::cout << ( first_passing ? ";" : "" ) << f;
+            if ( args.return_only_generated && !f.generated )
+              continue;
+
+            std::cout << ( first_passing ? ";" : "" ) << f.file;
             first_passing = true;
           }
         }
         else
         {
-          for ( const std::string & f : generated_list )
+          for ( const auto & f : generated_list )
           {
+            if ( args.return_only_generated && !f.generated )
+              continue;
+
             std::cout << ( first_passing ? " " : "" );
-            if ( args.return_build_files_path )
-              std::cout << "\"" << f << "\"";
+            if ( args.return_files_path )
+              std::cout << "\"" << f.file << "\"";
             else
-              std::cout << f;
+              std::cout << f.file;
             first_passing = true;
           }
           std::cout << std::endl;
@@ -156,11 +177,17 @@ int main( int argc, char * argv[] )
 
         //
         generator.generate_into( args.work_dir );
-        std::cout << prefix_out << "Successful generation of " << generator.get_generated_filepath_list().size() << " files" << std::endl;
 
         //
-        std::cout << prefix_out << "Saving cache" << std::endl;
-        generator.save_cache_into( args.work_dir );
+        const erc_maker::src_generator::generation_rapport & rapport( generator.get_rapport() );
+        std::cout << prefix_out << "PackerSuccess : generation(" << rapport.nb_generated << ") passed(" << rapport.nb_passed << ") " << std::endl;
+
+        //
+        if ( rapport.nb_generated > 0 )
+        {
+          std::cout << prefix_out << "Saving changement in cache" << std::endl;
+          generator.save_cache_into( args.work_dir );
+        }
 
         // //
         // std::cout << "       See generated files : " << std::endl;

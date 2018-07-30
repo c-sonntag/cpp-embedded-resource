@@ -1,15 +1,13 @@
 #include <erc_maker/src_generator.h>
 
+#include <erc_maker/file_system.h>
+
 #include <istream>
 #include <ostream>
 #include <fstream>
 #include <sstream>
 #include <regex>
 #include <cstring>
-
-#include <experimental/filesystem>
-namespace fs = std::experimental::filesystem;
-
 
 namespace erc_maker {
 
