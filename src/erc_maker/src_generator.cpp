@@ -110,7 +110,7 @@ namespace erc_maker {
   src_generator::src_generator( const erc_package_file_parser & _erc_package, const erc_files_list & _erc_files ) :
     erc_package( std::move( _erc_package ) ),
     erc_files( std::move( _erc_files ) ),
-    package_unique_identifier( erc_package.content.package_name ),
+    package_unique_identifier( generate_package_identifier( erc_package ) ),
     names_generator( *this )
   {
 

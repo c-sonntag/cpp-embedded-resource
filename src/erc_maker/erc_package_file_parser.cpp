@@ -212,7 +212,8 @@ namespace erc_maker {
   // ---- ---- ---- ----
 
   erc_package_file_parser::erc_package_file_parser( const std::string _erc_package_filepath ) :
-    erc_package_filepath( generic_string_path( std::move( _erc_package_filepath ) ) )
+    erc_package_filepath( generic_string_path( std::move( _erc_package_filepath ) ) ),
+    erc_package_absolute_filepath( generic_string_path( fs::absolute( fs::path( erc_package_filepath ) ) ) )
   {
     try
     {

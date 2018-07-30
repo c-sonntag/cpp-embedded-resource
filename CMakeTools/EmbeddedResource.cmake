@@ -8,7 +8,6 @@
 
 function(ERC_ADD_RESSOURCE target_name input_erc_xml_package_filepath)
 
-  #
 
   #
   ##
@@ -33,69 +32,14 @@ function(ERC_ADD_RESSOURCE target_name input_erc_xml_package_filepath)
     return()
   endif()
 
-  ## #
-  ## ##
-  ## message(STATUS "[ERC_ADD_RESSOURCE]]")
-  ## message(STATUS "  target_name : ${target_name}")
-  ## message(STATUS "  input_erc_xml_package_filepath : ${input_erc_xml_package_filepath}")
-
-  #
-  ##
-  #set(work_directory "erc_generation")
-  #file(MAKE_DIRECTORY "${work_relative_directory}/")
-  #set(work_relative_directory "erc_generation")
-
   #
   ##
   get_filename_component(input_erc_xml_package_filepath_realpath "${input_erc_xml_package_filepath}" REALPATH)
   string(SHA256 input_erc_xml_package_filepath_realpath_hash ${input_erc_xml_package_filepath_realpath})
   set(erc_target "erc_package_${input_erc_xml_package_filepath_realpath_hash}")
-
-  #set(erc_target_special_chars ".")
-  #set(erc_target ${input_erc_xml_package_filepath})
-  #string(REPLACE ":"  "${erc_target_special_chars}" erc_target ${erc_target})
-  #string(REPLACE "/"  "${erc_target_special_chars}" erc_target ${erc_target})
-  #string(REPLACE "\\" "${erc_target_special_chars}" erc_target ${erc_target})
-  #string(REPLACE "."  "${erc_target_special_chars}" erc_target ${erc_target})
-
-  #set(erc_target "${target_name}_erc_generation")
-
-  #set(erc_target "${input_erc_xml_package_filepath}")
+  #
   set(work_absolute_directory "${CMAKE_CURRENT_BINARY_DIR}/embedded_rc_generation")
   file(MAKE_DIRECTORY ${work_absolute_directory})
-
-  #
-  ##
-  ##FUNCTION(PREPEND var prefix)
-  ##  SET(listVar "")
-  ##  FOREACH(f ${ARGN})
-  ##    LIST(APPEND listVar "${prefix}/${f}")
-  ##  ENDFOREACH(f)
-  ##  SET(${var} "${listVar}" PARENT_SCOPE)
-  ##ENDFUNCTION(PREPEND)
-
-
-  ## file(MAKE_DIRECTORY ${work_relative_directory})
-
-  # set(outfile "${work_relative_directory}/erc_yop.cpp")
-
-
-  #
-  #set(ERC_BINARY_PACKAGER "R:/C/libdb/cpp-embedded-resource/builds/embedded_resource_packager.exe")
-
-  #
-  ##
- ## set(build_files)
- ## set(build_files_result)
- ## set(build_files_result_error_msg)
- ## execute_process(
- ##   COMMAND ${ERC_BINARY_PACKAGER}
- ##   ARGS "--input-package" ${input_erc_xml_package_filepath} "--work-dir" ${work_relative_directory} "--return-build-files-path"
- ##   OUTPUT_VARIABLE build_files
- ##   RESULT_VARIABLE build_files_result
- ##   ERROR_VARIABLE build_files_result_error_msg
- ##   WORKING_DIRECTORY ${work_relative_directory}
- ## )
 
   #
   ##
@@ -142,68 +86,6 @@ function(ERC_ADD_RESSOURCE target_name input_erc_xml_package_filepath)
       "--return-build-files-path" "--return-only-generated" "--cmake-list"
   )
 
-  #
-  #separate_arguments(build_files)
-  #set(build_files_relative_path)
-  #PREPEND(build_files_relative_path ${work_relative_directory} ${build_files})
-  message(STATUS "  files_path :  ${files_path}\n")
-  #message(STATUS "  files_path_to_build :  ${files_path_to_build}\n")
-
-  #
-  ##
-  #set(build_files_path_list  ${build_files_path})
-  #separate_arguments(build_files_path_list)
-  #string(REPLACE "\"" "" build_files_path_list ${build_files_path_list})
-  #string(REGEX MATCHALL "^\"(.+)\"$" build_files_path_list ${build_files_path_list})
-  #string(REGEX MATCHALL "([^\ \" ]+\"\ |\"[^\ \"]+\"$)" build_files_path_list "${build_files_path}")
-  #string(REGEX MATCHALL "([^\ ]+\ |[^\ ]+$)" build_files_path_list "${build_files_path}")
-  #string(REGEX MATCHALL "\\\"([^\\\"]+)\\\"\ |\\\"([^\\\"]+)\\\"$" build_files_path_list "${build_files_path}")
-  #string(REGEX MATCHALL "\\\"(.+)\\\"\ |\\\"(.+)\\\"$" build_files_path_list ${build_files_path})
-  #string(REGEX MATCHALL "\"([^\"]+)\" |\"([^\"]+)\"$" build_files_path_list ${build_files_path})
-  #string(REGEX MATCHALL "([^\"]+) |([^\"]+)" build_files_path_list ${build_files_path})
-  #string(REGEX MATCHALL "([^\"]+)" build_files_path_list ${build_files_path})
-  #string(REPLACE "\" \"" "\";\"" build_files_path_list ${build_files_path})
-  #message(STATUS "  build_files_path_list :  ${build_files_path_list} ")
-  #message(STATUS "  build_files_path :  ${build_files_path} ")
-
-  #
-  ##
-  ## add_custom_target(
-  ##   ${erc_target} ALL
-  ##   COMMAND ${ERC_BINARY_PACKAGER}
-  ##   ARGS "--input-package" ${input_erc_xml_package_filepath} "--work-dir" ${work_absolute_directory}
-  ##   BYPRODUCTS ${build_files_path}
-  ##   WORKING_DIRECTORY ${work_absolute_directory}
-  ##   # SOURCES ${build_files_path}
-  ##   # DEPENDS ${input_erc_xml_package_filepath}
-  ##   VERBATIM
-  ## )
-
-  #
-  ##
-#  add_custom_target(
-#    ${erc_target} ALL
-#    #DEPENDS ${build_files_path}
-#    BYPRODUCTS ${build_files_path}
-#    COMMAND ${ERC_BINARY_PACKAGER}
-#    ARGS "--input-package" ${input_erc_xml_package_filepath} "--work-dir" ${work_absolute_directory}
-#    WORKING_DIRECTORY ${work_absolute_directory}
-#    VERBATIM
-#  )
-
-
-  ## add_custom_command (
-  ##    OUTPUT erc_gen ${files_path}
-  ##    BYPRODUCTS ${files_path}
-  ##    COMMAND ${ERC_BINARY_PACKAGER}
-  ##    ARGS "--input-package" ${input_erc_xml_package_filepath} "--work-dir" ${work_absolute_directory}
-  ##    WORKING_DIRECTORY ${work_absolute_directory}
-  ##    VERBATIM
-  ##    COMMENT "Generating EmbeddedResource from ${input_erc_xml_package_filepath}"
-  ## )
-
-  #add_library(${erc_target} STATIC)
-
   set( erc_args_current_xml_pakage
     "--input-package" ${input_erc_xml_package_filepath}
     "--work-dir" ${work_absolute_directory}
@@ -212,88 +94,19 @@ function(ERC_ADD_RESSOURCE target_name input_erc_xml_package_filepath)
   add_custom_target(
     ${erc_target} ALL
     COMMAND ${ERC_BINARY_PACKAGER}
-    ARGS ${erc_args_current_xml_pakage}
-    #ARGS "--input-package" ${input_erc_xml_package_filepath} "--work-dir" ${work_absolute_directory}
+    ARGS "--input-package" ${input_erc_xml_package_filepath}
+         "--work-dir" ${work_absolute_directory}
     BYPRODUCTS ${files_path}
-    #SOURCES ${files_path_to_build}
-    #WORKING_DIRECTORY ${work_absolute_directory}
-    # SOURCES ${build_files_path}
-    # DEPENDS ${input_erc_xml_package_filepath}
     COMMENT "Executing EmbeddedResource for file : ${input_erc_xml_package_filepath}"
     VERBATIM
   )
 
-  # add_custom_command(
-  #   TARGET ${target_name} PRE_BUILD
-  #  # TARGET ${erc_target} PRE_BUILD
-  #  # OUTPUT ${files_path}
-  #   COMMAND ${ERC_BINARY_PACKAGER}
-  #   ARGS ${erc_args_current_xml_pakage}
-  #   #ARGS "--input-package" ${input_erc_xml_package_filepath} "--work-dir" ${work_absolute_directory}
-  #   # BYPRODUCTS ${files_path}
-  #   WORKING_DIRECTORY ${work_absolute_directory}
-  #   # SOURCES ${files_path}
-  #   # DEPENDS ${input_erc_xml_package_filepath}
-  #   VERBATIM
-  # )
-
-  #
-  #set_source_files_properties( ${files_path} PROPERTIES GENERATED OFF )
-  #set_source_files_properties( ${files_path_to_build} PROPERTIES GENERATED ON )
-
-  #set_source_files_properties( ${files_path} PROPERTIES GENERATED ON )
-
-  #set_property(CACHE ${files_path} PROPERTY )
-
   #
   target_sources(${target_name} PUBLIC ${files_path})
+  add_dependencies(${target_name} ${erc_target})
 
-
-  #add_dependencies(${erc_target} ${PROJECT_EMBEDDEDRESOURCE_PROGRAM})
-
-  #
-  #target_sources(${erc_target} PRIVATE ${files_path})
-  #add_dependencies(${erc_target}_lib ${erc_target})
-  #add_dependencies(${erc_target} ${PROJECT_EMBEDDEDRESOURCE_PROGRAM})
-
-  #
-
-  #target_sources(${target_name} PRIVATE ${files_path})
-  #add_dependencies(${target_name} ${erc_target})
-
-
-  ## #
-  ## ##
-  ## add_custom_command(
-  ##   TARGET ${target_name}
-  ##   PRE_BUILD
-  ##   COMMAND ${ERC_BINARY_PACKAGER}
-  ##   ARGS "--input-package" ${input_erc_xml_package_filepath} "--work-dir" ${work_absolute_directory}
-  ##   # BYPRODUCTS ${files_path}
-  ##   WORKING_DIRECTORY ${work_absolute_directory}
-  ##   MAIN_DEPENDENCY ${input_erc_xml_package_filepath}
-  ##   VERBATIM
-  ## )
-  ##
-  ## #add_dependencies(${target_name} ${input_erc_xml_package_filepath})
-  ## #target_sources(${target_name} PRIVATE ${files_path})
-
-  #
-  # WORKING_DIRECTORY ${work_absolute_directory}
-  ##
-  #DEPEND ${target_name}
-  #add_custom_target(${target_name}_call_generate_embedded_files DEPENDS ${target_name}_generate_embedded_files)
-
-  #
-  ##
-  ##message(STATUS "  ARGS : --input-package ${input_erc_xml_package_filepath} --work-dir ${work_absolute_directory}")
-  ##message(STATUS "  embedded_resource_files : ${oFutfile}")
-
-  #
-  ##
-
-  #add_library("${target_name}_erc" STATIC ${files_path})
-  #add_dependencies(${target_name} ${target_name}_call_generate_embedded_files)
+  # Yes or no ? @todo
+  add_dependencies(${erc_target} ${PROJECT_EMBEDDEDRESOURCE_PROGRAM})
 
 
 endfunction()
