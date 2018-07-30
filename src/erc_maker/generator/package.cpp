@@ -32,7 +32,12 @@ namespace erc_maker {
              << endl
              << "namespace erc {" << endl
              << endl
-             << "  namespace generated_embedded_files {" << endl
+             << "  namespace generated_embedded_files {" << endl;
+
+      for ( const src_file_identifier & file_id : erc_files_identifier )
+        output << "   const extern erc::embedded_file " << names_generator.to_extern_erc( file_id ) << ";" << endl;
+
+      output << endl
              << "    static const erc::embedded_file * const embedded_files[]" << endl
              << "    {" << endl;
 

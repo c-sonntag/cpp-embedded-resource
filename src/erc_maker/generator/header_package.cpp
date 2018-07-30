@@ -29,20 +29,20 @@ namespace erc_maker {
       //
       output << "#pragma once" << endl
              << endl
-             << "#include <erc/file.h>" << endl
+             // << "#include <erc/file.h>" << endl
              << "#include <erc/package.h>" << endl
              << endl
              << "namespace erc {" << endl
-             << endl
-             << "  namespace generated_embedded_files {" << endl;
-
-      //
-      for ( const src_file_identifier & file_id : erc_files_identifier )
-        output << "    const extern erc::embedded_file " << names_generator.to_extern_erc( file_id ) << ";" << endl;
-
-      //
-      output << "  }" << endl
-             << endl
+             //        << endl
+             //        << "  namespace generated_embedded_files {" << endl;
+             //
+             // //
+             // for ( const src_file_identifier & file_id : erc_files_identifier )
+             //   output << "    const extern erc::embedded_file " << names_generator.to_extern_erc( file_id ) << ";" << endl;
+             //
+             // //
+             // output << "  }" << endl
+             //        << endl
              << "  namespace generated_package {" << endl;
 
       //
@@ -54,7 +54,7 @@ namespace erc_maker {
 
       //
       output << "  }" << endl
-             << endl
+           //  << endl
              << "}" << endl
              << endl;
     }
