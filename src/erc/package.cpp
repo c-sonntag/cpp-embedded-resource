@@ -1,32 +1,17 @@
 #include <erc/package.h>
 
-#include <vector>
-
 namespace erc {
 
-  //const erc::package * find_package_from_package_list( const package_list & pl, const std::string & name )
-  //{
-  //  for ( const package_list * pl_p( &pl ); pl_p != nullptr; pl_p = pl_p->next )
-  //    if ( pl_p->package.name == name )
-  //      return &pl_p->package;
-  //  return nullptr;
-  //}
-
-  static std::vector<const package *> packages;
-
-  void package_manager::push( const package & pack )
+  const erc::embedded_file * package::get_embedded_file( const std::string & file_path ) const
   {
-    packages.emplace_back( &pack );
-  }
-
-  const package * package_manager::get( const std::string & name )
-  {
-    for ( const package * p_p : packages )
-      if ( p_p->name == name )
-        return p_p;
+    for ( uint i( 0 ); i < size; ++i )
+    {
+      const erc::embedded_file & ef( *embedded_files[i] );
+      if ( ef.path == file_path )
+        return &ef;
+    }
     return nullptr;
   }
-
 
 }
 

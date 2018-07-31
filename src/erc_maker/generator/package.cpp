@@ -28,7 +28,8 @@ namespace erc_maker {
              << endl;
 
       //
-      output << "#include <erc/package.h>" << endl
+      output << "#define ERC_FROM_GENERATED_PACKAGE 1" << endl
+             << "#include <erc/inventory_package.h>" << endl
              << endl
              << "namespace erc {" << endl
              << endl
@@ -58,7 +59,7 @@ namespace erc_maker {
              << "     erc::generated_embedded_files::embedded_files" << endl
              << "   };" << endl
              << "   static struct initializer {" << endl
-             << "     inline initializer() { erc::package_manager::push(" << names_generator.to_extern_package() << "); }" << endl
+             << "     inline initializer() { erc::inventory_package::push(" << names_generator.to_extern_package() << "); }" << endl
              << "   } _mypack;" << endl
              << "  }" << endl
              << "}" << endl

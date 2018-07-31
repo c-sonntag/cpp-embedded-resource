@@ -19,7 +19,7 @@ namespace erc_maker {
 
    public:
     static constexpr uint hash_digest_size {32};
-    byte digest[hash_digest_size]{0};
+    byte digest[hash_digest_size] {0};
 
     static constexpr uint hash_hex_size {hash_digest_size * 2};
     hash_hex_string hex;
@@ -41,7 +41,7 @@ namespace erc_maker {
   struct file_cache_information
   {
     uint size = 0;
-    std::time_t last_modification = 0;
+    time_t last_modification = 0;
 
     inline file_cache_information() = default;
     inline file_cache_information( const erc::file_property & fp ) :

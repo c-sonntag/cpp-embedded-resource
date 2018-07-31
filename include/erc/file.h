@@ -1,9 +1,10 @@
 #pragma once
 
 #include <erc/types.h>
+
 #include <string>
 #include <cstring>
-#include <chrono>
+#include <crtdefs.h>
 
 namespace erc {
 
@@ -12,10 +13,10 @@ namespace erc {
     std::string filename;
     std::string extension;
     uint size;
-    std::time_t last_modification;
+    time_t last_modification;
 
     inline file_property() = default;
-    inline file_property( std::string _filename, std::string _extension, uint _size, std::time_t _last_modification ) :
+    inline file_property( std::string _filename, std::string _extension, uint _size, time_t _last_modification ) :
       filename( _filename ), extension( std::move( _extension ) ),
       size( std::move( _size ) ), last_modification( std::move( _last_modification ) )
     {}
@@ -82,6 +83,13 @@ namespace erc {
     inline embedded_file( std::string _path, embedded_data_property _property, const unsigned char * const _data ) :
       path( _path ), property( std::move( _property ) ), data( std::move( _data ) )
     {}
+
+   private:
+    mutable const std::string * proper_data_p = nullptr;
+
+   public:
+    const std::string & get_proper_data() const;
+    void unallocate_proper_data() const;
   };
 
   inline bool operator==( const embedded_file & lhs, const embedded_file & rhs )

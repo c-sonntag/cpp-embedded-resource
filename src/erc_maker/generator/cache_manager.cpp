@@ -12,8 +12,8 @@
 
 namespace erc_maker {
 
-  static const char current_version_header[] { "CacheEmbeddedResourceLib v1.0\n" };
-  static constexpr uint current_version_header_size { sizeof( current_version_header ) - 1 };
+
+  static const std::string current_version_header( "CacheEmbeddedResourceLib v1.0 - " + std::string( __DATE__ ) + " - " + std::string( __TIME__ ) + " \n" );
 
   // ---- ----
 
@@ -48,11 +48,12 @@ namespace erc_maker {
         throw std::runtime_error( "can't open <erc_cache_filepath> at " + erc_cache_filepath );
 
       //
-      char header_cstr[current_version_header_size] {0};
-      input.read( header_cstr, current_version_header_size );
+      std::vector<char> version_header_vec( current_version_header.size(), '\0' );
+      input.read( version_header_vec.data(), static_cast<std::streamsize>( current_version_header.size() ) );
+      const std::string version_header( version_header_vec.data(), current_version_header.size() );
 
       //
-      if ( strncmp( header_cstr, current_version_header, current_version_header_size ) != 0 )
+      if ( version_header != current_version_header )
         throw std::runtime_error( "Incompatible header version" );
 
       //
@@ -116,7 +117,7 @@ namespace erc_maker {
       output << current_version_header;
 
       //
-      output_for<uint32_t>( output, static_cast<uint32_t>(erc_files_identifier.size()) );
+      output_for<uint32_t>( output, static_cast<uint32_t>( erc_files_identifier.size() ) );
 
       //
       for ( const src_file_identifier & file_id : erc_files_identifier )
