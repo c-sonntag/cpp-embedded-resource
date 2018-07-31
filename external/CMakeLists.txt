@@ -2,28 +2,10 @@
 # EmbeddedResource project - externals builds
 # Under the Copyright (C) Christophe-Alexandre Sonntag (http://u4a.at)
 
-# --- KEEP CMAKE_INSTALL_PREFIX ---
-set(ORIGINAL_CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
-macro(SetExternalInstallPrefix Name)
-  set(CMAKE_INSTALL_BINDIR)
-  set(CMAKE_INSTALL_SBINDIR)
-  set(CMAKE_INSTALL_LIBEXECDIR)
-  set(CMAKE_INSTALL_SYSCONFDIR)
-  set(CMAKE_INSTALL_SHAREDSTATEDIR)
-  set(CMAKE_INSTALL_LOCALSTATEDIR)
-  set(CMAKE_INSTALL_RUNSTATEDIR)
-  set(CMAKE_INSTALL_LIBDIR)
-  set(CMAKE_INSTALL_INCLUDEDIR)
-  set(CMAKE_INSTALL_OLDINCLUDEDIR)
-  set(CMAKE_INSTALL_DATAROOTDIR)
-  set(CMAKE_INSTALL_DATADIR)
-  set(CMAKE_INSTALL_INFODIR)
-  set(CMAKE_INSTALL_LOCALEDIR)
-  set(CMAKE_INSTALL_MANDIR)
-  set(CMAKE_INSTALL_DOCDIR)
-  set(CMAKE_INSTALL_PREFIX "${ORIGINAL_CMAKE_INSTALL_PREFIX}/external/${Name}" CACHE PATH "(external set)" FORCE)
-  include(GNUInstallDirs)
-endmacro()
+
+# ---  ---
+include (ExternalProject)
+set(EXTERNAL_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external")
 
 # --- EXTERNAL SETS ---
 set(EXTERNAL_ZLIB_DIR       "zlib-master")
@@ -36,95 +18,119 @@ set(EXTERNAL_PICOSHA2_DIR   "picosha2-master")
 #
 
 # --- EXTERNAL : ZLIB ---
-set(ZLIB_SOURCE  "${CMAKE_CURRENT_SOURCE_DIR}/${EXTERNAL_ZLIB_DIR}")
-set(ZLIB_BUILD   "${CMAKE_CURRENT_BINARY_DIR}/zlib")
-set(PROJECT_ZLIB_STATIC zlibstatic)
+set(ZLIB_SOURCE         "${EXTERNAL_SOURCE_DIR}/${EXTERNAL_ZLIB_DIR}")
+set(ZLIB_PREFIX          "external/zlib")
+set(ZLIB_BUILD           "${CMAKE_CURRENT_BINARY_DIR}/${ZLIB_PREFIX}/build")
+set(ZLIB_INSTALL         "${CMAKE_CURRENT_BINARY_DIR}/${ZLIB_PREFIX}/install")
+set(PROJECT_ZLIB_STATIC "${ZLIB_BUILD}/libzlibstatic.a")
 #
-SetExternalInstallPrefix("zlib")
-add_subdirectory(${ZLIB_SOURCE} ${ZLIB_BUILD})
+ExternalProject_Add(
+  zlib
+  PREFIX ${ZLIB_PREFIX}
+  SOURCE_DIR ${ZLIB_SOURCE}
+  BINARY_DIR ${ZLIB_BUILD}
+  INSTALL_DIR ${ZLIB_INSTALL}
+  BUILD_IN_SOURCE OFF
+  BUILD_BYPRODUCTS ${PROJECT_ZLIB_STATIC}
+  STEP_TARGETS build
+  EXCLUDE_FROM_ALL TRUE
+  CMAKE_CACHE_ARGS
+    -DCMAKE_BUILD_TYPE:STRING=Release
+    -DCMAKE_INSTALL_PREFIX:STRING=${ZLIB_INSTALL}
+)
 #
 macro(LINK_PRIVATE_LIB_ZLIB PROJECT_TARGET)
+  add_dependencies(${PROJECT_TARGET} zlib-build)
   target_include_directories(${PROJECT_TARGET} PRIVATE ${ZLIB_SOURCE})
   target_include_directories(${PROJECT_TARGET} PRIVATE ${ZLIB_BUILD})
   target_link_libraries     (${PROJECT_TARGET} PRIVATE ${PROJECT_ZLIB_STATIC})
 endmacro()
-#
-set(ZLIB_SOURCE          ${ZLIB_SOURCE}         PARENT_SCOPE)
-set(ZLIB_BUILD           ${ZLIB_BUILD}          PARENT_SCOPE)
-set(PROJECT_ZLIB_STATIC  ${PROJECT_ZLIB_STATIC} PARENT_SCOPE)
 
 #
 ##
 #
 
 # --- EXTERNAL : TINYXML2 ---
-set(TINYXML2_SOURCE  "${CMAKE_CURRENT_SOURCE_DIR}/${EXTERNAL_TINYXML2_DIR}")
-set(TINYXML2_BUILD   "${CMAKE_CURRENT_BINARY_DIR}/tinyxml2")
-set(PROJECT_TINYXML2_STATIC tinyxml2_static)
+set(TINYXML2_SOURCE         "${EXTERNAL_SOURCE_DIR}/${EXTERNAL_TINYXML2_DIR}")
+set(TINYXML2_PREFIX          "external/tinyxml2")
+set(TINYXML2_BUILD           "${CMAKE_CURRENT_BINARY_DIR}/${TINYXML2_PREFIX}/build")
+set(TINYXML2_INSTALL         "${CMAKE_CURRENT_BINARY_DIR}/${TINYXML2_PREFIX}/install")
+set(PROJECT_TINYXML2_STATIC "${TINYXML2_BUILD}/libtinyxml2.a")
 #
-SetExternalInstallPrefix("tinyxml2")
-set(BUILD_SHARED_LIBS    OFF                 CACHE BOOL "(external set)" FORCE)
-set(BUILD_STATIC_LIBS    ON                  CACHE BOOL "(external set)" FORCE)
-set(BUILD_TESTS          OFF                 CACHE BOOL "(external set)" FORCE)
-add_subdirectory(${TINYXML2_SOURCE} ${TINYXML2_BUILD})
+ExternalProject_Add(
+  tinyxml2
+  PREFIX ${TINYXML2_PREFIX}
+  SOURCE_DIR ${TINYXML2_SOURCE}
+  BINARY_DIR ${TINYXML2_BUILD}
+  INSTALL_DIR ${TINYXML2_INSTALL}
+  BUILD_IN_SOURCE OFF
+  BUILD_BYPRODUCTS ${PROJECT_TINYXML2_STATIC}
+  STEP_TARGETS build
+  EXCLUDE_FROM_ALL TRUE
+  CMAKE_CACHE_ARGS
+    -DCMAKE_BUILD_TYPE:STRING=Release
+    -DCMAKE_INSTALL_PREFIX:STRING=${TINYXML2_INSTALL}
+    -DBUILD_SHARED_LIBS:BOOL=OFF
+    -DBUILD_STATIC_LIBS:BOOL=ON
+    -DBUILD_TESTS:BOOL=OFF
+)
 #
 macro(LINK_PRIVATE_LIB_TINYXML2 PROJECT_TARGET)
+  add_dependencies(${PROJECT_TARGET} tinyxml2-build)
   target_include_directories(${PROJECT_TARGET} PRIVATE ${TINYXML2_SOURCE})
   target_link_libraries     (${PROJECT_TARGET} PRIVATE ${PROJECT_TINYXML2_STATIC})
 endmacro()
-#
-set(TINYXML2_SOURCE          ${TINYXML2_SOURCE}         PARENT_SCOPE)
-set(TINYXML2_BUILD           ${TINYXML2_BUILD}          PARENT_SCOPE)
-set(PROJECT_TINYXML2_STATIC  ${PROJECT_TINYXML2_STATIC} PARENT_SCOPE)
 
 #
 ##
 #
 
 # --- EXTERNAL : GTEST ---
-set(GTEST_SOURCE  "${CMAKE_CURRENT_SOURCE_DIR}/${EXTERNAL_GTEST_DIR}")
-set(GTEST_BUILD   "${CMAKE_CURRENT_BINARY_DIR}/gtest")
-set(PROJECT_GTEST_STATIC      gtest)
+set(GTEST_SOURCE          "${EXTERNAL_SOURCE_DIR}/${EXTERNAL_GTEST_DIR}")
+set(GTEST_PREFIX          "external/gtest")
+set(GTEST_BUILD           "${CMAKE_CURRENT_BINARY_DIR}/${GTEST_PREFIX}/build")
+set(GTEST_INSTALL         "${CMAKE_CURRENT_BINARY_DIR}/${GTEST_PREFIX}/install")
+set(PROJECT_GTEST_STATIC  "${GTEST_BUILD}/gtest")
 #
-SetExternalInstallPrefix("gtest")
-set(BUILD_GMOCK                 OFF              CACHE BOOL "(external set)" FORCE)
-set(BUILD_GTEST                 ON               CACHE BOOL "(external set)" FORCE)
-set(INSTALL_GTEST               OFF              CACHE BOOL "(external set)" FORCE)
-set(INSTALL_GMOCK               OFF              CACHE BOOL "(external set)" FORCE)
-set(BUILD_SHARED_LIBS           OFF              CACHE BOOL "(external set)" FORCE)
-set(gtest_build_tests           OFF              CACHE BOOL "(external set)" FORCE)
-set(gtest_build_samples         OFF              CACHE BOOL "(external set)" FORCE)
-set(gtest_disable_pthreads      OFF              CACHE BOOL "(external set)" FORCE)
-set(gtest_hide_internal_symbols OFF              CACHE BOOL "(external set)" FORCE)
-add_subdirectory(${GTEST_SOURCE} ${GTEST_BUILD})
+ExternalProject_Add(
+  gtest
+  PREFIX ${GTEST_PREFIX}
+  SOURCE_DIR ${GTEST_SOURCE}
+  BINARY_DIR ${GTEST_BUILD}
+  INSTALL_DIR ${GTEST_INSTALL}
+  BUILD_IN_SOURCE OFF
+  BUILD_BYPRODUCTS ${PROJECT_GTEST_STATIC}
+  STEP_TARGETS build
+  EXCLUDE_FROM_ALL TRUE
+  CMAKE_CACHE_ARGS
+    -DCMAKE_BUILD_TYPE:STRING=Release
+    -DBUILD_GMOCK:BOOL=OFF
+    -DBUILD_GTEST:BOOL=ON
+    -DINSTALL_GTEST:BOOL=OFF
+    -DINSTALL_GMOCK:BOOL=OFF
+    -DBUILD_SHARED_LIBS:BOOL=OFF
+    -Dgtest_build_tests:BOOL=OFF
+    -Dgtest_build_samples:BOOL=OFF
+    -Dgtest_disable_pthreads:BOOL=OFF
+    -Dgtest_hide_internal_symbols:BOOL=OFF
+    -DCMAKE_INSTALL_PREFIX:STRING=${GTEST_INSTALL}
+)
 #
 macro(LINK_PRIVATE_LIB_GTEST PROJECT_TARGET)
+  add_dependencies(${PROJECT_TARGET} gtest-build)
   target_include_directories(${PROJECT_TARGET} PRIVATE "${GTEST_SOURCE}/googletest/include")
   target_link_libraries     (${PROJECT_TARGET} PRIVATE ${PROJECT_GTEST_STATIC})
 endmacro()
-#
-set(GTEST_SOURCE               ${GTEST_SOURCE}              PARENT_SCOPE)
-set(GTEST_BUILD                ${GTEST_BUILD}               PARENT_SCOPE)
-set(PROJECT_GTEST_STATIC       ${PROJECT_GTEST_STATIC}      PARENT_SCOPE)
 
 #
 ##
 #
 
 # --- EXTERNAL : PICOSHA2 ---
-set(PICOSHA2_SOURCE  "${CMAKE_CURRENT_SOURCE_DIR}/${EXTERNAL_PICOSHA2_DIR}")
+set(PICOSHA2_SOURCE  "${EXTERNAL_SOURCE_DIR}/${EXTERNAL_PICOSHA2_DIR}")
 #
 macro(LINK_PRIVATE_LIB_PICOSHA2 PROJECT_TARGET)
   target_include_directories(${PROJECT_TARGET} PRIVATE "${PICOSHA2_SOURCE}")
 endmacro()
-#
-set(PICOSHA2_SOURCE               ${PICOSHA2_SOURCE}              PARENT_SCOPE)
-
-#
-##
-#
-
-# --- RESTORE CMAKE_INSTALL_PREFIX ---
-set(CMAKE_INSTALL_PREFIX "${ORIGINAL_CMAKE_INSTALL_PREFIX}" CACHE PATH "Installation prefix" FORCE)
 
 

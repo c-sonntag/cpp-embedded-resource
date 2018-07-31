@@ -14,7 +14,7 @@ set(PROJECT_EMBEDDEDRESOURCE_MAKER "erc_maker")
 set(PROJECT_EMBEDDEDRESOURCE_PROGRAM "embedded_resource_packager")
 
 # --- EXTERNALS LIBS ---
-add_subdirectory("external")
+include("external/CMakeLists.txt")
 
 # --- SET CMAKE TOOLS ---
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/CMakeTools;${CMAKE_MODULE_PATH}")
@@ -167,7 +167,7 @@ find_program(
 
 # --- BUILDS TOOLS  ---
 if(${EMBEDDEDRESOURCE_BUILD_TOOLS})
-  add_subdirectory("tools/")
+  ##add_subdirectory("tools/")
 endif()
 
 # # --- BUILDS EXAMPLES ---
