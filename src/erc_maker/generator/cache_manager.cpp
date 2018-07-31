@@ -9,6 +9,7 @@
 #include <regex>
 #include <cstring>
 
+
 namespace erc_maker {
 
   static const char current_version_header[] { "CacheEmbeddedResourceLib v1.0\n" };
@@ -55,10 +56,10 @@ namespace erc_maker {
         throw std::runtime_error( "Incompatible header version" );
 
       //
-      const uint number_of_entries( input_for<uint>( input ) );
+      const uint32_t number_of_entries( input_for<uint32_t>( input ) );
 
       //
-      for ( uint i( 0 ); i < number_of_entries; ++i )
+      for ( uint i( 0 ); i < number_of_entries && input.good(); ++i )
       {
         //
         hash256 entry_hash;
@@ -115,7 +116,7 @@ namespace erc_maker {
       output << current_version_header;
 
       //
-      output_for( output, erc_files_identifier.size() );
+      output_for<uint32_t>( output, static_cast<uint32_t>(erc_files_identifier.size()) );
 
       //
       for ( const src_file_identifier & file_id : erc_files_identifier )

@@ -16,11 +16,11 @@ namespace erc_maker {
     return hash;
   }
 
-  hash256::hash256( const byte( &digested )[hash_digest_size] )
-  {
-    memcpy( digest, digested, hash_digest_size );
-    generate_hash_hex_string();
-  }
+ // hash256::hash256( const byte( &digested )[hash_digest_size] )
+ // {
+ //   memcpy( digest, digested, hash_digest_size );
+ //   generate_hash_hex_string();
+ // }
 
   hash256::hash256( const std::string & data )
   {
@@ -129,15 +129,21 @@ namespace erc_maker {
     const fs::path output_directorypath( erc_output_directorypath );
 
     //
+    bool new_erc_embedded( false );
+
+    //
     for ( const src_file_identifier & file_id : erc_files_identifier )
     {
-
       //
       const std::string erc_embedded_file_str( names_generator.to_file_erc( file_id ) );
       const fs::path erc_embedded_filepath( output_directorypath / fs::path( erc_embedded_file_str ) );
 
       //
-      const bool need_generate( !cache_have_same_file( file_id ) || !fs::exists( erc_embedded_filepath ) );
+      const bool not_exist( !fs::exists( erc_embedded_filepath ) );
+      if ( not_exist ) new_erc_embedded = true;
+
+      //
+      const bool need_generate( !cache_have_same_file( file_id ) || not_exist );
       rapport.insert( erc_embedded_file_str, generic_string_path( erc_embedded_filepath ), need_generate );
 
       //
@@ -145,16 +151,13 @@ namespace erc_maker {
         generate_file( file_id, erc_embedded_filepath.string() );
     }
 
-    //
-    bool erc_files_have_changement( rapport.nb_generated > 0 );
-
     {
       //
       const std::string erc_package_file_str( names_generator.to_file_package_file() );
       const fs::path erc_package_filepath( output_directorypath / fs::path( erc_package_file_str ) );
 
       //
-      const bool need_generate( !fs::exists( erc_package_filepath ) || erc_files_have_changement );
+      const bool need_generate( !fs::exists( erc_package_filepath ) || new_erc_embedded );
       rapport.insert( erc_package_file_str, generic_string_path( erc_package_filepath ), need_generate );
 
       //
