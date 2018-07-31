@@ -21,14 +21,30 @@ namespace erc_maker {
 
   struct internal_parser
   {
+   public:
+    struct
+    {
+      bool compress = false;
+    } default_config;
+
+   public:
     const erc_package_file_parser & erc_parsed_content;
     model & content;
 
+   public:
     internal_parser( erc_package_file_parser & _erc_parsed_content );
 
+   public:
+    void parse_attributes_erc( const tinyxml2::XMLElement & e );
+
+   private:
+    inline basic_link basic_link_tag_inheritance( const tinyxml2::XMLElement & e );
+
+   public:
     void parse_tag_package_name( const std::string & tag_text );
     void parse_tag_prefix( const std::string & tag_text );
 
+   public:
     void parse_tag_file( const tinyxml2::XMLElement & e );
     void parse_tag_directory( const tinyxml2::XMLElement & e );
   };
@@ -44,10 +60,12 @@ namespace erc_maker {
     using namespace tinyxml2;
 
     XMLDocument doc;
-    doc.LoadFile( erc_parsed_content.erc_package_filepath.c_str() );
+    const XMLError open_error_code( doc.LoadFile( erc_parsed_content.erc_package_filepath.c_str() ) );
+    if ( open_error_code != 0 )
+      throw std::runtime_error( "Error code(" + std::to_string( static_cast<int>( open_error_code ) ) + ") on opening file : " + erc_parsed_content.erc_package_filepath );
 
-    XMLPrinter printer;
-    doc.Print( &printer );
+    // XMLPrinter printer;
+    // doc.Print( &printer );
 
     try
     {
@@ -56,13 +74,16 @@ namespace erc_maker {
       std::list<std::string> erc_xml_error;
 
       //
-      const XMLElement * root_erc( doc.RootElement() );
+      const XMLElement * const root_erc( doc.RootElement() );
       if ( !root_erc )
-        throw std::runtime_error( "Can't find root element" );
+        throw std::runtime_error( "Can't find root element like '<erc>' tag" );
 
       //
       if ( std::string( root_erc->Name() ) != "erc" )
         erc_xml_error.emplace_back( "Root element need to be 'erc' tag" );
+
+      //
+      parse_attributes_erc( *root_erc );
 
       //
       for (
@@ -150,12 +171,19 @@ namespace erc_maker {
 
   // ---- ----
 
-  inline basic_link basic_link_tag_inheritance( const tinyxml2::XMLElement & e )
+  void internal_parser::parse_attributes_erc( const tinyxml2::XMLElement & e )
+  {
+    default_config.compress = e.BoolAttribute( "default-compress", false );
+  }
+
+  // ---- ----
+
+  inline basic_link internal_parser::basic_link_tag_inheritance( const tinyxml2::XMLElement & e )
   {
     basic_link bl;
 
     bl.path = e.GetText();
-    bl.compress = e.BoolAttribute( "compress", false );
+    bl.compress = e.BoolAttribute( "compress", default_config.compress );
 
     return bl;
   }

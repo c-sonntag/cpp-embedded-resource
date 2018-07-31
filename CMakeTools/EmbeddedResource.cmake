@@ -77,6 +77,8 @@ function(ERC_TARGET_RESOURCE output_target_name output_files_path_list input_erc
   set(erc_target "erc_${CMAKE_MATCH_1}")
   string( REGEX MATCH "Files:([^\n]+)" files_path "${erc_cmake_target_information}")
   set(files_path ${CMAKE_MATCH_1})
+ # string( REGEX MATCH "NotFoundModelFiles:([^\n]+)" not_found_model_files_path "${erc_cmake_target_information}")
+ # set(files_path ${CMAKE_MATCH_1})
 
   #
   ##
