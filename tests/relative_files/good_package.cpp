@@ -1,7 +1,10 @@
+#include "./composed_resource.hpp"
+
 #include <tests_directories.h>
 #include <gtest/gtest.h>
 
 #include <erc/package.h>
+#include <erc/inventory_package.h>
 
 #include <vector>
 #include <string>
@@ -12,11 +15,11 @@ TEST( relative_files, good_package )
 {
 
   //
-  const erc::package * const package_p( erc::package_manager::get("composed_ressource") );
-  ASSERT_NE( package_p, nullptr );
+  const erc::package_group * const package_group_p( erc::inventory_package::get_group( "composed_ressource" ) );
+  ASSERT_NE( package_group_p, nullptr );
 
   //
-  const erc::package & package(*package_p);
+  const erc::package & package( package_group_p->package );
 
   //
   ASSERT_EQ( package.name, "composed_ressource" );
@@ -24,20 +27,42 @@ TEST( relative_files, good_package )
   ASSERT_NE( package.embedded_files, nullptr );
 
   //
-  const erc::embedded_file * const * const embedded_files( package.embedded_files );
+  for ( const erc::embedded_file & final_ef : final_efs )
+  {
+
+    //
+    const erc::embedded_file * const ef_p( package.get_embedded_file( final_ef.path ) );
+    ASSERT_TRUE( ef_p != nullptr );
+
+    //
+    const erc::embedded_file & ef( *ef_p );
+
+    //
+    const std::string final_ef_proprer_data( final_ef.data, final_ef.data + final_ef.property.file.size );
+    ASSERT_EQ( ef.get_proper_data(), final_ef_proprer_data );
+    //std::cout << " Path(" << ef.path << ") : " << ef.get_proper_data() << " == " << final_ef_proprer_data << std::endl;
+
+    //
+    erc::embedded_data_property edp_without_modification_time( ef.property );
+    edp_without_modification_time.file.last_modification = 0;
+
+    //
+    ASSERT_EQ( edp_without_modification_time, final_ef.property );
+  }
 
   //
-  for ( unsigned int i( 0 ); i < package.size; ++i )
-  {
-    const erc::embedded_file & ef( *embedded_files[i] );
-    std::cout << "File id(" << i << ") : " << std::endl
-              << "  Path(" << ef.path << ")" << std::endl
-              << "  Compressed(" << std::boolalpha << ef.property.compressed << ") Raw(" << std::boolalpha << ef.property.raw_data << ")  Size(" << std::boolalpha << ef.property.size << ")" << std::endl
-              << "  Filename(" << std::boolalpha << ef.property.file.filename << ") RealSize(" << std::boolalpha << ef.property.file.size << ")" << std::endl
-              << "  Data : ";
-    std::cout.write( reinterpret_cast<const char *>( ef.data ), ef.property.size );
-    std::cout << std::endl;
-  }
+  //const erc::embedded_file * const * const embedded_files( package.embedded_files );
+  //for ( unsigned int i( 0 ); i < package.size; ++i )
+  //{
+  //  const erc::embedded_file & ef( *embedded_files[i] );
+  //  std::cout << "File id(" << i << ") : " << std::endl
+  //            << "  Path(" << ef.path << ")" << std::endl
+  //            << "  Compressed(" << std::boolalpha << ef.property.compressed << ") Raw(" << std::boolalpha << ef.property.raw_data << ")  Size(" << std::boolalpha << ef.property.size << ")" << std::endl
+  //            << "  Filename(" << std::boolalpha << ef.property.file.filename << ") RealSize(" << std::boolalpha << ef.property.file.size << ")" << std::endl
+  //            << "  Data : " << ef.get_proper_data() << std::endl;
+  //  //std::cout.write( reinterpret_cast<const char *>( ef.data ), ef.property.size );
+  //  std::cout << std::endl;
+  //}
 
 
 }
