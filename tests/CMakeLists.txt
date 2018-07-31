@@ -71,4 +71,4 @@ include("EmbeddedResource")
 #
 
 
-erc_add_ressource(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/relative_files/composed_ressource.erc")
+erc_add_ressources(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/relative_files/composed_ressource.erc")

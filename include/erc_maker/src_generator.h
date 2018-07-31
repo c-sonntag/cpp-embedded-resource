@@ -19,15 +19,15 @@ namespace erc_maker {
 
    public:
     static constexpr uint hash_digest_size {32};
-    byte digest[hash_digest_size];
+    byte digest[hash_digest_size]{0};
 
     static constexpr uint hash_hex_size {hash_digest_size * 2};
     hash_hex_string hex;
 
    public:
     inline hash256() = default;
-    hash256( const byte( &digested )[hash_digest_size] );
-    hash256( const byte digested[hash_digest_size] );
+    //hash256( const byte( &digested )[hash_digest_size] );
+    //hash256( const byte digested[hash_digest_size] );
 
     hash256( const std::string & data );
 

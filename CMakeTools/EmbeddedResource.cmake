@@ -7,7 +7,7 @@
 ## ERC_TARGET_RESOURCE to create or get embedded resource target
 #
 
-function(ERC_TARGET_RESOURCE output_target_name input_erc_xml_package_filepath)
+function(ERC_TARGET_RESOURCE output_target_name output_files_path_list input_erc_xml_package_filepath)
 
   #
   ##
@@ -101,24 +101,29 @@ function(ERC_TARGET_RESOURCE output_target_name input_erc_xml_package_filepath)
       ARGS "--input-package" ${input_erc_xml_package_filepath}
            "--work-dir" ${work_absolute_directory}
       BYPRODUCTS ${files_path}
-      SOURCES    ${files_path}
       COMMENT "Executing EmbeddedResource for file : ${input_erc_xml_package_filepath}"
       VERBATIM
     )
 
-    #
-    ##
-    set(${output_target_name} ${erc_target} PARENT_SCOPE)
-
   endif()
+
+  #
+  ##
+  set(${output_target_name} ${erc_target} PARENT_SCOPE)
+  set(${output_files_path_list} ${files_path} PARENT_SCOPE)
+
 
 endfunction()
 
 #
-## ERC_ADD_RESSOURCE to add embedded resource on target
+## ERC_ADD_RESSOURCES to add embedded resource on target
 #
 
-function(ERC_ADD_RESSOURCE target_name input_erc_xml_package_filepath)
+function(ERC_ADD_RESSOURCES target_name )
+
+  #
+  ##
+  set(inputs_ercs_xmls_packages_filepath ${ARGN})
 
   #
   ##
@@ -133,13 +138,17 @@ function(ERC_ADD_RESSOURCE target_name input_erc_xml_package_filepath)
 
   #
   ##
-  erc_target_resource(erc_target ${input_erc_xml_package_filepath})
+  foreach(input_erc_xml_package_filepath IN ITEMS ${inputs_ercs_xmls_packages_filepath})
 
-  #
-  ##
-  get_target_property(files_path ${erc_target} SOURCES)
-  target_sources(${target_name} PUBLIC ${files_path})
-  add_dependencies(${target_name} ${erc_target})
+    #
+    ##
+    erc_target_resource(erc_target files_path ${input_erc_xml_package_filepath})
+
+    #
+    target_sources(${target_name} PRIVATE ${files_path})
+    add_dependencies(${target_name} ${erc_target})
+
+  endforeach()
 
 endfunction()
 
