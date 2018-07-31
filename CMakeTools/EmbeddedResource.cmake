@@ -2,25 +2,23 @@
 # EmbeddedResource project
 # Under the Copyright (C) Christophe-Alexandre Sonntag (http://u4a.at)
 
+
 #
-## ERC_ADD_RESSOURCE to add embedded resource on target
+## ERC_TARGET_RESOURCE to create or get embedded resource target
 #
 
-function(ERC_ADD_RESSOURCE target_name input_erc_xml_package_filepath)
-
+function(ERC_TARGET_RESOURCE output_target_name input_erc_xml_package_filepath)
 
   #
   ##
   set(fatal_error_msg)
+
   #
   if(NOT EXISTS ${ERC_BINARY_PACKAGER})
    set(fatal_error_msg "${fatal_error_msg}Can't find executable embedded_resource_packager on variable ERC_BINARY_PACKAGER : ${ERC_BINARY_PACKAGER}\n")
   endif()
   if(NOT EXISTS ${input_erc_xml_package_filepath})
     set(fatal_error_msg "${fatal_error_msg}Can't find <input_erc_xml_package_filepath> : ${input_erc_xml_package_filepath}\n")
-  endif()
-  if(NOT DEFINED ${target_name})
-    set(fatal_error_msg "${fatal_error_msg}Can't find <target_name> : ${target_name}\n")
   endif()
   #
   if(${fatal_error_msg})
@@ -80,11 +78,8 @@ function(ERC_ADD_RESSOURCE target_name input_erc_xml_package_filepath)
   string( REGEX MATCH "Files:([^\n]+)" files_path "${erc_cmake_target_information}")
   set(files_path ${CMAKE_MATCH_1})
 
-  #message(STATUS "erc_cmake_target_information : ${erc_cmake_target_information}")
-  ##message(STATUS "erc_target : ${erc_target} ---")
-  ##message(STATUS "files_path : ${files_path} ---")
-
   #
+  ##
   if(NOT erc_target OR NOT files_path)
     message(FATAL_ERROR
       "[ERC_ADD_RESSOURCE]\n"
@@ -96,26 +91,57 @@ function(ERC_ADD_RESSOURCE target_name input_erc_xml_package_filepath)
 
   #
   ##
-  add_custom_target(
-    ${erc_target} ALL
-    COMMAND ${ERC_BINARY_PACKAGER}
-    ARGS "--input-package" ${input_erc_xml_package_filepath}
-         "--work-dir" ${work_absolute_directory}
-    BYPRODUCTS ${files_path}
-    COMMENT "Executing EmbeddedResource for file : ${input_erc_xml_package_filepath}"
-    VERBATIM
-  )
+  if(NOT TARGET ${erc_target})
 
-  #
-  target_sources(${target_name} PUBLIC ${files_path})
-  add_dependencies(${target_name} ${erc_target})
+    #
+    ##
+    add_custom_target(
+      ${erc_target} ALL
+      COMMAND ${ERC_BINARY_PACKAGER}
+      ARGS "--input-package" ${input_erc_xml_package_filepath}
+           "--work-dir" ${work_absolute_directory}
+      BYPRODUCTS ${files_path}
+      SOURCES    ${files_path}
+      COMMENT "Executing EmbeddedResource for file : ${input_erc_xml_package_filepath}"
+      VERBATIM
+    )
 
-  # Yes or no ? @todo
-  add_dependencies(${erc_target} ${PROJECT_EMBEDDEDRESOURCE_PROGRAM})
+    #
+    ##
+    set(${output_target_name} ${erc_target} PARENT_SCOPE)
 
+  endif()
 
 endfunction()
 
+#
+## ERC_ADD_RESSOURCE to add embedded resource on target
+#
+
+function(ERC_ADD_RESSOURCE target_name input_erc_xml_package_filepath)
+
+  #
+  ##
+  if(NOT TARGET ${target_name})
+    message(FATAL_ERROR
+      "[ERC_ADD_RESSOURCE]\n"
+      "Can't find <target_name> : ${target_name}\n"
+      "\n"
+    )
+    return()
+  endif()
+
+  #
+  ##
+  erc_target_resource(erc_target ${input_erc_xml_package_filepath})
+
+  #
+  ##
+  get_target_property(files_path ${erc_target} SOURCES)
+  target_sources(${target_name} PUBLIC ${files_path})
+  add_dependencies(${target_name} ${erc_target})
+
+endfunction()
 
 #
 ## ERC_RESSOURCE_LIBRARY to made an embedded resource library (for other mutiple target)

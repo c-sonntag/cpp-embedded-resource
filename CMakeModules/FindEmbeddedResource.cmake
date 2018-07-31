@@ -63,7 +63,7 @@ find_package_handle_standard_args(ERC REQUIRED_VARS ERC_INCLUDE_DIRS ERC_LIBRARI
 
 #
 ##
-include(${ERC_CMAKE_TOOLS_DIRS})
+include("${ERC_CMAKE_TOOLS_DIRS}/EmbeddedResource.cmake")
 
 #
 ##

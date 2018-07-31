@@ -90,7 +90,7 @@ set(GTEST_SOURCE          "${EXTERNAL_SOURCE_DIR}/${EXTERNAL_GTEST_DIR}")
 set(GTEST_PREFIX          "external/gtest")
 set(GTEST_BUILD           "${CMAKE_CURRENT_BINARY_DIR}/${GTEST_PREFIX}/build")
 set(GTEST_INSTALL         "${CMAKE_CURRENT_BINARY_DIR}/${GTEST_PREFIX}/install")
-set(PROJECT_GTEST_STATIC  "${GTEST_BUILD}/gtest")
+set(PROJECT_GTEST_STATIC  "${GTEST_BUILD}/googletest/libgtest.a")
 #
 ExternalProject_Add(
   gtest
