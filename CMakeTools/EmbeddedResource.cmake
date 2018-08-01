@@ -7,7 +7,7 @@
 ## ERC_TARGET_RESOURCE to create or get embedded resource target
 #
 
-function(ERC_TARGET_RESOURCE output_target_name output_files_path_list input_erc_xml_package_filepath)
+function(ERC_TARGET_RESOURCE output_target_name output_generated_files_path_list output_scanned_files_path_list input_erc_xml_package_filepath)
 
   #
   ##
@@ -23,7 +23,7 @@ function(ERC_TARGET_RESOURCE output_target_name output_files_path_list input_erc
   #
   if(${fatal_error_msg})
     message(FATAL_ERROR
-      "[ERC_ADD_RESSOURCE]\n"
+      "[ERC_TARGET_RESOURCE]\n"
       "${fatal_error_msg}\n"
       "\n"
     )
@@ -53,7 +53,7 @@ function(ERC_TARGET_RESOURCE output_target_name output_files_path_list input_erc
   #
   if(NOT ${erc_cmake_target_information_result} EQUAL "0")
     message(FATAL_ERROR
-      "[ERC_ADD_RESSOURCE]\n"
+      "[ERC_TARGET_RESOURCE]\n"
       "  ERC_BINARY_PACKAGER Can't get information of package to make target\n"
       "  ProgramPath : ${ERC_BINARY_PACKAGER}\n"
       "  Argument    : ${ARGN}\n"
@@ -73,22 +73,46 @@ function(ERC_TARGET_RESOURCE output_target_name output_files_path_list input_erc
 
   #
   ##
-  string( REGEX MATCH "Package:([^\n]+)" erc_target "${erc_cmake_target_information}")
-  set(erc_target "erc_${CMAKE_MATCH_1}")
-  string( REGEX MATCH "Files:([^\n]+)" files_path "${erc_cmake_target_information}")
-  set(files_path ${CMAKE_MATCH_1})
- # string( REGEX MATCH "NotFoundModelFiles:([^\n]+)" not_found_model_files_path "${erc_cmake_target_information}")
- # set(files_path ${CMAKE_MATCH_1})
+  string( REGEX MATCH
+    "Package:([^\n]+)\nInputFiles:([^\n]+)\nGeneratedFiles:([^\n]+)\nNotFoundModelFiles:([^\n]*)\nNotFoundModelDirs:([^\n]*)\n"
+    erc_cmake_target_information_parsed
+    "${erc_cmake_target_information}"
+  )
+  #
+  set(erc_cmake_target_information_parsed_nb ${CMAKE_MATCH_COUNT})
+  #
+  set(erc_target              "erc_${CMAKE_MATCH_1}")
+  set(input_files_path        ${CMAKE_MATCH_2})
+  set(generated_files_path    ${CMAKE_MATCH_3})
+  set(erc_xml_not_found_files ${CMAKE_MATCH_4})
+  set(erc_xml_not_found_dirs  ${CMAKE_MATCH_5})
 
   #
   ##
-  if(NOT erc_target OR NOT files_path)
+  if(NOT erc_target OR NOT input_files_path OR NOT generated_files_path)
     message(FATAL_ERROR
-      "[ERC_ADD_RESSOURCE]\n"
+      "[ERC_TARGET_RESOURCE]\n"
       "  ERC_BINARY_PACKAGER Not returns good information of package to make target\n"
       "\n"
     )
     return()
+  endif()
+
+  #
+  ##
+  if(erc_xml_not_found_files OR erc_xml_not_found_dirs)
+    set(warnings_msg)
+    if(erc_xml_not_found_files)
+      set(warnings_msg "${warnings_msg}  Not founds file(s) : ${erc_xml_not_found_files}\n")
+    endif()
+    if(erc_xml_not_found_dirs)
+      set(warnings_msg "${warnings_msg}  Not founds directorie(s) : ${erc_xml_not_found_dirs}\n")
+    endif()
+    #
+    message(WARNING "\n[ERC_TARGET_RESOURCE]\n"
+      "  From : ${input_erc_xml_package_filepath}\n"
+      "${warnings_msg}\n"
+    )
   endif()
 
   #
@@ -102,7 +126,7 @@ function(ERC_TARGET_RESOURCE output_target_name output_files_path_list input_erc
       COMMAND ${ERC_BINARY_PACKAGER}
       ARGS "--input-package" ${input_erc_xml_package_filepath}
            "--work-dir" ${work_absolute_directory}
-      BYPRODUCTS ${files_path}
+      BYPRODUCTS ${generated_files_path}
       COMMENT "Executing EmbeddedResource for file : ${input_erc_xml_package_filepath}"
       VERBATIM
     )
@@ -111,8 +135,9 @@ function(ERC_TARGET_RESOURCE output_target_name output_files_path_list input_erc
 
   #
   ##
-  set(${output_target_name} ${erc_target} PARENT_SCOPE)
-  set(${output_files_path_list} ${files_path} PARENT_SCOPE)
+  set(${output_target_name}               ${erc_target}           PARENT_SCOPE)
+  set(${output_generated_files_path_list} ${generated_files_path} PARENT_SCOPE)
+  set(${output_scanned_files_path_list}   ${input_files_path}     PARENT_SCOPE)
 
 
 endfunction()
@@ -125,7 +150,15 @@ function(ERC_ADD_RESSOURCES target_name )
 
   #
   ##
-  set(inputs_ercs_xmls_packages_filepath ${ARGN})
+  set(options ADD_INTO_IDE)
+  set(oneValueArgs "")
+  set(multiValueArgs "")
+  cmake_parse_arguments(ARGUMENTS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+  #
+  set(inputs_ercs_xmls_packages_filepath ${ARGUMENTS_UNPARSED_ARGUMENTS})
+  set(ide_add_scanned_files              ${ARGUMENTS_ADD_INTO_IDE})
+
+  #set(inputs_ercs_xmls_packages_filepath ${ARGN})
 
   #
   ##
@@ -144,11 +177,23 @@ function(ERC_ADD_RESSOURCES target_name )
 
     #
     ##
-    erc_target_resource(erc_target files_path ${input_erc_xml_package_filepath})
+    erc_target_resource(erc_target generated_files_path scanned_files_path ${input_erc_xml_package_filepath})
 
     #
-    target_sources(${target_name} PRIVATE ${files_path})
+    ##
+    target_sources(${target_name} PRIVATE ${generated_files_path})
     add_dependencies(${target_name} ${erc_target})
+
+    #
+    ##
+    set_source_files_properties(${input_erc_xml_package_filepath} PROPERTIES HEADER_FILE_ONLY ON)
+    target_sources(${target_name} PRIVATE ${input_erc_xml_package_filepath})
+    #
+    if(ide_add_scanned_files)
+      set_source_files_properties(${scanned_files_path} PROPERTIES HEADER_FILE_ONLY ON)
+      target_sources(${target_name} PRIVATE ${scanned_files_path})
+    endif()
+
 
   endforeach()
 

@@ -1,9 +1,9 @@
+#include "head.hpp"
+
 #include <cstdio>
 #include <iostream>
 #include <exception>
 #include <vector>
-
-#include <erc_maker/src_generator.h>
 
 void help()
 {
@@ -82,79 +82,25 @@ struct ParseCommand
 
 int main( int argc, char * argv[] )
 {
-
-
   try
   {
     const ParseCommand args{argc, argv};
-
     try
     {
-      const erc_maker::erc_package_file_parser erc( args.input_package );
-      const erc_maker::erc_files_list files( erc );
-      erc_maker::src_generator generator( erc, files );
-
+      embedded_resource_packager erp( args.input_package, args.work_dir );
       if ( args.get_for_cmake_target )
-      {
-        generator.generate_into( args.work_dir, true );
-        const erc_maker::src_generator::generation_rapport & rapport( generator.get_rapport() );
-
-        //
-        std::cout << "Package:" << generator.names_generator.to_extern_package() << std::endl
-                  << "Files:";
-
-        //
-        bool first_passing( false );
-        for ( const auto & f : rapport.filepath_list )
-        {
-          std::cout << ( first_passing ? ";" : "" ) << f.file;
-          first_passing = true;
-        }
+        erp.for_cmake_target();
+      else
+        erp.for_generation();
     }
-    else
-    {
-      //
-      static const std::string prefix_out( "       [EmbeddedResource] " );
-
-      //
-      std::cout << prefix_out << "File : " << args.input_package << std::endl;
-
-      //
-      std::cout << prefix_out << "Opening cache (if exist)" << std::endl;
-      try { generator.open_cache_if_exist_into( args.work_dir ); }
-      catch ( const std::exception & e )
-      { std::cout << prefix_out << "  -> Cache errors : " << e.what() << std::endl; }
-
-      //
-      generator.generate_into( args.work_dir );
-
-      //
-      const erc_maker::src_generator::generation_rapport & rapport( generator.get_rapport() );
-      std::cout << prefix_out << "PackerSuccess : generation(" << rapport.nb_generated << ") passed(" << rapport.nb_passed << ") " << std::endl;
-
-      //
-      if ( rapport.nb_generated > 0 )
-      {
-        std::cout << prefix_out << "Saving changement in cache" << std::endl;
-        generator.save_cache_into( args.work_dir );
-      }
-
-      // //
-      // std::cout << "       See generated files : " << std::endl;
-      // const std::vector<std::string> & generated_filepath_list( generator.get_generated_filepath_list() );
-      // for ( const std::string & filepath : generated_filepath_list )
-      //   std::cout << "  " << filepath << std::endl;
-    }
-
+    catch ( std::exception & e )
+    { std::cerr << "Error process : " << e.what() << std::endl; return EXIT_FAILURE; }
   }
   catch ( std::exception & e )
-  { std::cerr << "Error process : " << e.what() << std::endl; return EXIT_FAILURE; }
-}
-catch ( std::exception & e )
-{ std::cerr << "Error arguments : " << e.what() << std::endl << "See help :" << std::endl << " ----- " << std::endl; help(); return EXIT_FAILURE; }
+  { std::cerr << "Error arguments : " << e.what() << std::endl << "See help :" << std::endl << " ----- " << std::endl; help(); return EXIT_FAILURE; }
 
 
-return EXIT_SUCCESS;
+  return EXIT_SUCCESS;
 }
 
 

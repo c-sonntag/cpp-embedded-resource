@@ -23,17 +23,8 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/CMakeTools;${CMAKE_MODULE_PATH}
 ##
 #
 
-
 # --- SET CMAKE MODULES ---
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/CMakeModules;${CMAKE_MODULE_PATH}")
-
-## # --- LIB : UNIXFAKE ---
-## find_package(UNIXFAKE REQUIRED)
-## include_directories(${UNIXFAKE_INCLUDE_DIRS})
-## link_directories(${UNIXFAKE_DIRECTORIES})
-## link_libraries(${UNIXFAKE_LIBRARIES})
-## add_definitions(${UNIXFAKE_DEFINITIONS})
-## copy_shared_on_rootbasebin_from_archive(${UNIXFAKE_ROOT} ${UNIXFAKE_LIBRARIES})
 
 #
 ## ERC LIB
