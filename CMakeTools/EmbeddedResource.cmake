@@ -48,7 +48,8 @@ function(ERC_TARGET_RESOURCE output_target_name output_generated_files_path_list
     OUTPUT_VARIABLE   erc_cmake_target_information
     RESULT_VARIABLE   erc_cmake_target_information_result
     ERROR_VARIABLE    erc_cmake_target_information_result_error_msg
-    WORKING_DIRECTORY ${work_absolute_directory}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  #  WORKING_DIRECTORY ${work_absolute_directory}
   )
   #
   if(NOT ${erc_cmake_target_information_result} EQUAL "0")
@@ -127,6 +128,7 @@ function(ERC_TARGET_RESOURCE output_target_name output_generated_files_path_list
       ARGS "--input-package" ${input_erc_xml_package_filepath}
            "--work-dir" ${work_absolute_directory}
       BYPRODUCTS ${generated_files_path}
+      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
       COMMENT "Executing EmbeddedResource for file : ${input_erc_xml_package_filepath}"
       VERBATIM
     )
@@ -143,10 +145,12 @@ function(ERC_TARGET_RESOURCE output_target_name output_generated_files_path_list
 endfunction()
 
 #
-## ERC_ADD_RESSOURCES to add embedded resource on target
+## ERC_ADD_RESOURCES to add embedded resource on target
 #
 
-function(ERC_ADD_RESSOURCES target_name )
+function(ERC_ADD_RESOURCES target_name )
+
+  # MADE IT SHARED for other acces with lib prefix
 
   #
   ##

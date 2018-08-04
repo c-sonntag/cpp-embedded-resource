@@ -1,8 +1,8 @@
-#include "./composed_resource.hpp"
+#include <relative_files/composed_resource.hpp>
 
 #include <erc_maker/erc_package_file_parser.h>
 
-#include <tests_directories.h>
+#include <unitstest_program/tests_directories.h>
 #include <gtest/gtest.h>
 
 #include <vector>

@@ -13,7 +13,7 @@ namespace erc {
       package_name( std::move( _package_name ) )
     {}
 
-    inline file_id from( const std::string file_path )
+    inline file_id from( const std::string file_path ) const
     { return file_id( package_name, file_path ); }
   };
 

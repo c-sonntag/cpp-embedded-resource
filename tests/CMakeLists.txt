@@ -42,33 +42,32 @@ add_definitions("-D_TESTS_DIRECTORY_PATH=\"${CMAKE_CURRENT_LIST_DIR}\"")
 set(SRC_PATH ".")
 set(HEADER_PATH ".")
 
-# --- TARGETS FILES ---
-file(GLOB_RECURSE TARGET_SRC_FILES "${SRC_PATH}/*.cpp" "${SRC_PATH}/*.c")
-file(GLOB_RECURSE TARGET_HEADER_FILES "${HEADER_PATH}/*.h" "${HEADER_PATH}/*.hpp")
-
 # --- COMPILE OPTIONS ---
 include_directories(${HEADER_PATH})
+
+#
+## FIND_PACKAGE ERC (without installation)
+#
+include("EmbeddedResource")
 
 #
 ## TESTS C++
 #
 
 
+
+# --- BUILD TESTS STATIC LIB  ---
+add_library("tests_static" STATIC "tests_static/get_static_lib.cpp")
+erc_add_resources("tests_static" "relative_files/composed_ressource.erc")
+erc_add_resources("tests_static" "tests_static/source_info.erc")
+
 # --- BUILD TESTS PROGRAM ---
-add_executable(${PROJECT_NAME} ${TARGET_SRC_FILES} ${TARGET_HEADER_FILES})
-set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
-LINK_PRIVATE_LIB_GTEST(${PROJECT_NAME})
-
+file(GLOB_RECURSE unitstest_program_files "unitstest_program/*.h" "unitstest_program/*.cpp")
+add_executable("unitstest_program" ${unitstest_program_files})
+LINK_PRIVATE_LIB_GTEST("unitstest_program")
 #
-## FIND_PACKAGE ERC (without installation)
+target_link_libraries("unitstest_program" PRIVATE "tests_static")
 #
+erc_add_resources("unitstest_program" "relative_files/composed_ressource.erc")
+erc_add_resources("unitstest_program" "unitstest_program/source_info.erc")
 
-add_dependencies(${PROJECT_NAME} ${PROJECT_EMBEDDEDRESOURCE_PROGRAM})
-include("EmbeddedResource")
-
-#
-## ERC PACKAGE
-#
-
-
-erc_add_ressources(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/relative_files/composed_ressource.erc")

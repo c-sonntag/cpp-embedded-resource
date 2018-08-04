@@ -9,6 +9,7 @@
 #include <regex>
 #include <cstring>
 
+//#include <iostream>
 
 namespace erc_maker {
 
@@ -69,6 +70,7 @@ namespace erc_maker {
 
         //
         const file_cache_information entry_information( input_for<file_cache_information>( input ) );
+        // std::cout << entry_hash.hex << ":" << std::boolalpha << entry_information.compress << "/" << entry_information.size << "/" << entry_information.last_modification << std::endl;
 
         //
         const auto entry_already_exist_it( supplement_cache.find( entry_hash.hex ) );
@@ -126,8 +128,11 @@ namespace erc_maker {
         output_for( output, file_id.file_unique_identifier.digest );
 
         //
-        const file_cache_information entry_information( file_id.valid_input_file.property );
+        const file_cache_information entry_information( file_id.valid_input_file );
         output_for( output, entry_information );
+
+        //
+        //std::cout << file_id.file_unique_identifier.hex << ":" << std::boolalpha << entry_information.compress << "/" << entry_information.size << "/" << entry_information.last_modification << std::endl;
       }
     }
     catch ( const std::exception & e )

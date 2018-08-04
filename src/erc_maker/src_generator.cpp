@@ -176,9 +176,7 @@ namespace erc_maker {
       return false;
 
     //
-    const file_cache_information & fci( find_it->second );
-    return ( fci.size == file_id.valid_input_file.property.size ) &&
-           ( fci.last_modification == file_id.valid_input_file.property.last_modification ) ;
+    return find_it->second == file_id.valid_input_file;
   }
 
 }

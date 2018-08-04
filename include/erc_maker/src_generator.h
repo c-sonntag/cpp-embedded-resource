@@ -40,17 +40,27 @@ namespace erc_maker {
 
   struct file_cache_information
   {
+    bool compress = false;
     uint size = 0;
     time_t last_modification = 0;
 
     inline file_cache_information() = default;
-    inline file_cache_information( const erc::file_property & fp ) :
-      size( fp.size ), last_modification( fp.last_modification )
+    inline file_cache_information( const erc_maker::file_property_found & fpf ) :
+      compress( fpf.file.compress ),
+      size( fpf.property.size ),
+      last_modification( fpf.property.last_modification )
     {}
-    //inline file_cache_information( uint _size, std::time_t _last_modification ) :
-    //  size( std::move( _size ) ), last_modification( std::move( _last_modification ) )
-    //{}
   };
+
+  inline bool operator ==( const file_cache_information & fci, const file_property_found & fpf )
+  {
+    return ( fci.compress == fpf.file.compress ) &&
+           ( fci.size == fpf.property.size ) &&
+           ( fci.last_modification == fpf.property.last_modification );
+  }
+
+  // ---- ----
+
 
   struct src_file_identifier
   {
@@ -68,8 +78,8 @@ namespace erc_maker {
 
   inline hash256 generate_package_identifier( const erc_package_file_parser & erc_package )
   {
-    //return erc_package.erc_package_absolute_filepath;
-    return erc_package.content.package_name;
+    return erc_package.erc_package_absolute_filepath;
+    //return erc_package.content.package_name;
   }
 
   // ---- ----

@@ -17,6 +17,24 @@ set(EXTERNAL_PICOSHA2_DIR   "picosha2-master")
 ##
 #
 
+macro(LINK_DO_WHOLE_ARCHIVE target)
+  if(MSVC)
+    set(flags "/WHOLEARCHIVE")
+  elseif (APPLE)
+    set(flags "-Wl,-all_load")
+  elseif(CMAKE_COMPILER_IS_GNUCXX)
+    set(flags "-Wl,--whole-archive")
+  else()
+    message(FATAL_ERROR "[LINK_SET_WHOLE_ARCHIVE] Can't know compiler flag")
+  endif()
+  #
+  set_target_properties(${target} PROPERTIES LINK_FLAGS ${flags})
+endmacro()
+
+#
+##
+#
+
 # --- EXTERNAL : ZLIB ---
 set(ZLIB_SOURCE         "${EXTERNAL_SOURCE_DIR}/${EXTERNAL_ZLIB_DIR}")
 set(ZLIB_PREFIX          "external/zlib")
@@ -35,7 +53,7 @@ ExternalProject_Add(
   STEP_TARGETS build
   EXCLUDE_FROM_ALL TRUE
   CMAKE_CACHE_ARGS
-    -DCMAKE_BUILD_TYPE:STRING=Release
+    -DCMAKE_BUILD_TYPE:STRIFNG=Release
     -DCMAKE_INSTALL_PREFIX:STRING=${ZLIB_INSTALL}
 )
 #
@@ -43,7 +61,26 @@ macro(LINK_PRIVATE_LIB_ZLIB PROJECT_TARGET)
   add_dependencies(${PROJECT_TARGET} zlib-build)
   target_include_directories(${PROJECT_TARGET} PRIVATE ${ZLIB_SOURCE})
   target_include_directories(${PROJECT_TARGET} PRIVATE ${ZLIB_BUILD})
-  target_link_libraries     (${PROJECT_TARGET} PRIVATE ${PROJECT_ZLIB_STATIC})
+
+  #set_target_properties     (${PROJECT_TARGET} PROPERTIES LINK_FLAGS "-Wl,--whole-archive")
+  #set_target_properties     (${PROJECT_TARGET} PROPERTIES LINK_FLAGS "--whole-archive")
+  ##set_target_properties     (${PROJECT_TARGET} PROPERTIES STATIC_LIBRARY_FLAGS "--whole-archive")
+  #set_target_properties     (${PROJECT_TARGET} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
+
+  #set_target_properties     (${PROJECT_TARGET} PROPERTIES LINK_FLAGS "-Wl,--whole-archive" ${PROJECT_ZLIB_STATIC} "-Wl,--no-whole-archive")
+  #set_target_properties     (${PROJECT_TARGET} PROPERTIES LINK_LIBRARIES "-Wl,--whole-archive" ${PROJECT_ZLIB_STATIC} "-Wl,--no-whole-archive")
+
+  target_link_libraries     (${PROJECT_TARGET} PRIVATE "-Wl,--whole-archive" ${PROJECT_ZLIB_STATIC} "-Wl,--no-whole-archive" )
+
+  #target_link_libraries     (${PROJECT_TARGET} PRIVATE ${PROJECT_ZLIB_STATIC})
+
+  #target_link_libraries     (${PROJECT_TARGET} "--whole-archive" ${PROJECT_ZLIB_STATIC} "--no-whole-archive" )
+
+  #target_link_libraries     (${PROJECT_TARGET} PUBLIC "-Wl,--export-all-symbols" "-Wl,--whole-archive" ${PROJECT_ZLIB_STATIC} "-Wl,--no-whole-archive" "-Wl,--export-all-symbols")
+  #target_link_libraries     (${PROJECT_TARGET} PUBLIC "-Wl,--whole-archive" ${PROJECT_ZLIB_STATIC} "-Wl,--no-whole-archive" )
+  #target_link_libraries     (${PROJECT_TARGET} PUBLIC "--whole-archive" ${PROJECT_ZLIB_STATIC} "--no-whole-archive" )
+  #target_link_libraries     (${PROJECT_TARGET} PRIVATE   ${PROJECT_ZLIB_STATIC})
+  #target_sources(${PROJECT_TARGET} OBJECT ${PROJECT_ZLIB_STATIC})
 endmacro()
 
 #

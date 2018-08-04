@@ -9,6 +9,7 @@ namespace tests_directories {
 
   ADD_CONSTEXPR_TESTS_DIRECTORIES( relative_files, "relative_files" )
   ADD_CONSTEXPR_TESTS_DIRECTORIES( relative_directory, "relative_directory" )
+  ADD_CONSTEXPR_TESTS_DIRECTORIES( static_lib_file, "static_lib_file" )
 
 }
 

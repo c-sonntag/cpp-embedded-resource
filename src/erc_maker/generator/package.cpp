@@ -58,7 +58,7 @@ namespace erc_maker {
              << "     " << erc_files_identifier.size() << "," << endl
              << "     erc::generated_embedded_files::embedded_files" << endl
              << "   };" << endl
-             << "   static struct initializer {" << endl
+             << "   static const struct initializer {" << endl
              << "     inline initializer() { erc::inventory_package::push(" << names_generator.to_extern_package() << "); }" << endl
              << "   } _mypack;" << endl
              << "  }" << endl

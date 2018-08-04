@@ -80,8 +80,8 @@ namespace erc {
     const unsigned char * const data;
 
     inline embedded_file() = default;
-    inline embedded_file( std::string _path, embedded_data_property _property, const unsigned char * const _data ) :
-      path( _path ), property( std::move( _property ) ), data( std::move( _data ) )
+    inline embedded_file( const  std::string _path, const embedded_data_property _property, const unsigned char * const _data ) :
+      path( std::move( _path ) ), property( std::move( _property ) ), data( std::move( _data ) )
     {}
 
    private:

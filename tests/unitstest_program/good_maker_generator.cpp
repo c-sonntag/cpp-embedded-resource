@@ -3,7 +3,7 @@
 
 #include <erc_maker/src_generator.h>
 
-#include <tests_directories.h>
+#include <unitstest_program/tests_directories.h>
 #include <gtest/gtest.h>
 
 #include <vector>
@@ -23,7 +23,5 @@ TEST( relative_files, good_maker_generator )
   //
   erc_maker::src_generator generator( erc, files );
   generator.generate_into( "./" );
-
-
 
 }
