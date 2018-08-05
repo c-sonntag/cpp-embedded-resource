@@ -1,6 +1,6 @@
 #include <erc/package_manager.h>
 
-#include <erc/inventory_package.h>
+//#include <erc/inventory_package.h>
 
 namespace erc {
 

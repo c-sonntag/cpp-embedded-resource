@@ -14,14 +14,14 @@
 TEST( relative_files, good_maker_generator )
 {
 
+  // //
+  // const erc_maker::erc_package_file_parser erc( tests_directories::relative_files + "composed_ressource.erc" );
   //
-  const erc_maker::erc_package_file_parser erc( tests_directories::relative_files + "composed_ressource.erc" );
-
+  // //
+  // const erc_maker::erc_files_list files( erc );
   //
-  const erc_maker::erc_files_list files( erc );
-
-  //
-  erc_maker::src_generator generator( erc, files );
-  generator.generate_into( "./" );
+  // //
+  // erc_maker::src_generator generator( erc, files );
+  // generator.generate_into( "./" );
 
 }

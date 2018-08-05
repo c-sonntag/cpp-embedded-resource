@@ -114,6 +114,8 @@ namespace erc_maker {
             parse_tag_file( e );
           else if ( tag_name == "directory" )
             parse_tag_directory( e );
+          //else if ( tag_name == "source" )
+          //    parse_tag_source( e );
           else
             erc_xml_error.emplace_back( "unknown tag <" + tag_name + ">" );
 
