@@ -14,7 +14,9 @@ namespace erc_maker {
   { return "pack_" + epp.package_unique_identifier.hex; }
 
   std::string src_internal_names::to_extern_inventory( const erc_inventory & ei )
-  { return "inventory_" + ei.inventory_unique_identifier.hex; }
+  //{ return "inventory_" + ei.inventory_unique_identifier.hex; }
+  //{ return "inventory_" + ei.inventory_name; }
+  { return ei.inventory_name; }
 
   // ---- ----
 

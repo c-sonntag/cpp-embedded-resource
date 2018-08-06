@@ -10,6 +10,7 @@
 #include <vector>
 #include <ostream>
 #include <unordered_map>
+#include <unordered_set>
 //#endif
 
 #include <iostream>
@@ -39,7 +40,7 @@ namespace erc {
 
   #ifdef ERC_INVENTORY_PACKAGE_EXTERN_NAME
   struct inventory_package;
-  namespace generated_inventory { extern const erc::inventory_package ERC_INVENTORY_PACKAGE_EXTERN_NAME;  }
+  namespace generated_resources { extern const erc::inventory_package ERC_INVENTORY_PACKAGE_EXTERN_NAME;  }
   #endif
 
   using inventory_package_map = std::unordered_multimap<std::string, const erc::package *>;
@@ -49,7 +50,7 @@ namespace erc {
    public:
     #ifdef ERC_INVENTORY_PACKAGE_EXTERN_NAME
     static __forceinline constexpr const inventory_package & get() {
-      return ::erc::generated_inventory::ERC_INVENTORY_PACKAGE_EXTERN_NAME;
+      return ::erc::generated_resources::ERC_INVENTORY_PACKAGE_EXTERN_NAME;
     }
     #endif
 

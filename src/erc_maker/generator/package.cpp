@@ -30,11 +30,11 @@ namespace erc_maker {
              << endl;
 
       //
-      output << "#define ERC_FROM_GENERATED_PACKAGE 1" << endl
-             << "#include <erc/inventory_package.h>" << endl
+      output << "#include <erc/package.h>" << endl
              << endl
              << "namespace erc {" << endl
-             << "  namespace " << src_internal_names::global_namespace() << " {" << endl;
+             << "  namespace " << src_internal_names::global_namespace() << " {" << endl
+             << endl;
 
       //
       for ( const erc_file_identifier & file_id : pp.files_identifier )
@@ -49,12 +49,12 @@ namespace erc_maker {
              << endl;
 
       //
-      output << "    extern const erc::package " << src_internal_names::to_extern_package( pp ) << endl
+      output << "    extern const erc::package " << src_internal_names::to_extern_package( pp ) << ";" << endl
              << "    const erc::package " << src_internal_names::to_extern_package( pp ) << endl
              << "    {" << endl
              << "      \"" << pp.package.content.package_name << "\"," << endl
              << "      " << pp.files_identifier.size() << "," << endl
-             << "      erc::generated_embedded_files::embedded_files" << endl
+             << "      embedded_files" << endl
              << "    };" << endl
              << endl
              << "  }" << endl

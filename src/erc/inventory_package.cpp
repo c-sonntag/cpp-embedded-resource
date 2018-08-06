@@ -130,11 +130,11 @@ namespace erc {
     if ( empty() )
     { os << "[erc::inventory_package::debug_print] No Package" << std::endl; return; }
 
-    os << "[erc:: inventory_package::debug_print] Packages : " << std::endl;
+    os << "[erc::inventory_package::debug_print] Packages : " << std::endl;
     for ( const value_type & pack_pair : *this )
     {
       const erc::package & package( *pack_pair.second );
-      os << "  Package name(" << package.name << ") : " << std::endl;
+      os << "  Package pair_name(" << pack_pair.first << ") name(" << package.name << ") : " << std::endl;
       const erc::embedded_file * const * const embedded_files( package.embedded_files );
       for ( unsigned int i( 0 ); i < package.size; ++i )
       {

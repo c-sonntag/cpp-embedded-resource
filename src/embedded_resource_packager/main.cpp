@@ -33,7 +33,7 @@ struct ParseCommand
   bool get_for_cmake_target = false;
 
  private:
-  enum struct Option { None = 0, InputPackage, WorkDir };
+  enum struct Option { None = 0, InventoryName, InputPackage, WorkDir };
   enum struct MultiArgs { None = 0, InputPackages };
 
  public:
@@ -51,7 +51,9 @@ struct ParseCommand
       const std::string & argument = *it;
       //
       if ( option != Option::None ) {
-        if ( option == Option::InputPackage )
+        if ( option == Option::InventoryName )
+          parsed.inventory_name = argument;
+        else if ( option == Option::InputPackage )
           parsed.input_packages.emplace_back( argument );
         else if ( option == Option::WorkDir )
           parsed.work_dir = argument;
@@ -62,6 +64,8 @@ struct ParseCommand
       else {
         if ( ( argument == "--help" ) || ( argument == "-h" ) )
         {help( ); exit( EXIT_SUCCESS );}
+        else if ( argument == "--inventory-name" )
+          option = Option::InventoryName;
         else if ( argument == "--input-package" )
           option = Option::InputPackage;
         else if ( argument == "--input-packages" )
@@ -81,8 +85,8 @@ struct ParseCommand
       throw std::runtime_error( "One option need an argument" );
 
     //
-    if ( ( parsed.input_packages.empty() ) || parsed.work_dir.empty() )
-      throw std::runtime_error( "Need ('--input-package' | '--input-packages') and '--work-dir' params" );
+    if ( parsed.input_packages.empty() || parsed.inventory_name.empty() || parsed.work_dir.empty() )
+      throw std::runtime_error( "Need '--inventory-name', ('--input-package' or '--input-packages') and '--work-dir' params" );
   }
 };
 

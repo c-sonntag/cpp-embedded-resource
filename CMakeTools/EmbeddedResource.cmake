@@ -61,6 +61,11 @@ function(ERC_ADD_RESOURCES target_name )
 
   #
   ##
+  string(MD5 erc_inventory    ${target_name})
+  set(erc_inventory           "inventory_${erc_inventory}")
+
+  #
+  ##
   set(work_absolute_directory "${CMAKE_CURRENT_BINARY_DIR}/embedded_resource_generation")
   file(MAKE_DIRECTORY ${work_absolute_directory})
 
@@ -71,7 +76,8 @@ function(ERC_ADD_RESOURCES target_name )
   set(erc_cmake_target_information_result_error_msg)
   execute_process(
     COMMAND           ${ERC_BINARY_PACKAGER}
-    ARGS              "--input-package" ${input_erc_xml_package_filepath}
+    ARGS              "--inventory-name" ${erc_inventory}
+                      "--input-package" ${input_erc_xml_package_filepath}
                       "--work-dir" ${work_absolute_directory}
                       "--get-for-cmake-target"
     OUTPUT_VARIABLE   erc_cmake_target_information
@@ -106,32 +112,26 @@ function(ERC_ADD_RESOURCES target_name )
   message(STATUS "${erc_cmake_target_information}")
   message(STATUS "--")
 
-  return()
-
   #
   ##
   string( REGEX MATCH
-    "Package:([^\n]+)\nInputFiles:([^\n]+)\nGeneratedFiles:([^\n]+)\nNotFoundModelFiles:([^\n]*)\nNotFoundModelDirs:([^\n]*)\n"
+    "InputFiles:([^\n]+)\nGeneratedFiles:([^\n]+)\nNotFoundModelFiles:([^\n]*)\nNotFoundModelDirs:([^\n]*)\n"
     erc_cmake_target_information_parsed
     "${erc_cmake_target_information}"
   )
   #
   set(erc_cmake_target_information_parsed_nb ${CMAKE_MATCH_COUNT})
   #
-  set(erc_package             ${CMAKE_MATCH_1})
-  set(input_files_path        ${CMAKE_MATCH_2})
-  set(generated_files_path    ${CMAKE_MATCH_3})
-  set(erc_xml_not_found_files ${CMAKE_MATCH_4})
-  set(erc_xml_not_found_dirs  ${CMAKE_MATCH_5})
+  #set(erc_package            ${CMAKE_MATCH_1})
+  set(input_files_path        ${CMAKE_MATCH_1})
+  set(generated_files_path    ${CMAKE_MATCH_2})
+  set(erc_xml_not_found_files ${CMAKE_MATCH_3})
+  set(erc_xml_not_found_dirs  ${CMAKE_MATCH_4})
 
   #
-  string(SHA1 erc_target ${erc_package})
-  set(erc_target_generate      "erc_pack_${erc_target}_generation")
-  set(erc_target_lib           "erc_pack_${erc_target}")
-
-  # TODO
-  set(erc_target_seed          "erc_pack_${erc_target}")
-
+  #string(SHA1 erc_target ${erc_package})
+  set(erc_target_generate      "erc_${erc_inventory}_generation")
+  set(erc_target_lib           "erc_${erc_inventory}")
 
 
   #
@@ -171,28 +171,36 @@ function(ERC_ADD_RESOURCES target_name )
    add_custom_target(
      ${erc_target_generate} ALL
      COMMAND ${ERC_BINARY_PACKAGER}
-     ARGS "--input-package" ${input_erc_xml_package_filepath}
+     ARGS "--inventory-name" ${erc_inventory}
+          "--input-packages" ${input_erc_xml_package_filepath}
           "--work-dir" ${work_absolute_directory}
+
      BYPRODUCTS ${generated_files_path}
      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
      COMMENT "Executing EmbeddedResource for file : ${input_erc_xml_package_filepath}"
      VERBATIM
    )
 
-  add_library(${erc_target_lib} STATIC ${generated_files_path})
-  add_dependencies(${erc_target_lib} ${erc_target_generate})
+  #add_library(${erc_target_lib} OBJECT ${generated_files_path})
+  #target_compile_definitions(${erc_target_lib} PRIVATE "-DERC_INVENTORY_PACKAGE_EXTERN_NAME=${erc_inventory}")
+  #add_dependencies(${erc_target_lib} ${erc_target_generate})
 
   endif()
 
 
-  #
+  #C
   ##
-  #target_sources(${target_name} PRIVATE ${generated_files_path})
-  message(STATUS "Link ${erc_target_lib} (${erc_package}) to ${target_name}")
+  target_sources(${target_name} PRIVATE ${generated_files_path})
 
-  target_link_libraries(${target_name} PRIVATE ${erc_target_lib})
-  target_include_directories(${target_name} PRIVATE ${work_absolute_directory})
-  add_dependencies(${target_name} ${erc_target_lib})
+  #message(STATUS "Link ${erc_target_lib} (${erc_package}) to ${target_name}")
+  #target_link_libraries(${target_name} PRIVATE ${erc_target_lib})
+  #target_include_directories(${target_name} PRIVATE ${work_absolute_directory})
+  #add_dependencies(${target_name} ${erc_target_lib})
+
+  target_compile_definitions(${target_name} PRIVATE "-DERC_INVENTORY_PACKAGE_EXTERN_NAME=${erc_inventory}")
+
+  #debug :
+  add_dependencies(${target_name} ${PROJECT_EMBEDDEDRESOURCE_PROGRAM})
 
   #
   ##

@@ -22,18 +22,17 @@ namespace erc_maker {
   {
    public:
     const input_packages_filepaths_t & input_packages_filepaths;
-    const std::list<erc_prepared_package> prepared_packages;
+    const std::string inventory_name;
 
    public:
-    const hash256 inventory_unique_identifier;
+    const std::list<erc_prepared_package> prepared_packages;
+    //const hash256 inventory_unique_identifier;
 
    public:
     custom_unordered_set<std::string, const erc_file_identifier *, erc_file_identifier_p_getter> files_identifier_p;
 
    public:
-    erc_inventory( const input_packages_filepaths_t & _input_packages_filepaths );
-
-
+    erc_inventory( const input_packages_filepaths_t & _input_packages_filepaths, const std::string _inventory_name );
   };
 
 }

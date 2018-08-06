@@ -61,7 +61,7 @@ file(GLOB_RECURSE tests_static_files "tests_static/*.h" "tests_static/*.cpp")
 add_library("tests_static" STATIC ${tests_static_files})
 #target_compile_definitions("tests_static" PRIVATE "-DERC_INVENTORY_PACKAGE_EXTERN_NAME=inventory_aaaa")
 #add_library("tests_static" STATIC "tests_static/get_static_lib.cpp")
-#erc_add_resources("tests_static" "tests_static/source_info.erc")
+erc_add_resources("tests_static" "tests_static/source_info.erc")
 #erc_add_resources("tests_static" "relative_files/composed_ressource.erc")
 
 # --- BUILD TESTS PROGRAM ---

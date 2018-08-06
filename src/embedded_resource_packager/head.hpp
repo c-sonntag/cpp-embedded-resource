@@ -10,6 +10,7 @@ struct ParsedCommand
 {
   std::vector<std::string> input_packages;
   std::string work_dir;
+  std::string inventory_name;
 };
 
 struct embedded_resource_packager
@@ -21,7 +22,7 @@ struct embedded_resource_packager
 
   embedded_resource_packager( const ParsedCommand & _parsed ) :
     parsed( std::move( _parsed ) ),
-    erc_inventory( parsed.input_packages ),
+    erc_inventory( parsed.input_packages, parsed.inventory_name ),
     src_generator( erc_inventory )
   {}
 

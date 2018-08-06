@@ -13,14 +13,18 @@
 
 TEST( relative_files, good_package )
 {
-
-  //
   const erc::inventory_package & inventory( erc::inventory_package::get() );
-  const erc::inventory_package::inventory_package_range package_ranges( inventory.get_range( "composed_ressource" ) );
-  ASSERT_NE( package_ranges.first, package_ranges.second );
+
+  std::cout << "---- debug inventory ---- " << std::endl;
+  inventory.debug_print( std::cout );
+  std::cout << "---- ---- " << std::endl;
 
   //
-  const erc::package & package( *package_ranges.first->second );
+  const erc::package * const package_p( inventory.get_first_package( "composed_ressource" ) );
+  ASSERT_TRUE( package_p );
+
+  //
+  const erc::package & package( *package_p );
 
   //
   ASSERT_EQ( package.name, "composed_ressource" );

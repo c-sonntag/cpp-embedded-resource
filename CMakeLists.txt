@@ -47,7 +47,7 @@ set(EMBEDDEDRESOURCE_INSTALL_ERC_MAKER OFF CACHE BOOL "Install erc_maker of Embe
 # --- BUILD OPTIONS  ---
 # set(EMBEDDEDRESOURCE_BUILD_TOOLS ON CACHE BOOL "Build tools for EmbeddedResource library")
 # set(EMBEDDEDRESOURCE_BUILD_EXAMPLES ON CACHE BOOL "Build examples for EmbeddedResource library")
-set(EMBEDDEDRESOURCE_BUILD_TESTS OFF CACHE BOOL "Build tests for EmbeddedResource library (need second cmake/make compile time)")
+set(EMBEDDEDRESOURCE_BUILD_TESTS ON CACHE BOOL "Build tests for EmbeddedResource library (need second cmake/make compile time)")
 
 #
 ##

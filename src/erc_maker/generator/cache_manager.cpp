@@ -17,6 +17,10 @@ namespace erc_maker {
 
   static const std::string current_version_header( "CacheEmbeddedResourceLib v1.0 - " + std::string( __DATE__ ) + " - " + std::string( __TIME__ ) + " \n" );
 
+  /** @todo SET cache for an folder
+   *        need read/write blocking acces
+   */
+
   // ---- ----
 
   template<typename T>
