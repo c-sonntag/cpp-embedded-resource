@@ -55,7 +55,6 @@ include("EmbeddedResource")
 #
 
 
-
 # --- BUILD TESTS STATIC LIB  ---
 file(GLOB_RECURSE tests_static_files "tests_static/*.h" "tests_static/*.cpp")
 add_library("tests_static" STATIC ${tests_static_files})

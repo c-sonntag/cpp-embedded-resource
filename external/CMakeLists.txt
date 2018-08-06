@@ -7,6 +7,7 @@
 include (ExternalProject)
 set(EXTERNAL_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external")
 
+
 # --- EXTERNAL SETS ---
 set(EXTERNAL_ZLIB_DIR       "zlib-master")
 set(EXTERNAL_TINYXML2_DIR   "tinyxml2-master-6.2.0")
@@ -36,11 +37,14 @@ set(EXTERNAL_PICOSHA2_DIR   "picosha2-master")
 #
 
 # --- EXTERNAL : ZLIB ---
-set(ZLIB_SOURCE         "${EXTERNAL_SOURCE_DIR}/${EXTERNAL_ZLIB_DIR}")
-set(ZLIB_PREFIX          "external/zlib")
-set(ZLIB_BUILD           "${CMAKE_CURRENT_BINARY_DIR}/${ZLIB_PREFIX}/build")
-set(ZLIB_INSTALL         "${CMAKE_CURRENT_BINARY_DIR}/${ZLIB_PREFIX}/install")
-set(PROJECT_ZLIB_STATIC "${ZLIB_BUILD}/libzlibstatic.a")
+set(ZLIB_SOURCE             "${EXTERNAL_SOURCE_DIR}/${EXTERNAL_ZLIB_DIR}")
+set(ZLIB_PREFIX              "external/zlib")
+set(ZLIB_BUILD               "${CMAKE_CURRENT_BINARY_DIR}/${ZLIB_PREFIX}/build")
+set(ZLIB_INSTALL             "${CMAKE_CURRENT_BINARY_DIR}/${ZLIB_PREFIX}/install")
+#set(ZLIB_INSTALL            "${CMAKE_INSTALL_PREFIX}/internal/zlib")
+set(PROJECT_ZLIB_STATIC     "${ZLIB_BUILD}/libzlibstatic.a")
+set(PROJECT_ZLIB_SHARED     "${ZLIB_BUILD}/libzlib.dll.a")    # todo for other system
+set(PROJECT_ZLIB_SHARED_DEP "${ZLIB_BUILD}/libzlib.dll")
 #
 ExternalProject_Add(
   zlib
@@ -50,39 +54,27 @@ ExternalProject_Add(
   INSTALL_DIR ${ZLIB_INSTALL}
   BUILD_IN_SOURCE OFF
   BUILD_BYPRODUCTS ${PROJECT_ZLIB_STATIC}
-  STEP_TARGETS build
+  #STEP_TARGETS build
   EXCLUDE_FROM_ALL TRUE
   CMAKE_CACHE_ARGS
     -DCMAKE_BUILD_TYPE:STRIFNG=Release
     -DCMAKE_INSTALL_PREFIX:STRING=${ZLIB_INSTALL}
 )
 #
+##set(ZLIB_SOURCES  "${EXTERNAL_SOURCE_DIR}/${EXTERNAL_ZLIB_DIR}")
+##set(ZLIB_SOURCES_CONTRIB  "${ZLIB_SOURCE}/contrib/iostream3/zfstream.cc")
+##set(ZLIB_INCLUDES_CONTRIB "${ZLIB_SOURCE}/contrib/iostream3")
+#
 macro(LINK_PRIVATE_LIB_ZLIB PROJECT_TARGET)
-  add_dependencies(${PROJECT_TARGET} zlib-build)
+  #add_dependencies(${PROJECT_TARGET} zlib-build)
+  add_dependencies(${PROJECT_TARGET} zlib)
   target_include_directories(${PROJECT_TARGET} PRIVATE ${ZLIB_SOURCE})
   target_include_directories(${PROJECT_TARGET} PRIVATE ${ZLIB_BUILD})
-
-  #set_target_properties     (${PROJECT_TARGET} PROPERTIES LINK_FLAGS "-Wl,--whole-archive")
-  #set_target_properties     (${PROJECT_TARGET} PROPERTIES LINK_FLAGS "--whole-archive")
-  ##set_target_properties     (${PROJECT_TARGET} PROPERTIES STATIC_LIBRARY_FLAGS "--whole-archive")
-  #set_target_properties     (${PROJECT_TARGET} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
-
-  #set_target_properties     (${PROJECT_TARGET} PROPERTIES LINK_FLAGS "-Wl,--whole-archive" ${PROJECT_ZLIB_STATIC} "-Wl,--no-whole-archive")
-  #set_target_properties     (${PROJECT_TARGET} PROPERTIES LINK_LIBRARIES "-Wl,--whole-archive" ${PROJECT_ZLIB_STATIC} "-Wl,--no-whole-archive")
-
-  #target_link_libraries     (${PROJECT_TARGET} PRIVATE "-Wl,--whole-archive" ${PROJECT_ZLIB_STATIC} "-Wl,--no-whole-archive" )
-
   target_link_libraries     (${PROJECT_TARGET} PRIVATE ${PROJECT_ZLIB_STATIC})
-
-  #target_link_libraries     (${PROJECT_TARGET} PRIVATE ${PROJECT_ZLIB_STATIC})
-
-  #target_link_libraries     (${PROJECT_TARGET} "--whole-archive" ${PROJECT_ZLIB_STATIC} "--no-whole-archive" )
-
-  #target_link_libraries     (${PROJECT_TARGET} PUBLIC "-Wl,--export-all-symbols" "-Wl,--whole-archive" ${PROJECT_ZLIB_STATIC} "-Wl,--no-whole-archive" "-Wl,--export-all-symbols")
-  #target_link_libraries     (${PROJECT_TARGET} PUBLIC "-Wl,--whole-archive" ${PROJECT_ZLIB_STATIC} "-Wl,--no-whole-archive" )
-  #target_link_libraries     (${PROJECT_TARGET} PUBLIC "--whole-archive" ${PROJECT_ZLIB_STATIC} "--no-whole-archive" )
-  #target_link_libraries     (${PROJECT_TARGET} PRIVATE   ${PROJECT_ZLIB_STATIC})
-  #target_sources(${PROJECT_TARGET} OBJECT ${PROJECT_ZLIB_STATIC})
+endmacro()
+#
+macro(INSTALL_LIB_ZLIB_INTERNAL_DEPENDENCIES)
+  install(DIRECTORY "${ZLIB_INSTALL}/." DESTINATION "internal/zlib")
 endmacro()
 
 #
@@ -119,6 +111,7 @@ macro(LINK_PRIVATE_LIB_TINYXML2 PROJECT_TARGET)
   target_include_directories(${PROJECT_TARGET} PRIVATE ${TINYXML2_SOURCE})
   target_link_libraries     (${PROJECT_TARGET} PRIVATE ${PROJECT_TINYXML2_STATIC})
 endmacro()
+
 
 #
 ##

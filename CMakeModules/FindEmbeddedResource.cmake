@@ -26,14 +26,13 @@ set(ERC_INCLUDE_DIR ${ERC_INCLUDE_DIRS})
 ##
 set(ERC_LIBRARIES_NAME "liberc")
 
-
 #
 ##
 find_library(
   ERC_LIBRARIES
   NAMES
-    # "${ERC_LIBRARIES_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}"
-    "${ERC_LIBRARIES_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+    "${ERC_LIBRARIES_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}"
+    #"${ERC_LIBRARIES_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
   PATHS ${ERC_POSSIBLE_PATH}
   PATH_SUFFIXES "lib/"
 )
@@ -56,6 +55,41 @@ find_path(
   PATH_SUFFIXES "CMakeTools/"
 )
 
+
+#
+##
+##set(ZLIB_STATIC ON)
+##set(ZLIB_SHARED OFF)
+##find_package(ZLIB)
+##if(NOT ZLIB_FOUND)
+##  find_library(
+##    ERC_LIBRARIES_ZLIB_INTERNAL
+##    NAMES
+##      "libzlibstatic${CMAKE_STATIC_LIBRARY_SUFFIX}"
+##    PATHS ${ERC_POSSIBLE_PATH}
+##    PATH_SUFFIXES "external/zlib/lib/"
+##  )
+##  if(NOT ERC_LIBRARIES_ZLIB_INTERNAL)
+##    message(FATAL_ERROR "Can't found static zlib")
+##  endif()
+##  set(ERC_LIBRARIES ${ERC_LIBRARIES} ${ERC_LIBRARIES_ZLIB_INTERNAL})
+##else()
+##  set(ERC_LIBRARIES ${ERC_LIBRARIES} ${ZLIB_LIBRARIES})
+##endif()
+
+#
+##
+find_library(
+  ERC_LIBRARIES_ZLIB_INTERNAL
+  NAMES
+    "libzlibstatic${CMAKE_STATIC_LIBRARY_SUFFIX}"
+  PATHS ${ERC_POSSIBLE_PATH}
+  PATH_SUFFIXES "internal/zlib/lib/"
+)
+if(NOT ERC_LIBRARIES_ZLIB_INTERNAL)
+  message(FATAL_ERROR "Can't found static zlib for 'internal/zlib/lib/' in ERC installation directory")
+endif()
+set(ERC_LIBRARIES ${ERC_LIBRARIES} ${ERC_LIBRARIES_ZLIB_INTERNAL})
 
 #
 ##

@@ -19,7 +19,7 @@ function(ERC_ADD_RESOURCES target_name )
   cmake_parse_arguments(ARGUMENTS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
   #
   set(inputs_ercs_xmls_packages_filepath ${ARGUMENTS_UNPARSED_ARGUMENTS})
-  set(ide_add_scanned_files              ${ARGUMENTS_ADD_INTO_IDE})
+  set(ide_add_input_files_path           ${ARGUMENTS_ADD_INTO_IDE})
 
   #
   ##
@@ -62,8 +62,16 @@ function(ERC_ADD_RESOURCES target_name )
   if(NOT EXISTS ${ERC_BINARY_PACKAGER})
    set(fatal_error_msg "${fatal_error_msg}  Can't find executable embedded_resource_packager on variable ERC_BINARY_PACKAGER : ${ERC_BINARY_PACKAGER}\n")
   endif()
-  if(NOT EXISTS ${input_erc_xml_package_filepath})
-    set(fatal_error_msg "${fatal_error_msg}  Can't find <input_erc_xml_package_filepath> : ${input_erc_xml_package_filepath}\n")
+  #
+  set(fatal_error_msg_not_founds_inputs_ercs)
+  foreach(input_erc_xml_package_filepath IN ITEMS ${inputs_ercs_xmls_packages_filepath})
+    set(input_erc_xml_package_curent_source_filepath "${CMAKE_CURRENT_SOURCE_DIR}/${input_erc_xml_package_filepath}")
+    if(NOT EXISTS ${input_erc_xml_package_curent_source_filepath})
+      set(fatal_error_msg_not_founds_inputs_ercs ${fatal_error_msg_not_founds_inputs_ercs} ${input_erc_xml_package_filepath})
+    endif()
+  endforeach()
+  if(fatal_error_msg_not_founds_inputs_ercs)
+    set(fatal_error_msg "${fatal_error_msg}  Can't find <inputs_ercs_xmls_packages_filepath> : ${fatal_error_msg_not_founds_inputs_ercs}\n")
   endif()
   #
   if(${fatal_error_msg})
@@ -178,26 +186,27 @@ function(ERC_ADD_RESOURCES target_name )
     VERBATIM
   )
 
-message(STATUS "erc_target_generate_args ${erc_target_generate_args}")
+  ## debug : message(STATUS "erc_target_generate_args ${erc_target_generate_args}")
 
   #
   ##
-  target_sources(${target_name} PRIVATE ${generated_files_path})
   target_compile_definitions(${target_name} PRIVATE "-DERC_INVENTORY_PACKAGE_EXTERN_NAME=${erc_inventory}")
+  target_sources(${target_name} PRIVATE ${generated_files_path})
+  add_dependencies(${target_name} ${erc_target_generate})
 
   #debug :
-  add_dependencies(${target_name} ${PROJECT_EMBEDDEDRESOURCE_PROGRAM})
+  ##add_dependencies(${target_name} ${PROJECT_EMBEDDEDRESOURCE_PROGRAM})
 
   #
   ##
-  set_source_files_properties(${input_erc_xml_package_filepath} PROPERTIES HEADER_FILE_ONLY ON)
-  target_sources(${target_name} PRIVATE ${input_erc_xml_package_filepath})
+  set_source_files_properties(${inputs_ercs_xmls_packages_filepath} PROPERTIES HEADER_FILE_ONLY ON)
+  target_sources(${target_name} PRIVATE ${inputs_ercs_xmls_packages_filepath})
 
   #
   ##
-  if(ide_add_scanned_files)
-    set_source_files_properties(${scanned_files_path} PROPERTIES HEADER_FILE_ONLY ON)
-    target_sources(${target_name} PRIVATE ${scanned_files_path})
+  if(ide_add_input_files_path)
+    set_source_files_properties(${input_files_path} PROPERTIES HEADER_FILE_ONLY ON)
+    target_sources(${target_name} PRIVATE ${input_files_path})
   endif()
 
 endfunction()
