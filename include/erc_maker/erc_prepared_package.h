@@ -25,7 +25,7 @@ namespace erc_maker {
 
    private:
     inline hash256 make_hash_for( const erc_maker::file & file ) const
-    { return hash256( package_unique_identifier.hex + ":" + file.path ); }
+    { return hash256( package_unique_identifier.hex + ":" + file.hash().hex ); }
 
    public:
     std::vector<erc_file_identifier> files_identifier;

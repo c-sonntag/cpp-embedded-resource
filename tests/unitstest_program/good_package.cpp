@@ -15,9 +15,9 @@ TEST( relative_files, good_package )
 {
   const erc::inventory_package & inventory( erc::inventory_package::get() );
 
-  std::cout << "---- debug inventory ---- " << std::endl;
-  inventory.debug_print( std::cout );
-  std::cout << "---- ---- " << std::endl;
+  //  std::cout << "---- debug inventory ---- " << std::endl;
+  //  inventory.debug_print( std::cout );
+  //  std::cout << "---- ---- " << std::endl;
 
   //
   const erc::package * const package_p( inventory.get_first_package( "composed_ressource" ) );

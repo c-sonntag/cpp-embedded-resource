@@ -37,8 +37,20 @@ namespace erc_maker {
   // ---- ----
 
   src_generator::src_generator( const erc_inventory & _inventory ) :
-    inventory( std::move( _inventory ) )
+    inventory( std::move( _inventory ) ),
+    inventory_cache( inventory )
   { }
+
+  // ---- ----
+
+  void src_generator::open_caches_if_exists_into( const std::string & erc_working_directorypath )
+  {
+    inventory_cache.open_if_exist_into( erc_working_directorypath );
+  }
+  void src_generator::save_caches_into( const std::string & erc_working_directorypath ) const
+  {
+    inventory_cache.save_into( erc_working_directorypath );
+  }
 
   // ---- ----
 
@@ -72,7 +84,7 @@ namespace erc_maker {
 
         //
         //const bool need_generate( !cache_have_same_file( file_id ) || not_exist );
-        const bool need_generate( !cache_have_same_file( file_id ) );
+        const bool need_generate( !inventory_cache.have_same_file( file_id ) );
         rapport.insert( erc_embedded_file_str, generic_string_path( erc_embedded_filepath ), need_generate );
 
         //
@@ -115,18 +127,6 @@ namespace erc_maker {
 
   }
 
-  // ---- ----
-
-  inline bool src_generator::cache_have_same_file( const erc_file_identifier & file_id ) const
-  {
-    //
-    const auto find_it( supplement_cache.find( file_id.file_unique_identifier.hex ) );
-    if ( find_it == supplement_cache.end() )
-      return false;
-
-    //
-    return find_it->second == file_id.valid_input_file;
-  }
 
 }
 

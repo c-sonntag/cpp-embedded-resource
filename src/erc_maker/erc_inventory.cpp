@@ -11,14 +11,9 @@ namespace erc_maker {
     prepared_packages( input_packages_filepaths.cbegin(), input_packages_filepaths.cend() )
     //inventory_unique_identifier( inventory_name )
   {
-      std::cout << "push:";
     for ( const erc_prepared_package & pp : prepared_packages )
-        for ( const erc_file_identifier & file_id : pp.files_identifier ){
-            files_identifier_p.emplace( &file_id );
-            std::cout << file_id.valid_input_file.path << ";";
-        }
-
-    std::cout << "\n";
+      for ( const erc_file_identifier & file_id : pp.files_identifier )
+        files_identifier_p.emplace( &file_id );
   }
 
 

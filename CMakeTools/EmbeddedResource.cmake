@@ -128,7 +128,7 @@ function(ERC_ADD_RESOURCES target_name )
   #set(erc_target "erc_package_${input_erc_xml_package_filepath_realpath_hash}")
 
 
-  message(STATUS "-- input_erc_xml_package_filepath : ${input_erc_xml_package_filepath}")
+  message(STATUS "-- inputs_ercs_xmls_packages_filepath : ${inputs_ercs_xmls_packages_filepath}")
   message(STATUS "-- target_name : ${target_name}")
   message(STATUS "-- erc_inventory : ${erc_inventory}")
   message(STATUS "-- erc_cmake_target_information for target  -- ")

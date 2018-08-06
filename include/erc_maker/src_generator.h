@@ -5,34 +5,14 @@
 #include <erc_maker/erc_file_identifier.h>
 #include <erc_maker/hash.h>
 
+#include <erc_maker/cache_inventory_manager.h>
+
 #include <string>
 #include <vector>
 #include <unordered_map>
 
 namespace erc_maker {
 
-  struct file_cache_information
-  {
-    bool compress = false;
-    uint size = 0;
-    time_t last_modification = 0;
-
-    inline file_cache_information() = default;
-    inline file_cache_information( const erc_maker::file_property_found & fpf ) :
-      compress( fpf.file.compress ),
-      size( fpf.property.size ),
-      last_modification( fpf.property.last_modification )
-    {}
-  };
-
-  inline bool operator ==( const file_cache_information & fci, const file_property_found & fpf )
-  {
-    return ( fci.compress == fpf.file.compress ) &&
-           ( fci.size == fpf.property.size ) &&
-           ( fci.last_modification == fpf.property.last_modification );
-  }
-
-  // ---- ----
 
   struct src_generator
   {
@@ -62,6 +42,10 @@ namespace erc_maker {
    private:
     generation_rapport rapport;
 
+  public:
+    void open_caches_if_exists_into( const std::string & erc_working_directorypath );
+    void save_caches_into( const std::string & erc_working_directorypath ) const;
+
    private:
     void generate_file( const erc_file_identifier & file_id, const std::string & output_src_file );
     void generate_package( const erc_prepared_package & pp, const std::string & output_src_file );
@@ -72,14 +56,9 @@ namespace erc_maker {
     const generation_rapport & get_rapport() const {return rapport;}
 
    private:
-    std::unordered_map<hash_hex_string, file_cache_information> supplement_cache;
+    /**< @todo an file_cache_manager cound be apart */
+    cache_inventory_manager inventory_cache;
 
-   public:
-    void open_cache_if_exist_into( const std::string & erc_working_directorypath );
-    void save_cache_into( const std::string & erc_working_directorypath ) const;
-
-   private:
-    inline bool cache_have_same_file( const erc_file_identifier & file_id ) const;
 
   };
 

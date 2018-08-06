@@ -2,16 +2,17 @@
 
 #include <erc/inventory_package.h>
 
-static const erc::package_id package_erc_id( "source_info" );
-static const erc::file_id source_info_erc_id( package_erc_id.from( "source_info.txt" ) );
+#include <iostream>
 
 const erc::package * get_static_lib()
 {
-  return erc::inventory_package::get().get_first_package( package_erc_id );
+  erc::inventory_package::get().debug_print( std::cout );
+
+  return erc::inventory_package::get().get_first_package( "composed_ressource" );
 }
 
 const erc::embedded_file * get_static_lib_source_info_file()
 {
-  return erc::inventory_package::get().get_first_embedded_file( source_info_erc_id );
+  return erc::inventory_package::get().get_first_embedded_file( "source_info", "source_info.txt" );
 }
 

@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+#include <erc_maker/hash.h>
+
 namespace erc_maker {
 
   struct basic_link
@@ -15,6 +17,9 @@ namespace erc_maker {
     inline basic_link( const std::string _path, bool _compress = false ) :
       compress( _compress ), path( std::move( _path ) )
     {}
+
+    inline virtual hash256 hash() const
+    { return path + ":" + ( compress ? "1" : "0" ); }
   };
 
   inline bool operator==( const basic_link & lhs, const basic_link & rhs )
@@ -42,6 +47,9 @@ namespace erc_maker {
     using basic_link::basic_link;
     inline directory() = default;
     inline directory( const basic_link & bl ) : basic_link( bl ) {}
+
+    inline virtual hash256 hash() const
+    { return basic_link::hash().hex + ":" + regex_patern + ":" + regex_extension; }
   };
 
   inline bool operator==( const directory & lhs, const directory & rhs )

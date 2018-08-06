@@ -1,7 +1,7 @@
-#include <erc_maker/src_generator.h>
+#include <erc_maker/cache_inventory_manager.h>
 
-#include <erc_maker/src_internal_names.h>
 #include <erc_maker/file_system.h>
+#include <erc_maker/src_internal_names.h>
 
 #include <istream>
 #include <ostream>
@@ -10,12 +10,25 @@
 #include <regex>
 #include <cstring>
 
-//#include <iostream>
-
 namespace erc_maker {
 
 
   static const std::string current_version_header( "CacheEmbeddedResourceLib v1.0 - " + std::string( __DATE__ ) + " - " + std::string( __TIME__ ) + " \n" );
+
+  // ---- ---- ---- ----
+
+  bool cache_inventory_manager::have_same_file( const erc_file_identifier & file_id ) const
+  {
+    //
+    const auto find_it( supplement_cache.find( file_id.file_unique_identifier.hex ) );
+    if ( find_it == supplement_cache.end() )
+      return false;
+
+    //
+    return find_it->second == file_id.valid_input_file;
+  }
+
+  // ---- ---- ---- ----
 
   /** @todo SET cache for an folder
    *        need read/write blocking acces
@@ -31,7 +44,7 @@ namespace erc_maker {
     return in;
   }
 
-  void src_generator::open_cache_if_exist_into( const std::string & erc_working_directorypath )
+  void cache_inventory_manager::open_if_exist_into( const std::string & erc_working_directorypath )
   {
     //
     supplement_cache.clear();
@@ -90,7 +103,7 @@ namespace erc_maker {
     catch ( const std::exception & e )
     {
       supplement_cache.clear();
-      throw std::runtime_error( "[embedded_rc::erc_maker::src_generator::open_cache_file] " + std::string( e.what() ) );
+      throw std::runtime_error( "[embedded_rc::erc_maker::cache_inventory_manager::open_cache_file] " + std::string( e.what() ) );
     }
   }
 
@@ -111,7 +124,7 @@ namespace erc_maker {
   //{ };
 
 
-  void src_generator::save_cache_into( const std::string & erc_working_directorypath ) const
+  void cache_inventory_manager::save_into( const std::string & erc_working_directorypath ) const
   {
 
     //
@@ -152,7 +165,7 @@ namespace erc_maker {
       }
     }
     catch ( const std::exception & e )
-    { throw std::runtime_error( "[embedded_rc::erc_maker::src_generator::save_cache_file] " + std::string( e.what() ) ); }
+    { throw std::runtime_error( "[embedded_rc::erc_maker::cache_inventory_manager::save_cache_file] " + std::string( e.what() ) ); }
 
   }
 
