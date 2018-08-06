@@ -117,7 +117,11 @@ namespace erc_maker {
       const fs::path erc_inventory_filepath( output_directorypath / fs::path( erc_inventory_file_str ) );
 
       //
-      const bool need_generate( !fs::exists( erc_inventory_filepath ) || have_new_package );
+      const bool need_generate(
+        !fs::exists( erc_inventory_filepath ) ||
+        have_new_package ||
+        !inventory_cache.same_inventory()
+      );
       rapport.insert( erc_inventory_file_str, generic_string_path( erc_inventory_filepath ), need_generate );
 
       //

@@ -59,18 +59,15 @@ include("EmbeddedResource")
 # --- BUILD TESTS STATIC LIB  ---
 file(GLOB_RECURSE tests_static_files "tests_static/*.h" "tests_static/*.cpp")
 add_library("tests_static" STATIC ${tests_static_files})
-#target_compile_definitions("tests_static" PRIVATE "-DERC_INVENTORY_PACKAGE_EXTERN_NAME=inventory_aaaa")
-#add_library("tests_static" STATIC "tests_static/get_static_lib.cpp")
 erc_add_resources("tests_static"
   "tests_static/source_info.erc"
   "relative_files/composed_ressource.erc"
 )
-#erc_add_resources("tests_static" "relative_files/composed_ressource.erc")
+
 
 # --- BUILD TESTS PROGRAM ---
 file(GLOB_RECURSE unitstest_program_files "unitstest_program/*.h" "unitstest_program/*.cpp")
 add_executable("unitstest_program" ${unitstest_program_files})
-#target_compile_definitions("unitstest_program" PRIVATE "-DERC_INVENTORY_PACKAGE_EXTERN_NAME=inventory_bbbb")
 LINK_PRIVATE_LIB_GTEST("unitstest_program")
 #
 target_link_libraries("unitstest_program" PRIVATE "tests_static")
@@ -78,5 +75,5 @@ target_link_libraries("unitstest_program" PRIVATE "tests_static")
 erc_add_resources("unitstest_program"
   "relative_files/composed_ressource.erc"
   "unitstest_program/source_info.erc"
- )
+)
 

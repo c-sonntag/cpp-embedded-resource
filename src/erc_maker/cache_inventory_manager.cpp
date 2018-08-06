@@ -17,15 +17,43 @@ namespace erc_maker {
 
   // ---- ---- ---- ----
 
+  static inline hash256 generate_packages_absolutes_paths_hash( const erc_inventory & inventory )
+  {
+    hash256_digestor digestor;
+    for ( const erc_prepared_package & pp : inventory.prepared_packages )
+      digestor( pp.package.erc_package_absolute_filepath );
+    return digestor.hash();
+  }
+
+  cache_inventory_manager::cache_inventory_manager( const erc_inventory & _inventory )  :
+    inventory( std::move( _inventory ) ),
+    packages_absolutes_paths_hash( generate_packages_absolutes_paths_hash( inventory ) )
+  {}
+
+  // ---- ---- ---- ----
+
+  bool cache_inventory_manager::same_inventory() const
+  {
+    return packages_absolutes_paths_hash == cache.packages_absolutes_paths_hash;
+  }
+
   bool cache_inventory_manager::have_same_file( const erc_file_identifier & file_id ) const
   {
     //
-    const auto find_it( supplement_cache.find( file_id.file_unique_identifier.hex ) );
-    if ( find_it == supplement_cache.end() )
+    const auto find_it( cache.files.find( file_id.file_unique_identifier.hex ) );
+    if ( find_it == cache.files.end() )
       return false;
 
     //
     return find_it->second == file_id.valid_input_file;
+  }
+
+  // ---- ---- ---- ----
+
+  void cache_inventory_manager::reset_cache()
+  {
+    cache.packages_absolutes_paths_hash = hash256();
+    cache.files.clear();
   }
 
   // ---- ---- ---- ----
@@ -47,7 +75,7 @@ namespace erc_maker {
   void cache_inventory_manager::open_if_exist_into( const std::string & erc_working_directorypath )
   {
     //
-    supplement_cache.clear();
+    reset_cache();
 
     //
     const fs::path erc_cache_filepath_fs( fs::path( erc_working_directorypath ) / fs::path( src_internal_names::to_file_cache_inventory( inventory ) ) );
@@ -76,6 +104,10 @@ namespace erc_maker {
         throw std::runtime_error( "Incompatible header version" );
 
       //
+      input.read( reinterpret_cast<char *>( cache.packages_absolutes_paths_hash.digest ), hash256::hash_digest_size );
+      cache.packages_absolutes_paths_hash.generate_hash_hex_string();
+
+      //
       const uint32_t number_of_entries( input_for<uint32_t>( input ) );
 
       //
@@ -91,18 +123,18 @@ namespace erc_maker {
         // std::cout << entry_hash.hex << ":" << std::boolalpha << entry_information.compress << "/" << entry_information.size << "/" << entry_information.last_modification << std::endl;
 
         //
-        const auto entry_already_exist_it( supplement_cache.find( entry_hash.hex ) );
-        if ( entry_already_exist_it != supplement_cache.end() )
+        const auto entry_already_exist_it( cache.files.find( entry_hash.hex ) );
+        if ( entry_already_exist_it != cache.files.end() )
           throw std::runtime_error( "Entry with hash(" + entry_hash.hex + ") aleady exist in cache at entry number " + std::to_string( i ) );
 
         //
-        supplement_cache.emplace( entry_hash.hex, entry_information );
+        cache.files.emplace( entry_hash.hex, entry_information );
       }
 
     }
     catch ( const std::exception & e )
     {
-      supplement_cache.clear();
+      reset_cache();
       throw std::runtime_error( "[embedded_rc::erc_maker::cache_inventory_manager::open_cache_file] " + std::string( e.what() ) );
     }
   }
@@ -114,15 +146,6 @@ namespace erc_maker {
   {
     os.write( reinterpret_cast<const char *>( &out ), sizeof( T ) );
   }
-
-
-  //struct set_of_erc_file_identifier : public std::unordered_set <
-  //  const erc_file_identifier *,
-  //  std::hash<hash_hex_string>,
-  //  set_of_erc_file_identifier_comparator
-  //  >
-  //{ };
-
 
   void cache_inventory_manager::save_into( const std::string & erc_working_directorypath ) const
   {
@@ -146,6 +169,11 @@ namespace erc_maker {
       //
       output << current_version_header;
 
+      //
+      output_for( output, packages_absolutes_paths_hash.digest );
+
+      //
+      output_for<uint32_t>( output, static_cast<uint32_t>( inventory.files_identifier_p.size() ) );
 
       //
       output_for<uint32_t>( output, static_cast<uint32_t>( inventory.files_identifier_p.size() ) );

@@ -32,6 +32,27 @@ namespace erc_maker {
     void generate_generate_digest();
   };
 
+  // ---- ----
+
+  bool operator==( const hash256 & lhs, const hash256 & rhs );
+
+  inline bool operator!=( const hash256 & lhs, const hash256 & rhs )
+  {return !( lhs == rhs );}
+
+  // ---- ---- ---- ----
+
+  struct hash256_digestor
+  {
+   private:
+    hash256 digesting;
+
+   public:
+    void operator()( const std::string & data );
+
+   public:
+    hash256 hash() const;
+  };
+
 
 }
 

@@ -38,20 +38,25 @@ namespace erc_maker {
   {
    public:
     const erc_inventory & inventory;
+    const hash256 packages_absolutes_paths_hash;
 
    private:
-    std::unordered_map<hash_hex_string, file_cache_information> supplement_cache;
+    struct
+    {
+      hash256 packages_absolutes_paths_hash;
+      std::unordered_map<hash_hex_string, file_cache_information> files;
+    } cache;
+    void reset_cache();
 
    public:
-    inline cache_inventory_manager( const erc_inventory & _inventory ) :
-      inventory( std::move( _inventory ) )
-    {}
+    cache_inventory_manager( const erc_inventory & _inventory );
 
    public:
     void open_if_exist_into( const std::string & erc_working_directorypath );
     void save_into( const std::string & erc_working_directorypath ) const;
 
    public:
+    bool same_inventory() const;
     bool have_same_file( const erc_file_identifier & file_id ) const;
 
   };

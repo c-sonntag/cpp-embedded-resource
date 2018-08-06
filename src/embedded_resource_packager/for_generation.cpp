@@ -21,7 +21,7 @@ void embedded_resource_packager::for_generation()
 
   //
   std::cout << prefix_out << "Opening cache (if exist)" << std::endl;
-  try { src_generator.open_cache_if_exist_into( parsed.work_dir ); }
+  try { src_generator.open_caches_if_exists_into( parsed.work_dir ); }
   catch ( const std::exception & e )
   { std::cout << prefix_out << "  -> Cache errors : " << e.what() << std::endl; }
 
@@ -36,7 +36,7 @@ void embedded_resource_packager::for_generation()
   if ( rapport.nb_generated > 0 )
   {
     std::cout << prefix_out << "Saving changement in cache" << std::endl;
-    src_generator.save_cache_into( parsed.work_dir );
+    src_generator.save_caches_into( parsed.work_dir );
   }
 
   // //

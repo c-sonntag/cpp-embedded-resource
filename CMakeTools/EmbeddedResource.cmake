@@ -175,7 +175,7 @@ function(ERC_ADD_RESOURCES target_name )
     endif()
     #
     message(WARNING "\n[ERC_TARGET_RESOURCE]\n"
-      "  From : ${input_erc_xml_package_filepath}\n"
+      "  From(s) : ${inputs_ercs_xmls_packages_filepath}\n"
       "${warnings_msg}\n"
     )
   endif()

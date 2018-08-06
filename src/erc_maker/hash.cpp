@@ -1,5 +1,6 @@
 #include <erc_maker/hash.h>
 
+#include <cstring>
 #include <picosha2.h>
 
 namespace erc_maker {
@@ -46,6 +47,27 @@ namespace erc_maker {
       digest[i] = static_cast<byte>( byte_converted );
     }
   }
+
+  // ---- ----
+
+  bool operator==( const hash256 & lhs, const hash256 & rhs )
+  {
+    return memcmp( lhs.digest, rhs.digest, hash256::hash_digest_size ) == 0;
+  }
+
+  // ---- ---- ---- ----
+
+  void hash256_digestor::operator()( const std::string & data )
+  {
+    digesting = digesting.hex + data; /** @todo improve better performance (using stream digestion or other) */
+  }
+
+  hash256 hash256_digestor::hash() const
+  {
+    return digesting;
+  }
+
+
 
 }
 
