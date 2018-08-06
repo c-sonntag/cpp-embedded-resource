@@ -102,7 +102,11 @@ namespace erc_maker {
         if ( not_exist ) have_new_package = true;
 
         //
-        const bool need_generate( not_exist || have_new_erc_embedded );
+        const bool need_generate(
+          not_exist ||
+          have_new_erc_embedded ||
+          !inventory_cache.have_same_package_files( pp )
+        );
         rapport.insert( erc_package_file_str, generic_string_path( erc_package_filepath ), need_generate );
 
         //

@@ -37,13 +37,18 @@ namespace erc_maker {
     return packages_absolutes_paths_hash == cache.packages_absolutes_paths_hash;
   }
 
+  bool cache_inventory_manager::have_same_package_files( const erc_prepared_package & pp ) const
+  {
+    const auto find_it( cache.packages_files_identifier_hash.find( pp.files_identifier_hash.hex ) );
+    return ( find_it != cache.packages_files_identifier_hash.end() );;
+  }
+
   bool cache_inventory_manager::have_same_file( const erc_file_identifier & file_id ) const
   {
     //
     const auto find_it( cache.files.find( file_id.file_unique_identifier.hex ) );
     if ( find_it == cache.files.end() )
       return false;
-
     //
     return find_it->second == file_id.valid_input_file;
   }
@@ -54,6 +59,7 @@ namespace erc_maker {
   {
     cache.packages_absolutes_paths_hash = hash256();
     cache.files.clear();
+    cache.packages_files_identifier_hash.clear();
   }
 
   // ---- ---- ---- ----
@@ -108,27 +114,46 @@ namespace erc_maker {
       cache.packages_absolutes_paths_hash.generate_hash_hex_string();
 
       //
-      const uint32_t number_of_entries( input_for<uint32_t>( input ) );
+      {
+        const uint32_t number_of_packages_entries( input_for<uint32_t>( input ) );
+        for ( uint i( 0 ); i < number_of_packages_entries && input.good(); ++i )
+        {
+          //
+          hash256 entry_hash;
+          input.read( reinterpret_cast<char *>( entry_hash.digest ), hash256::hash_digest_size );
+          entry_hash.generate_hash_hex_string();
+
+          //
+          const auto entry_already_exist_it( cache.packages_files_identifier_hash.find( entry_hash.hex ) );
+          if ( entry_already_exist_it != cache.packages_files_identifier_hash.end() )
+            throw std::runtime_error( "PackageEntry with hash(" + entry_hash.hex + ") aleady exist in cache at entry number " + std::to_string( i ) );
+
+          //
+          cache.packages_files_identifier_hash.emplace( entry_hash.hex );
+        }
+      }
 
       //
-      for ( uint i( 0 ); i < number_of_entries && input.good(); ++i )
       {
-        //
-        hash256 entry_hash;
-        input.read( reinterpret_cast<char *>( entry_hash.digest ), hash256::hash_digest_size );
-        entry_hash.generate_hash_hex_string();
+        const uint32_t number_of_files_entries( input_for<uint32_t>( input ) );
+        for ( uint i( 0 ); i < number_of_files_entries && input.good(); ++i )
+        {
+          //
+          hash256 entry_hash;
+          input.read( reinterpret_cast<char *>( entry_hash.digest ), hash256::hash_digest_size );
+          entry_hash.generate_hash_hex_string();
 
-        //
-        const file_cache_information entry_information( input_for<file_cache_information>( input ) );
-        // std::cout << entry_hash.hex << ":" << std::boolalpha << entry_information.compress << "/" << entry_information.size << "/" << entry_information.last_modification << std::endl;
+          //
+          const file_cache_information entry_information( input_for<file_cache_information>( input ) );
 
-        //
-        const auto entry_already_exist_it( cache.files.find( entry_hash.hex ) );
-        if ( entry_already_exist_it != cache.files.end() )
-          throw std::runtime_error( "Entry with hash(" + entry_hash.hex + ") aleady exist in cache at entry number " + std::to_string( i ) );
+          //
+          const auto entry_already_exist_it( cache.files.find( entry_hash.hex ) );
+          if ( entry_already_exist_it != cache.files.end() )
+            throw std::runtime_error( "FileEntry with hash(" + entry_hash.hex + ") aleady exist in cache at entry number " + std::to_string( i ) );
 
-        //
-        cache.files.emplace( entry_hash.hex, entry_information );
+          //
+          cache.files.emplace( entry_hash.hex, entry_information );
+        }
       }
 
     }
@@ -173,23 +198,17 @@ namespace erc_maker {
       output_for( output, packages_absolutes_paths_hash.digest );
 
       //
-      output_for<uint32_t>( output, static_cast<uint32_t>( inventory.files_identifier_p.size() ) );
+      output_for<uint32_t>( output, static_cast<uint32_t>( inventory.prepared_packages.size() ) );
+      for ( const erc_prepared_package & pp : inventory.prepared_packages )
+        output_for( output, pp.files_identifier_hash.digest );
 
       //
       output_for<uint32_t>( output, static_cast<uint32_t>( inventory.files_identifier_p.size() ) );
-
-      //
       for ( const erc_file_identifier * const file_id : inventory.files_identifier_p )
       {
-        //
         output_for( output, file_id->file_unique_identifier.digest );
-
-        //
         const file_cache_information entry_information( file_id->valid_input_file );
         output_for( output, entry_information );
-
-        //
-        //std::cout << file_id.file_unique_identifier.hex << ":" << std::boolalpha << entry_information.compress << "/" << entry_information.size << "/" << entry_information.last_modification << std::endl;
       }
     }
     catch ( const std::exception & e )

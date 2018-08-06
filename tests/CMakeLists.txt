@@ -64,6 +64,13 @@ erc_add_resources("tests_static"
   "relative_files/composed_ressource.erc"
 )
 
+# --- BUILD TESTS STATIC LIB  ---
+file(GLOB_RECURSE tests_shared_files "tests_shared/*.h" "tests_shared/*.cpp")
+add_library("tests_shared" SHARED ${tests_shared_files})
+erc_add_resources("tests_shared"
+  "tests_shared/source_info.erc"
+  "relative_files/composed_ressource.erc"
+)
 
 # --- BUILD TESTS PROGRAM ---
 file(GLOB_RECURSE unitstest_program_files "unitstest_program/*.h" "unitstest_program/*.cpp")
@@ -71,6 +78,7 @@ add_executable("unitstest_program" ${unitstest_program_files})
 LINK_PRIVATE_LIB_GTEST("unitstest_program")
 #
 target_link_libraries("unitstest_program" PRIVATE "tests_static")
+target_link_libraries("unitstest_program" PRIVATE "tests_shared")
 #
 erc_add_resources("unitstest_program"
   "relative_files/composed_ressource.erc"

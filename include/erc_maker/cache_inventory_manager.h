@@ -8,18 +8,19 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <unordered_set>
 
 namespace erc_maker {
 
   struct file_cache_information
   {
-    bool compress = false;
+    //bool compress = false;
     uint size = 0;
     time_t last_modification = 0;
 
     inline file_cache_information() = default;
     inline file_cache_information( const erc_maker::file_property_found & fpf ) :
-      compress( fpf.file.compress ),
+      // compress( fpf.file.compress ),
       size( fpf.property.size ),
       last_modification( fpf.property.last_modification )
     {}
@@ -27,8 +28,8 @@ namespace erc_maker {
 
   inline bool operator ==( const file_cache_information & fci, const file_property_found & fpf )
   {
-    return ( fci.compress == fpf.file.compress ) &&
-           ( fci.size == fpf.property.size ) &&
+    //return ( fci.compress == fpf.file.compress ) &&
+    return ( fci.size == fpf.property.size ) &&
            ( fci.last_modification == fpf.property.last_modification );
   }
 
@@ -45,6 +46,7 @@ namespace erc_maker {
     {
       hash256 packages_absolutes_paths_hash;
       std::unordered_map<hash_hex_string, file_cache_information> files;
+      std::unordered_set<hash_hex_string> packages_files_identifier_hash;
     } cache;
     void reset_cache();
 
@@ -57,6 +59,7 @@ namespace erc_maker {
 
    public:
     bool same_inventory() const;
+    bool have_same_package_files( const erc_prepared_package & pp ) const;
     bool have_same_file( const erc_file_identifier & file_id ) const;
 
   };

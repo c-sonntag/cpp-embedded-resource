@@ -17,19 +17,19 @@ set(EXTERNAL_PICOSHA2_DIR   "picosha2-master")
 ##
 #
 
-macro(LINK_DO_WHOLE_ARCHIVE target)
-  if(MSVC)
-    set(flags "/WHOLEARCHIVE")
-  elseif (APPLE)
-    set(flags "-Wl,-all_load")
-  elseif(CMAKE_COMPILER_IS_GNUCXX)
-    set(flags "-Wl,--whole-archive")
-  else()
-    message(FATAL_ERROR "[LINK_SET_WHOLE_ARCHIVE] Can't know compiler flag")
-  endif()
-  #
-  set_target_properties(${target} PROPERTIES LINK_FLAGS ${flags})
-endmacro()
+## macro(LINK_DO_WHOLE_ARCHIVE target)
+##   if(MSVC)
+##     set(flags "/WHOLEARCHIVE")
+##   elseif (APPLE)
+##     set(flags "-Wl,-all_load")
+##   elseif(CMAKE_COMPILER_IS_GNUCXX)
+##     set(flags "-Wl,--whole-archive")
+##   else()
+##     message(FATAL_ERROR "[LINK_SET_WHOLE_ARCHIVE] Can't know compiler flag")
+##   endif()
+##   #
+##   set_target_properties(${target} PROPERTIES LINK_FLAGS ${flags})
+## endmacro()
 
 #
 ##
@@ -70,7 +70,9 @@ macro(LINK_PRIVATE_LIB_ZLIB PROJECT_TARGET)
   #set_target_properties     (${PROJECT_TARGET} PROPERTIES LINK_FLAGS "-Wl,--whole-archive" ${PROJECT_ZLIB_STATIC} "-Wl,--no-whole-archive")
   #set_target_properties     (${PROJECT_TARGET} PROPERTIES LINK_LIBRARIES "-Wl,--whole-archive" ${PROJECT_ZLIB_STATIC} "-Wl,--no-whole-archive")
 
-  target_link_libraries     (${PROJECT_TARGET} PRIVATE "-Wl,--whole-archive" ${PROJECT_ZLIB_STATIC} "-Wl,--no-whole-archive" )
+  #target_link_libraries     (${PROJECT_TARGET} PRIVATE "-Wl,--whole-archive" ${PROJECT_ZLIB_STATIC} "-Wl,--no-whole-archive" )
+
+  target_link_libraries     (${PROJECT_TARGET} PRIVATE ${PROJECT_ZLIB_STATIC})
 
   #target_link_libraries     (${PROJECT_TARGET} PRIVATE ${PROJECT_ZLIB_STATIC})
 

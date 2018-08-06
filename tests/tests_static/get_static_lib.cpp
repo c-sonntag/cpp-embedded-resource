@@ -2,12 +2,11 @@
 
 #include <erc/inventory_package.h>
 
-#include <iostream>
+//#include <iostream>
 
 const erc::package * get_static_lib()
 {
-  erc::inventory_package::get().debug_print( std::cout );
-
+  //erc::inventory_package::get().debug_print( std::cout );
   return erc::inventory_package::get().get_first_package( "composed_ressource" );
 }
 
