@@ -21,7 +21,7 @@ function(ERC_ADD_RESOURCES target_name )
   set(multiValueArgs "")
   cmake_parse_arguments(ARGUMENTS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
   #
-  set(input_erc_xml_package_filepath ${ARGUMENTS_UNPARSED_ARGUMENTS})
+  set(inputs_ercs_xmls_packages_filepath ${ARGUMENTS_UNPARSED_ARGUMENTS})
   set(ide_add_scanned_files              ${ARGUMENTS_ADD_INTO_IDE})
 
   #set(inputs_ercs_xmls_packages_filepath ${ARGN})
@@ -34,6 +34,28 @@ function(ERC_ADD_RESOURCES target_name )
       "Can't find <target_name> : ${target_name}\n"
       "\n"
     )
+    return()
+  endif()
+
+  #
+  ##
+  string(MD5 erc_inventory    ${target_name})
+  set(erc_inventory           "inventory_${erc_inventory}")
+
+  #
+  set(erc_target_generate      "erc_${erc_inventory}_generation")
+  set(erc_target_lib           "erc_${erc_inventory}")
+
+  #
+  ##
+  if(TARGET ${erc_target_generate})
+    message(FATAL_ERROR
+      "[ERC_ADD_RESSOURCE]\n"
+      "An resource as already set for this : ${target_name}\n"
+      " Please use varidiac args to pass all ressource like :\n"
+      "    erc_add_resources( target_name file_res1 file_res2 ... )\n"
+      "\n"
+      )
     return()
   endif()
 
@@ -61,25 +83,23 @@ function(ERC_ADD_RESOURCES target_name )
 
   #
   ##
-  string(MD5 erc_inventory    ${target_name})
-  set(erc_inventory           "inventory_${erc_inventory}")
-
-  #
-  ##
   set(work_absolute_directory "${CMAKE_CURRENT_BINARY_DIR}/embedded_resource_generation")
   file(MAKE_DIRECTORY ${work_absolute_directory})
 
   #
   ##
+  set(erc_cmake_target_information_args
+    "--inventory-name" ${erc_inventory}
+    "--input-packages" ${inputs_ercs_xmls_packages_filepath}
+    "--work-dir" ${work_absolute_directory}
+    "--get-for-cmake-target"
+  )
   set(erc_cmake_target_information)
   set(erc_cmake_target_information_result)
   set(erc_cmake_target_information_result_error_msg)
   execute_process(
     COMMAND           ${ERC_BINARY_PACKAGER}
-    ARGS              "--inventory-name" ${erc_inventory}
-                      "--input-package" ${input_erc_xml_package_filepath}
-                      "--work-dir" ${work_absolute_directory}
-                      "--get-for-cmake-target"
+    ARGS              ${erc_cmake_target_information_args}
     OUTPUT_VARIABLE   erc_cmake_target_information
     RESULT_VARIABLE   erc_cmake_target_information_result
     ERROR_VARIABLE    erc_cmake_target_information_result_error_msg
@@ -92,7 +112,7 @@ function(ERC_ADD_RESOURCES target_name )
       "[ERC_TARGET_RESOURCE]\n"
       "  ERC_BINARY_PACKAGER Can't get information of package to make target\n"
       "  ProgramPath : ${ERC_BINARY_PACKAGER}\n"
-      "  Argument    : ${ARGN}\n"
+      "  Arguments   : ${erc_cmake_target_information_args}\n"
       "  ErrorResult : ${erc_cmake_target_information_result}\n"
       "  ErrorMessage: ${erc_cmake_target_information_result_error_msg}\n"
       "  Message     : ${erc_cmake_target_information}\n"
@@ -108,7 +128,10 @@ function(ERC_ADD_RESOURCES target_name )
   #set(erc_target "erc_package_${input_erc_xml_package_filepath_realpath_hash}")
 
 
-  message(STATUS "-- erc_cmake_target_information -- ")
+  message(STATUS "-- input_erc_xml_package_filepath : ${input_erc_xml_package_filepath}")
+  message(STATUS "-- target_name : ${target_name}")
+  message(STATUS "-- erc_inventory : ${erc_inventory}")
+  message(STATUS "-- erc_cmake_target_information for target  -- ")
   message(STATUS "${erc_cmake_target_information}")
   message(STATUS "--")
 
@@ -127,11 +150,6 @@ function(ERC_ADD_RESOURCES target_name )
   set(generated_files_path    ${CMAKE_MATCH_2})
   set(erc_xml_not_found_files ${CMAKE_MATCH_3})
   set(erc_xml_not_found_dirs  ${CMAKE_MATCH_4})
-
-  #
-  #string(SHA1 erc_target ${erc_package})
-  set(erc_target_generate      "erc_${erc_inventory}_generation")
-  set(erc_target_lib           "erc_${erc_inventory}")
 
 
   #
@@ -164,7 +182,13 @@ function(ERC_ADD_RESOURCES target_name )
 
   #
   ##
-  if(NOT TARGET ${erc_target_generate} AND NOT ${erc_target_lib})
+ # if(NOT TARGET ${erc_target_generate} AND NOT ${erc_target_lib})
+
+
+    message(STATUS "-- -- MADE TARGET erc_target_generate : ${erc_target_generate}")
+    message(STATUS "-- -- ")
+    message(STATUS "-- -- ")
+    message(STATUS "-- -- ")
 
    #
    ##
@@ -172,12 +196,12 @@ function(ERC_ADD_RESOURCES target_name )
      ${erc_target_generate} ALL
      COMMAND ${ERC_BINARY_PACKAGER}
      ARGS "--inventory-name" ${erc_inventory}
-          "--input-packages" ${input_erc_xml_package_filepath}
+          "--input-packages" ${inputs_ercs_xmls_packages_filepath}
           "--work-dir" ${work_absolute_directory}
 
      BYPRODUCTS ${generated_files_path}
      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-     COMMENT "Executing EmbeddedResource for file : ${input_erc_xml_package_filepath}"
+     COMMENT "Executing EmbeddedResource for file(s) : ${inputs_ercs_xmls_packages_filepath}"
      VERBATIM
    )
 
@@ -185,10 +209,10 @@ function(ERC_ADD_RESOURCES target_name )
   #target_compile_definitions(${erc_target_lib} PRIVATE "-DERC_INVENTORY_PACKAGE_EXTERN_NAME=${erc_inventory}")
   #add_dependencies(${erc_target_lib} ${erc_target_generate})
 
-  endif()
+ # endif()
 
 
-  #C
+  #
   ##
   target_sources(${target_name} PRIVATE ${generated_files_path})
 

@@ -72,6 +72,8 @@ LINK_PRIVATE_LIB_GTEST("unitstest_program")
 #
 target_link_libraries("unitstest_program" PRIVATE "tests_static")
 #
-erc_add_resources("unitstest_program" "relative_files/composed_ressource.erc")
-#erc_add_resources("unitstest_program" "unitstest_program/source_info.erc")
+erc_add_resources("unitstest_program"
+  "relative_files/composed_ressource.erc"
+  "unitstest_program/source_info.erc"
+ )
 

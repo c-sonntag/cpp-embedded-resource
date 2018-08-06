@@ -45,7 +45,7 @@ namespace erc_maker {
              << "    {" << endl;
 
       for ( const erc_prepared_package & pp : inventory.prepared_packages )
-        output << "      {{\"" << pp.package.content.package_name << "\",&" << src_internal_names::to_extern_package( pp ) << "}}," << endl;
+        output << "      {\"" << pp.package.content.package_name << "\",&" << src_internal_names::to_extern_package( pp ) << "}," << endl;
       //output << "      for_map(" << src_internal_names::to_extern_package( pp ) << ")," << endl;
 
       output << "    };" << endl

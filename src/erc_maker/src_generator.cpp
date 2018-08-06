@@ -71,7 +71,8 @@ namespace erc_maker {
         if ( not_exist ) have_new_erc_embedded = true;
 
         //
-        const bool need_generate( !cache_have_same_file( file_id ) || not_exist );
+        //const bool need_generate( !cache_have_same_file( file_id ) || not_exist );
+        const bool need_generate( !cache_have_same_file( file_id ) );
         rapport.insert( erc_embedded_file_str, generic_string_path( erc_embedded_filepath ), need_generate );
 
         //

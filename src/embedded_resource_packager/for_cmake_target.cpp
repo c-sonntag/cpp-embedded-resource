@@ -24,11 +24,13 @@ std::ostream & operator<<( std::ostream & os, const erc_maker::erc_file_identifi
 template<typename T>
 void iterate_on( std::ostream & os, const T & container )
 {
-  auto it( container.cbegin() );
-  if ( it != container.end() )
-    std::cout << *it;
   const auto end_it( container.cend() );
-  for ( ; it != end_it; ++it )
+  auto it( container.cbegin() );
+  if ( it == end_it )
+    return;
+  //
+  std::cout << *it;
+  for ( ++it; it != end_it; ++it )
     std::cout << ";" << *it;
 }
 
