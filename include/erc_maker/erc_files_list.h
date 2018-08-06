@@ -33,10 +33,12 @@ namespace erc_maker {
 
   struct erc_files_list
   {
-    std::unordered_map<std::string, file_property_found> files_found;
-    std::unordered_set<std::string> files_not_found;
+    using files_found_t = std::unordered_map<std::string, file_property_found>;
+    files_found_t files_found;
 
-    std::unordered_set<std::string> directories_not_found;
+    using not_found_path_t = std::unordered_set<std::string>;
+    not_found_path_t files_not_found;
+    not_found_path_t directories_not_found;
 
     erc_files_list( const erc_package_file_parser & erc_parsed_content );
   };

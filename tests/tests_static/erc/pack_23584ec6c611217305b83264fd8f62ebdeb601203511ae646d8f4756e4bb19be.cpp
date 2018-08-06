@@ -24,7 +24,7 @@ namespace erc {
     const erc::package pack_23584ec6c611217305b83264fd8f62ebdeb601203511ae646d8f4756e4bb19be
     //const erc::package source_info
     {
-      "source_info-static",
+      "source_info",
       1,
       erc::generated_embedded_files::embedded_files
     };

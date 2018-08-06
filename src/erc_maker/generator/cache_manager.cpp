@@ -1,5 +1,6 @@
 #include <erc_maker/src_generator.h>
 
+#include <erc_maker/src_internal_names.h>
 #include <erc_maker/file_system.h>
 
 #include <istream>
@@ -32,7 +33,7 @@ namespace erc_maker {
     supplement_cache.clear();
 
     //
-    const fs::path erc_cache_filepath_fs( fs::path( erc_working_directorypath ) / fs::path( names_generator.to_file_cache_package_file() ) );
+    const fs::path erc_cache_filepath_fs( fs::path( erc_working_directorypath ) / fs::path( src_internal_names::to_file_cache_inventory( inventory ) ) );
     if ( !fs::exists( erc_cache_filepath_fs ) )
       return;
 
@@ -97,14 +98,24 @@ namespace erc_maker {
     os.write( reinterpret_cast<const char *>( &out ), sizeof( T ) );
   }
 
+
+  //struct set_of_erc_file_identifier : public std::unordered_set <
+  //  const erc_file_identifier *,
+  //  std::hash<hash_hex_string>,
+  //  set_of_erc_file_identifier_comparator
+  //  >
+  //{ };
+
+
   void src_generator::save_cache_into( const std::string & erc_working_directorypath ) const
   {
 
     //
     const std::string erc_cache_filepath(
-      ( fs::path( erc_working_directorypath ) / fs::path( names_generator.to_file_cache_package_file() )
+      ( fs::path( erc_working_directorypath ) / fs::path( src_internal_names::to_file_cache_inventory( inventory ) )
       ).string()
     );
+
 
     //
     try
@@ -118,17 +129,18 @@ namespace erc_maker {
       //
       output << current_version_header;
 
-      //
-      output_for<uint32_t>( output, static_cast<uint32_t>( erc_files_identifier.size() ) );
 
       //
-      for ( const src_file_identifier & file_id : erc_files_identifier )
+      output_for<uint32_t>( output, static_cast<uint32_t>( inventory.files_identifier_p.size() ) );
+
+      //
+      for ( const erc_file_identifier * const file_id : inventory.files_identifier_p )
       {
         //
-        output_for( output, file_id.file_unique_identifier.digest );
+        output_for( output, file_id->file_unique_identifier.digest );
 
         //
-        const file_cache_information entry_information( file_id.valid_input_file );
+        const file_cache_information entry_information( file_id->valid_input_file );
         output_for( output, entry_information );
 
         //

@@ -1,11 +1,13 @@
 #include <erc_maker/src_generator.h>
 
+#include <erc_maker/src_internal_names.h>
+
 #include <fstream>
 #include <sstream>
 
 namespace erc_maker {
 
-  void src_generator::generate_package( const std::string & output_src_file )
+  void src_generator::generate_package( const erc_prepared_package & pp, const std::string & output_src_file )
   {
 
     //
@@ -21,9 +23,9 @@ namespace erc_maker {
 
       //
       output << "/**" << endl
-             << "* @brief Generated file for EmbeddedResource lib." << endl
+             << "* @brief Generated Package file for EmbeddedResource lib." << endl
              << "* @note Package file can be found at" << endl
-             << "*       " << erc_package.erc_package_filepath << endl
+             << "*       " << pp.package.erc_package_filepath << endl
              << "*/" << endl
              << endl;
 
@@ -32,35 +34,29 @@ namespace erc_maker {
              << "#include <erc/inventory_package.h>" << endl
              << endl
              << "namespace erc {" << endl
-             << endl
-             << "  namespace generated_embedded_files {" << endl;
+             << "  namespace " << src_internal_names::global_namespace() << " {" << endl;
 
-      for ( const src_file_identifier & file_id : erc_files_identifier )
-        output << "    const extern erc::embedded_file " << names_generator.to_extern_erc( file_id ) << ";" << endl;
+      //
+      for ( const erc_file_identifier & file_id : pp.files_identifier )
+        output << "    const extern erc::embedded_file " << src_internal_names::to_extern_erc( file_id ) << ";" << endl;
 
+      //
       output << "    static const erc::embedded_file * const embedded_files[]" << endl
              << "    {" << endl;
-
-      //
-      for ( const src_file_identifier & file_id : erc_files_identifier )
-        output << "      &" << names_generator.to_extern_erc( file_id ) << "," << endl;
-
-      //
+      for ( const erc_file_identifier & file_id : pp.files_identifier )
+        output << "      &" << src_internal_names::to_extern_erc( file_id ) << "," << endl;
       output << "    };" << endl
-             << "  }" << endl
              << endl;
 
       //
-      output << "  namespace generated_package {" << endl
-             << "   static const erc::package " << names_generator.to_extern_package() << endl
-             << "   {" << endl
-             << "     \"" << erc_package.content.package_name << "\"," << endl
-             << "     " << erc_files_identifier.size() << "," << endl
-             << "     erc::generated_embedded_files::embedded_files" << endl
-             << "   };" << endl
-             << "   static const struct initializer {" << endl
-             << "     inline initializer() { erc::inventory_package::push(" << names_generator.to_extern_package() << "); }" << endl
-             << "   } _mypack;" << endl
+      output << "    extern const erc::package " << src_internal_names::to_extern_package( pp ) << endl
+             << "    const erc::package " << src_internal_names::to_extern_package( pp ) << endl
+             << "    {" << endl
+             << "      \"" << pp.package.content.package_name << "\"," << endl
+             << "      " << pp.files_identifier.size() << "," << endl
+             << "      erc::generated_embedded_files::embedded_files" << endl
+             << "    };" << endl
+             << endl
              << "  }" << endl
              << "}" << endl
              << endl;

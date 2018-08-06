@@ -1,5 +1,7 @@
 #include <erc_maker/src_generator.h>
 
+#include <erc_maker/src_internal_names.h>
+
 #include <erc/compress.h>
 
 #include <fstream>
@@ -96,7 +98,7 @@ namespace erc_maker {
 
   // ---- ---- ---- ----
 
-  void src_generator::generate_file( const src_file_identifier & file_id, const std::string & output_src_file )
+  void src_generator::generate_file( const erc_file_identifier & file_id, const std::string & output_src_file )
   {
 
     //
@@ -134,12 +136,12 @@ namespace erc_maker {
       {
         const std::string input_compressed_content( erc::compress_string( input_content ) );
         data_block_writer( output, input_compressed_content );
-        packing_size = input_compressed_content.size();
+        packing_size = uint( input_compressed_content.size() );
       }
       else
       {
         data_block_writer( output, input_content );
-        packing_size = input_content.size();
+        packing_size = uint( input_content.size() );
       }
 
       //
@@ -159,9 +161,9 @@ namespace erc_maker {
       output << "#include <erc/file.h>" << endl
              << endl
              << "namespace erc {" << endl
-             << "  namespace generated_embedded_files {" << endl
-             << "    const extern erc::embedded_file " << names_generator.to_extern_erc( file_id ) << ";" << endl
-             << "    const erc::embedded_file " << names_generator.to_extern_erc( file_id ) << endl
+             << "  namespace " << src_internal_names::global_namespace() << " {" << endl
+             << "    const extern erc::embedded_file " << src_internal_names::to_extern_erc( file_id ) << ";" << endl
+             << "    const erc::embedded_file " << src_internal_names::to_extern_erc( file_id ) << endl
              << ef << ";" << endl
              << "  }" << endl
              << "}" << endl

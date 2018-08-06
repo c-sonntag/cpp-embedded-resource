@@ -101,6 +101,13 @@ function(ERC_ADD_RESOURCES target_name )
   #string(SHA256 input_erc_xml_package_filepath_realpath_hash ${input_erc_xml_package_filepath_realpath})
   #set(erc_target "erc_package_${input_erc_xml_package_filepath_realpath_hash}")
 
+
+  message(STATUS "-- erc_cmake_target_information -- ")
+  message(STATUS "${erc_cmake_target_information}")
+  message(STATUS "--")
+
+  return()
+
   #
   ##
   string( REGEX MATCH
