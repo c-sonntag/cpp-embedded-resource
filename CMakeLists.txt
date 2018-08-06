@@ -45,8 +45,6 @@ include_directories(${HEADER_PATH})
 set(EMBEDDEDRESOURCE_INSTALL_ERC_MAKER OFF CACHE BOOL "Install erc_maker of EmbeddedResource library")
 
 # --- BUILD OPTIONS  ---
-# set(EMBEDDEDRESOURCE_BUILD_TOOLS ON CACHE BOOL "Build tools for EmbeddedResource library")
-# set(EMBEDDEDRESOURCE_BUILD_EXAMPLES ON CACHE BOOL "Build examples for EmbeddedResource library")
 set(EMBEDDEDRESOURCE_BUILD_TESTS ON CACHE BOOL "Build tests for EmbeddedResource library (need second cmake/make compile time)")
 
 #
@@ -183,15 +181,6 @@ find_program(
 ##
 #
 
-# --- BUILDS TOOLS  ---
-if(${EMBEDDEDRESOURCE_BUILD_TOOLS})
-  ##add_subdirectory("tools/")
-endif()
-
-# # --- BUILDS EXAMPLES ---
-# if(${EMBEDDEDRESOURCE_BUILD_EXAMPLES})
-#  add_subdirectory("examples/")
-# endif()
 
 # --- BUILDS TESTS ---
 if(${EMBEDDEDRESOURCE_BUILD_TESTS} AND EXISTS ${ERC_BINARY_PACKAGER})
