@@ -64,9 +64,9 @@ function(ERC_ADD_RESOURCES target_name )
   endif()
   #
   set(fatal_error_msg_not_founds_inputs_ercs)
-  foreach(input_erc_xml_package_filepath IN ITEMS ${inputs_ercs_xmls_packages_filepath})
-    set(input_erc_xml_package_curent_source_filepath "${CMAKE_CURRENT_SOURCE_DIR}/${input_erc_xml_package_filepath}")
-    if(NOT EXISTS ${input_erc_xml_package_curent_source_filepath})
+  foreach(test_exist_input_erc_xml_package_filepath IN ITEMS ${inputs_ercs_xmls_packages_filepath})
+    set(test_exist_input_erc_xml_package_current_source_filepath "${CMAKE_CURRENT_SOURCE_DIR}/${input_erc_xml_package_filepath}")
+    if(NOT EXISTS ${test_exist_input_erc_xml_package_filepath} AND NOT EXISTS ${input_erc_xml_package_current_source_filepath})
       set(fatal_error_msg_not_founds_inputs_ercs ${fatal_error_msg_not_founds_inputs_ercs} ${input_erc_xml_package_filepath})
     endif()
   endforeach()
@@ -187,6 +187,16 @@ function(ERC_ADD_RESOURCES target_name )
   )
 
   ## debug : message(STATUS "erc_target_generate_args ${erc_target_generate_args}")
+
+  #
+  ##
+  set_source_files_properties(${generated_files_path} PROPERTIES
+    #LABELS ${input_files_path} ( @todo need same list witn inventory ... etc)
+    COMPILE_FLAGS "-s -O3" LANGUAGE CXX
+  )
+  ## debug : list(GET generated_files_path 0 first_element_of_generated_files_path )
+  ## debug : get_source_file_property(first_element_of_generated_files_path_property ${first_element_of_generated_files_path} COMPILE_FLAGS)
+  ## debug : message(STATUS "COMPILE_FLAGS of ${first_element_of_generated_files_path} : ${first_element_of_generated_files_path_property}")
 
   #
   ##

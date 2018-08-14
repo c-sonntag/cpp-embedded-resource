@@ -48,9 +48,11 @@ namespace erc {
   {
    public:
     #ifdef ERC_INVENTORY_PACKAGE_EXTERN_NAME
-    static __forceinline constexpr const inventory_package & get() {
-      return ::erc::generated_resources::ERC_INVENTORY_PACKAGE_EXTERN_NAME;
-    }
+    static __forceinline constexpr const inventory_package & get()
+    { return ::erc::generated_resources::ERC_INVENTORY_PACKAGE_EXTERN_NAME; }
+    #else
+    static __forceinline const inventory_package & get()
+    { throw std::runtime_error( "[erc::inventory_package::get] No local package" ); }
     #endif
 
    public:
@@ -92,7 +94,34 @@ namespace erc {
    public:
     void debug_print( std::ostream & os, const bool print_properdata = false ) const;
     //#endif
+
+   public:
+    static const package & get_local_first_package( const package_id & id, const std::string & custom_err_group = "" );
+    static const embedded_file & get_local_first_embedded_file( const file_id & id, const std::string & custom_err_group = "" );
+
   };
+
+  __forceinline const package & inventory_package::get_local_first_package( const package_id & id, const std::string & custom_err_group )
+  {
+    const package * const pack_p( inventory_package::get().get_first_package( id ) );
+    if ( !pack_p )
+      throw std::runtime_error(
+        "[" + ( custom_err_group.empty() ? "erc::inventory_package_map::get_local_first_package" : custom_err_group ) + "] "
+        "Can't open package : " + id.package_name
+      );
+    return *pack_p;
+  }
+
+  __forceinline const embedded_file & inventory_package::get_local_first_embedded_file( const file_id & id, const std::string & custom_err_group )
+  {
+    const embedded_file * const erc_p( inventory_package::get().get_first_embedded_file( id ) );
+    if ( !erc_p )
+      throw std::runtime_error(
+        "[" + ( custom_err_group.empty() ? "erc::inventory_package_map::get_local_first_package" : custom_err_group ) + "] "
+        "Can't open embedded resource file : " + id.package_name + ":" + id.file_path
+      );
+    return *erc_p;
+  }
 
 
 }
