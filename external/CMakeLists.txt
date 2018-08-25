@@ -42,9 +42,19 @@ set(ZLIB_PREFIX              "external/zlib")
 set(ZLIB_BUILD               "${CMAKE_CURRENT_BINARY_DIR}/${ZLIB_PREFIX}/build")
 set(ZLIB_INSTALL             "${CMAKE_CURRENT_BINARY_DIR}/${ZLIB_PREFIX}/install")
 #set(ZLIB_INSTALL            "${CMAKE_INSTALL_PREFIX}/internal/zlib")
-set(PROJECT_ZLIB_STATIC     "${ZLIB_BUILD}/libzlibstatic.a")
-set(PROJECT_ZLIB_SHARED     "${ZLIB_BUILD}/libzlib.dll.a")    # todo for other system
-set(PROJECT_ZLIB_SHARED_DEP "${ZLIB_BUILD}/libzlib.dll")
+##set(PROJECT_ZLIB_SHARED     "${ZLIB_BUILD}/libzlib.dll.a")    # todo for other system
+##set(PROJECT_ZLIB_SHARED_DEP "${ZLIB_BUILD}/libzlib.dll")
+
+if(MINGW)
+  set(PROJECT_ZLIB_STATIC     "${ZLIB_BUILD}/libzlibstatic.a")
+elseif(MSVC)
+  set(PROJECT_ZLIB_STATIC     "${ZLIB_BUILD}/zlibstatic.lib")
+elseif(GNU)
+  set(PROJECT_ZLIB_STATIC     "${ZLIB_BUILD}/libz.a")
+else()
+  message(FATAL_ERROR "Can't get the Static Zlib for link later")
+endif()
+
 #
 ExternalProject_Add(
   zlib
@@ -143,7 +153,7 @@ ExternalProject_Add(
     -DBUILD_SHARED_LIBS:BOOL=OFF
     -Dgtest_build_tests:BOOL=OFF
     -Dgtest_build_samples:BOOL=OFF
-    -Dgtest_disable_pthreads:BOOL=OFF
+ #   -Dgtest_disable_pthreads:BOOL=OFF
     -Dgtest_hide_internal_symbols:BOOL=OFF
     -DCMAKE_INSTALL_PREFIX:STRING=${GTEST_INSTALL}
 )

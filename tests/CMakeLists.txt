@@ -54,7 +54,6 @@ include("EmbeddedResource")
 ## TESTS C++
 #
 
-
 # --- BUILD TESTS STATIC LIB  ---
 file(GLOB_RECURSE tests_static_files "tests_static/*.h" "tests_static/*.cpp")
 add_library("tests_static" STATIC ${tests_static_files})
@@ -63,13 +62,17 @@ erc_add_resources("tests_static"
   "relative_files/composed_ressource.erc"
 )
 
-# --- BUILD TESTS STATIC LIB  ---
+# --- BUILD TESTS SHARED LIB  ---
 file(GLOB_RECURSE tests_shared_files "tests_shared/*.h" "tests_shared/*.cpp")
 add_library("tests_shared" SHARED ${tests_shared_files})
 erc_add_resources("tests_shared"
   "tests_shared/source_info.erc"
   "relative_files/composed_ressource.erc"
 )
+if(GNU)
+  target_compile_options("tests_shared" PRIVATE "-fPIC")
+endif()
+
 
 # --- BUILD TESTS PROGRAM ---
 file(GLOB_RECURSE unitstest_program_files "unitstest_program/*.h" "unitstest_program/*.cpp")
