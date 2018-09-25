@@ -5,8 +5,9 @@
 #
 ##
 set(ERC_POSSIBLE_PATH
-  "${ERC_ROOT}"
-  "${ERC_SUFFIX}"
+  ${ERC_DIR}
+  ${ERC_SUFFIX}
+  ${ERC_ROOT}
   "${CMAKE_SOURCE_DIR}/external/erc"
   "${CMAKE_SOURCE_DIR}/thirdparty/erc"
   "${CMAKE_SOURCE_DIR}/third-party/erc"

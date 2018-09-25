@@ -1,9 +1,6 @@
-#pragma once
+#include <test_helper.hpp>
 
-#include <erc/file.h>
-#include <erc/package.h>
-
-static const erc::embedded_file final_efs[]
+static const std::vector<erc::embedded_file> final_efs
 {
   {"file1.txt",             {{ "file1.txt",     ".txt", 5,  0 }, 5,  false, true}, reinterpret_cast<const unsigned char *>( "Hello" )},
   {"file2.txt",             {{ "file2.txt",     ".txt", 5,  0 }, 5,  false, true}, reinterpret_cast<const unsigned char *>( "world" )},
@@ -14,11 +11,27 @@ static const erc::embedded_file final_efs[]
   {"sub_dir/sub_file2.txt", {{ "sub_file2.txt", ".txt", 12, 0 }, 12, false, true}, reinterpret_cast<const unsigned char *>( "subdirectory" )},
 };
 
-static constexpr size_t final_efs_size( sizeof( final_efs ) / sizeof( erc::embedded_file ) );
-
-const erc::package final_package
+static const erc::package final_package
 {
-  "composed_ressource",
-  final_efs_size,
+  "relative_files_resource",
+  erc::uint( final_efs.size() ),
   nullptr
 };
+
+
+static const std::vector<std::string> parsed_files_string
+{ "file1.txt", "file2.txt", "file3.txt", "file4.txt", "file5.txt", "sub_dir/sub_file1.txt", "sub_dir/sub_file2.txt", "nop1", "nop2", };
+
+static const std::vector<std::string> parsed_directories_string
+{};
+
+
+static const std::vector<std::string> nop_files_string
+{ "nop1", "nop2" };
+
+static const std::vector<std::string> nop_directories_string
+{};
+
+
+const test_helper relative_files_resource_helper
+{ final_efs, final_package, parsed_files_string, parsed_directories_string, nop_files_string, nop_directories_string };

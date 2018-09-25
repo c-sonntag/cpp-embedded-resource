@@ -145,6 +145,9 @@ function(ERC_ADD_RESOURCES target_name )
     message(FATAL_ERROR
       " [ERC_ADD_RESOURCES]\n"
       "   ERC_BINARY_PACKAGER Not returns good information of package to make target\n"
+      "   need input_files_path or generated_files_path\n"
+      "   See input erc erc_cmake_target_information :"
+      "${erc_cmake_target_information}"
       "\n"
     )
     return()
@@ -202,6 +205,7 @@ function(ERC_ADD_RESOURCES target_name )
   ##
   target_compile_definitions(${target_name} PRIVATE "-DERC_INVENTORY_PACKAGE_EXTERN_NAME=${erc_inventory}")
   target_sources(${target_name} PRIVATE ${generated_files_path})
+  # (ambe freeze cmake ? ) :
   add_dependencies(${target_name} ${erc_target_generate})
 
   #debug :

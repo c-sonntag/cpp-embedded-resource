@@ -1,4 +1,4 @@
-#include <relative_files/composed_resource.hpp>
+#include <test_helper.hpp>
 
 #include <unitstest_program/tests_directories.h>
 #include <gtest/gtest.h>
@@ -11,8 +11,9 @@
 #include <exception>
 
 
-TEST( relative_files, good_package )
+void good_package_by_helper( const test_helper & helper, const std::string & package_name )
 {
+
   const erc::inventory_package & inventory( erc::inventory_package::get() );
 
   //  std::cout << "---- debug inventory ---- " << std::endl;
@@ -20,19 +21,19 @@ TEST( relative_files, good_package )
   //  std::cout << "---- ---- " << std::endl;
 
   //
-  const erc::package * const package_p( inventory.get_first_package( "composed_ressource" ) );
+  const erc::package * const package_p( inventory.get_first_package( package_name ) );
   ASSERT_TRUE( package_p );
 
   //
   const erc::package & package( *package_p );
 
   //
-  ASSERT_EQ( package.name, "composed_ressource" );
-  ASSERT_EQ( package.size, 7 );
+  ASSERT_EQ( package.name, helper.final_package.name );
+  ASSERT_EQ( package.size, helper.final_efs.size() );
   ASSERT_NE( package.embedded_files, nullptr );
 
   //
-  for ( const erc::embedded_file & final_ef : final_efs )
+  for ( const erc::embedded_file & final_ef : helper.final_efs )
   {
 
     //
@@ -70,7 +71,7 @@ TEST( relative_files, good_package )
 
 
   //
-  //  const erc::package_group * const package_group_p( erc::inventory_package::get_group( "composed_ressource" ) );
+  //  const erc::package_group * const package_group_p( erc::inventory_package::get_group( "relative_files_resource" ) );
   //  if ( package_group_p )
   //  {
   //    const erc::package & package( package_group_p->package );
@@ -90,3 +91,7 @@ TEST( relative_files, good_package )
 
 
 }
+
+
+TEST( relative_files, good_package )
+{ good_package_by_helper( relative_files_resource_helper, "relative_files_resource" ); }

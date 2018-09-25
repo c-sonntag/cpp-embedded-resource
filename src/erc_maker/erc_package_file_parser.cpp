@@ -61,8 +61,10 @@ namespace erc_maker {
 
     XMLDocument doc;
     const XMLError open_error_code( doc.LoadFile( erc_parsed_content.erc_package_filepath.c_str() ) );
+    if ( open_error_code == XML_ERROR_FILE_NOT_FOUND )
+      throw std::runtime_error( "[XMLError] XMLError(XML_ERROR_FILE_NOT_FOUND) on opening file : " + erc_parsed_content.erc_package_filepath );
     if ( open_error_code != 0 )
-      throw std::runtime_error( "Error code(" + std::to_string( static_cast<int>( open_error_code ) ) + ") on opening file : " + erc_parsed_content.erc_package_filepath );
+      throw std::runtime_error( "[XMLError] XMLErrorCode(" + std::to_string( static_cast<int>( open_error_code ) ) + ") on opening file : " + erc_parsed_content.erc_package_filepath );
 
     // XMLPrinter printer;
     // doc.Print( &printer );
@@ -184,9 +186,16 @@ namespace erc_maker {
   {
     basic_link bl;
 
+    //
     bl.path = e.GetText();
     bl.compress = e.BoolAttribute( "compress", default_config.compress );
 
+    //
+    const char * const att_prefix( e.Attribute( "prefix", "" ) );
+    if ( att_prefix )
+      bl.prefix = std::string( att_prefix );
+
+    //
     return bl;
   }
 
@@ -252,7 +261,7 @@ namespace erc_maker {
     catch ( const std::exception & e )
     {
       throw std::runtime_error( "[embedded_rc::erc_maker::erc_package_file_parser] errors on file '" + erc_package_filepath + "' : \n"
-                                + std::string( e.what() ) );
+        + std::string( e.what() ) );
     }
 
   }

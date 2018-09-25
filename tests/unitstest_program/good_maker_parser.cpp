@@ -1,4 +1,4 @@
-#include <relative_files/composed_resource.hpp>
+#include <test_helper.hpp>
 
 #include <erc_maker/erc_package_file_parser.h>
 
@@ -9,19 +9,19 @@
 #include <string>
 #include <exception>
 
-TEST( relative_files, good_maker_parser )
+void good_maker_parser_by_helper( const test_helper & helper, const std::string & erc_filepath )
 {
+  //
+  const erc_maker::erc_package_file_parser erc( erc_filepath );
 
   //
-  const erc_maker::erc_package_file_parser erc( tests_directories::relative_files + "composed_ressource.erc" );
-
-  //
-  ASSERT_EQ( erc.content.files.size(), 9 );
-  ASSERT_EQ( erc.content.package_name, final_package.name );
+  ASSERT_EQ( erc.content.files.size(), helper.parsed_files_string.size() );
+  ASSERT_EQ( erc.content.directories.size(), helper.parsed_directories_string.size() );
+  ASSERT_EQ( erc.content.package_name, helper.final_package.name );
   ASSERT_EQ( erc.content.prefix.empty(), true );
 
   //
-  for ( const erc::embedded_file & ef : final_efs )
+  for ( const erc::embedded_file & ef : helper.final_efs )
   {
     const erc_maker::file ef_converted( ef.path, ef.property.compressed );
     bool found( false );
@@ -31,11 +31,7 @@ TEST( relative_files, good_maker_parser )
     ASSERT_TRUE( found );
   }
 
-  //
-  std::vector<erc_maker::file> nop_files
-  { {"nop1"}, {"nop2"} };
-
-  for ( const erc_maker::file & nop_mf : nop_files )
+  for ( const erc_maker::file & nop_mf : helper.nop_files_string )
   {
     bool found( false );
     for ( const erc_maker::file & mf : erc.content.files )
@@ -44,5 +40,7 @@ TEST( relative_files, good_maker_parser )
     ASSERT_TRUE( found );
   }
 
-
 }
+
+TEST( relative_files, good_maker_parser )
+{ good_maker_parser_by_helper( relative_files_resource_helper, tests_directories::relative_files + "relative_files_resource.erc" ); }

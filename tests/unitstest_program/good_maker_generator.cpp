@@ -15,7 +15,7 @@ TEST( relative_files, good_maker_generator )
 {
 
   // //
-  // const erc_maker::erc_package_file_parser erc( tests_directories::relative_files + "composed_ressource.erc" );
+  // const erc_maker::erc_package_file_parser erc( tests_directories::relative_files + "relative_files_resource.erc" );
   //
   // //
   // const erc_maker::erc_files_list files( erc );

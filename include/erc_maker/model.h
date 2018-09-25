@@ -12,18 +12,19 @@ namespace erc_maker {
     bool compress = false;
     /**< @todo bool encrypted = false;   */
     std::string path;
+    std::string prefix;
 
     inline basic_link() = default;
-    inline basic_link( const std::string _path, bool _compress = false ) :
-      compress( _compress ), path( std::move( _path ) )
+    inline basic_link( const std::string _path, bool _compress = false, const std::string _prefix = "" ) :
+      compress( _compress ), path( std::move( _path ) ), prefix( std::move( _prefix ) )
     {}
 
     inline virtual hash256 hash() const
-    { return path + ":" + ( compress ? "1" : "0" ); }
+    { return prefix + "/" + path + ":" + ( compress ? "1" : "0" ); }
   };
 
   inline bool operator==( const basic_link & lhs, const basic_link & rhs )
-  { return ( lhs.path == rhs.path ) && ( lhs.compress == rhs.compress );  }
+  { return ( lhs.path == rhs.path ) && ( lhs.compress == rhs.compress ) && ( lhs.prefix == rhs.prefix );  }
 
   inline bool operator!=( const basic_link & lhs, const basic_link & rhs )
   { return !( lhs == rhs );  }
@@ -55,8 +56,8 @@ namespace erc_maker {
   inline bool operator==( const directory & lhs, const directory & rhs )
   {
     return ( dynamic_cast<const basic_link &>( lhs ) == dynamic_cast<const basic_link &>( rhs ) ) &&
-           ( lhs.regex_patern == rhs.regex_patern ) &&
-           ( lhs.regex_patern == rhs.regex_patern );
+      ( lhs.regex_patern == rhs.regex_patern ) &&
+      ( lhs.regex_patern == rhs.regex_patern );
   }
 
   inline bool operator!=( const directory & lhs, const directory & rhs )
@@ -75,9 +76,9 @@ namespace erc_maker {
   inline bool operator==( const model & lhs, const model & rhs )
   {
     return ( lhs.package_name == rhs.package_name ) &&
-           ( lhs.prefix == rhs.prefix ) &&
-           ( lhs.files == rhs.files ) &&
-           ( lhs.directories == rhs.directories );
+      ( lhs.prefix == rhs.prefix ) &&
+      ( lhs.files == rhs.files ) &&
+      ( lhs.directories == rhs.directories );
   }
 
   inline bool operator!=( const model & lhs, const model & rhs )
