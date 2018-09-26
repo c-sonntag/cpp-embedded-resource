@@ -23,9 +23,11 @@ namespace erc_maker {
   {
     file_list.clear();
     filepath_list.clear();
+    lock_filepath_list.clear();
     nb_generated = 0;
     nb_passed = 0;
   }
+
 
   // ---- ---- ---- ----
 
@@ -33,6 +35,29 @@ namespace erc_maker {
   //{
   //  return hash256( package_unique_identifier.hex + ":" + file.path );
   //}
+
+  // ---- ----
+
+  bool src_generator::have_changement_file( const erc_file_identifier & input_file_id, const std::string & output )
+  {
+    return fs::exists( input_file_id.valid_input_file.path ) && fs::exists( output ) ?
+           !erc_maker::same_write_datetime( input_file_id.valid_input_file.path, output ) :
+           true;
+  }
+
+  bool src_generator::have_changement_package( const erc_prepared_package & input_pp, const std::string & )
+  {
+    return !inventory_cache.have_same_package_files( input_pp );
+    // Not possible : package can be contain a <directory> glob recurse :-)
+    //return fs::exists( input_pp.package_filepath ) && fs::exists( output ) ?
+    //       erc_maker::same_write_datetime( input_pp.package_filepath, output ) :
+    //       true;
+  }
+
+  bool src_generator::have_changement_inventory()
+  {
+    return !inventory_cache.same_inventory( inventory.prepared_packages );
+  }
 
   // ---- ----
 
@@ -73,29 +98,37 @@ namespace erc_maker {
 
       for ( const erc_file_identifier & file_id : pp.files_identifier )
       {
-
         //
         const std::string erc_embedded_file_str( src_internal_names::to_file_erc( file_id ) );
         const fs::path erc_embedded_filepath( output_directorypath / fs::path( erc_embedded_file_str ) );
-
+        const std::string erc_embedded_filepath_str( erc_embedded_filepath.string() );
         //
         const bool not_exist( !fs::exists( erc_embedded_filepath ) );
         if ( not_exist ) have_new_erc_embedded = true;
 
         //
         //const bool need_generate( !cache_have_same_file( file_id ) || not_exist );
-        const bool need_generate( !inventory_cache.have_same_file( file_id ) );
+        const bool need_generate( have_changement_file( file_id, erc_embedded_filepath_str ) );
         rapport.insert( erc_embedded_file_str, generic_string_path( erc_embedded_filepath ), need_generate );
 
         //
         if ( !generated_list_only && need_generate )
-          generate_file( file_id, erc_embedded_filepath.string() );
+        {
+          if ( !lock_file( erc_embedded_filepath_str ) )
+            rapport.lock_filepath_list.push_back( { file_id.valid_input_file.path, erc_embedded_filepath_str } );
+          else
+          {
+            generate_file( file_id, erc_embedded_filepath_str );
+            unlock_file( erc_embedded_filepath_str );
+          }
+        }
       }
 
       {
         //
         const std::string erc_package_file_str( src_internal_names::to_file_package( pp ) );
         const fs::path erc_package_filepath( output_directorypath / fs::path( erc_package_file_str ) );
+        const std::string erc_package_filepath_str( erc_package_filepath.string() );
 
         //
         const bool not_exist( !fs::exists( erc_package_filepath ) );
@@ -105,36 +138,57 @@ namespace erc_maker {
         const bool need_generate(
           not_exist ||
           have_new_erc_embedded ||
-          !inventory_cache.have_same_package_files( pp )
+          have_changement_package( pp, erc_package_filepath_str )
         );
         rapport.insert( erc_package_file_str, generic_string_path( erc_package_filepath ), need_generate );
 
         //
         if ( !generated_list_only && need_generate )
-          generate_package( pp, erc_package_filepath.string() );
+        {
+
+          if ( !lock_file( erc_package_filepath_str ) )
+            rapport.lock_filepath_list.push_back( { pp.package.erc_package_filepath, erc_package_filepath_str } );
+          else
+          {
+            generate_package( pp, erc_package_filepath_str );
+            unlock_file( erc_package_filepath_str );
+          }
+
+        }
       }
+
+      {
+        //
+        const std::string erc_inventory_file_str( src_internal_names::to_file_inventory( inventory ) );
+        const fs::path erc_inventory_filepath( output_directorypath / fs::path( erc_inventory_file_str ) );
+
+        //
+        const bool need_generate(
+          !fs::exists( erc_inventory_filepath ) ||
+          have_new_package ||
+          have_changement_inventory()
+        );
+        rapport.insert( erc_inventory_file_str, generic_string_path( erc_inventory_filepath ), need_generate );
+
+        //
+        if ( !generated_list_only && need_generate )
+          generate_inventory( erc_inventory_filepath.string() );
+      }
+
+      //
+      if ( !rapport.lock_filepath_list.empty() )
+      {
+        std::stringstream ss;
+        ss << "Can't generate files : ";
+        for ( const generation_rapport::lock_file & lfl : rapport.lock_filepath_list )
+          ss << "[" << "from:" << lfl.from << "/unlocable_to:" << lfl.to << "] ";
+        throw std::runtime_error( ss.str() );
+      }
+
     }
 
-    {
-      //
-      const std::string erc_inventory_file_str( src_internal_names::to_file_inventory( inventory ) );
-      const fs::path erc_inventory_filepath( output_directorypath / fs::path( erc_inventory_file_str ) );
-
-      //
-      const bool need_generate(
-        !fs::exists( erc_inventory_filepath ) ||
-        have_new_package ||
-        !inventory_cache.same_inventory()
-      );
-      rapport.insert( erc_inventory_file_str, generic_string_path( erc_inventory_filepath ), need_generate );
-
-      //
-      if ( !generated_list_only && need_generate )
-        generate_inventory( erc_inventory_filepath.string() );
-    }
 
   }
-
 
 }
 

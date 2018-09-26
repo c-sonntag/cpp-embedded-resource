@@ -13,7 +13,6 @@
 
 #include <bits/stdc++.h>
 
-
 namespace erc_maker {
 
   struct internal_listner
@@ -60,6 +59,10 @@ namespace erc_maker {
         ss << "  " << p << std::endl;
       throw std::runtime_error( "Some file path are similars : \n" + ss.str() );
     }
+
+    //
+    if ( base.files_found.empty() )
+      throw std::runtime_error( "No input(s) file(s)" );
 
   }
 
@@ -115,10 +118,20 @@ namespace erc_maker {
       for ( const fs::path & p : fs::directory_iterator( d_absolute_path ) )
       {
         const std::string p_filename( p.filename().string() );
+        const std::string p_path( generic_string_path( push_file_sub_dir + p_filename ) );
+        //
+        if ( d.regex_patern.set )
+          if ( !std::regex_match( p_path, d.regex_patern.rgx ) )
+            continue;
+
         if ( fs::is_regular_file( p ) )
         {
+          if ( d.regex_extension.set )
+            if ( !std::regex_match( p.extension().string(), d.regex_extension.rgx ) )
+              continue;
+
           file f( d );
-          f.path = generic_string_path( push_file_sub_dir + p_filename );
+          f.path = p_path;
           push_file( f, p );
         }
         else if ( fs::is_directory( p ) )
@@ -149,7 +162,7 @@ namespace erc_maker {
     catch ( const std::exception & e )
     {
       throw std::runtime_error( "[embedded_rc::erc_maker::erc_files_list] error on file '" + erc_parsed_content.erc_package_filepath + "' : \n"
-        + std::string( e.what() ) );
+                                + std::string( e.what() ) );
     }
 
   }

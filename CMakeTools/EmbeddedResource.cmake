@@ -54,13 +54,25 @@ function(ERC_ADD_RESOURCES target_name )
     return()
   endif()
 
-
   #
   ##
   set(fatal_error_msg)
   #
   if(NOT EXISTS ${ERC_BINARY_PACKAGER})
    set(fatal_error_msg "${fatal_error_msg}  Can't find executable embedded_resource_packager on variable ERC_BINARY_PACKAGER : ${ERC_BINARY_PACKAGER}\n")
+  endif()
+  #
+  if(NOT inputs_ercs_xmls_packages_filepath OR inputs_ercs_xmls_packages_filepath EQUAL "")
+    set(fatal_error_msg "${fatal_error_msg}  Need input(s) package(s) path(s) argument(s) for target : ${target_name} \n")
+  endif()
+  #
+  if(fatal_error_msg)
+    message(FATAL_ERROR
+      " [ERC_ADD_RESOURCES]\n"
+      "${fatal_error_msg}\n"
+      "\n"
+    )
+    return()
   endif()
   #
   set(fatal_error_msg_not_founds_inputs_ercs)
@@ -74,7 +86,7 @@ function(ERC_ADD_RESOURCES target_name )
     set(fatal_error_msg "${fatal_error_msg}  Can't find <inputs_ercs_xmls_packages_filepath> : ${fatal_error_msg_not_founds_inputs_ercs}\n")
   endif()
   #
-  if(${fatal_error_msg})
+  if(fatal_error_msg)
     message(FATAL_ERROR
       " [ERC_ADD_RESOURCES]\n"
       "${fatal_error_msg}\n"
@@ -138,7 +150,6 @@ function(ERC_ADD_RESOURCES target_name )
   set(erc_xml_not_found_files ${CMAKE_MATCH_3})
   set(erc_xml_not_found_dirs  ${CMAKE_MATCH_4})
 
-
   #
   ##
   if(NOT input_files_path OR NOT generated_files_path)
@@ -188,6 +199,15 @@ function(ERC_ADD_RESOURCES target_name )
     COMMENT "Executing EmbeddedResource for target '${target_name}' with erc_package(s) : ${inputs_ercs_xmls_packages_filepath}"
     VERBATIM
   )
+
+  #add_custom_command(
+  #  OUTPUT ${generated_files_path}
+  #  COMMAND ${ERC_BINARY_PACKAGER}
+  #  ARGS ${erc_target_generate_args}
+  #  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  #  COMMENT "Executing EmbeddedResource for target '${target_name}' with erc_package(s) : ${inputs_ercs_xmls_packages_filepath}"
+  #  VERBATIM
+  #)
 
   ## debug : message(STATUS "erc_target_generate_args ${erc_target_generate_args}")
 

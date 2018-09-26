@@ -1,9 +1,10 @@
 #pragma once
 
+#include <erc_maker/hash.h>
+
 #include <string>
 #include <vector>
-
-#include <erc_maker/hash.h>
+#include <regex>
 
 namespace erc_maker {
 
@@ -42,22 +43,33 @@ namespace erc_maker {
 
   struct directory : public basic_link
   {
-    std::string regex_patern;
-    std::string regex_extension;
+   public:
+    struct regex_tag
+    {
+      bool set = false;
+      std::string str;
+      std::regex rgx;
+    };
 
+   public:
+    regex_tag regex_patern;
+    regex_tag regex_extension;
+
+   public:
     using basic_link::basic_link;
     inline directory() = default;
     inline directory( const basic_link & bl ) : basic_link( bl ) {}
 
+   public:
     inline virtual hash256 hash() const
-    { return basic_link::hash().hex + ":" + regex_patern + ":" + regex_extension; }
+    { return basic_link::hash().hex + ":" + regex_patern.str + ":" + regex_extension.str; }
   };
 
   inline bool operator==( const directory & lhs, const directory & rhs )
   {
     return ( dynamic_cast<const basic_link &>( lhs ) == dynamic_cast<const basic_link &>( rhs ) ) &&
-      ( lhs.regex_patern == rhs.regex_patern ) &&
-      ( lhs.regex_patern == rhs.regex_patern );
+           ( lhs.regex_patern.str == rhs.regex_patern.str ) &&
+           ( lhs.regex_patern.str == rhs.regex_patern.str );
   }
 
   inline bool operator!=( const directory & lhs, const directory & rhs )
@@ -76,9 +88,9 @@ namespace erc_maker {
   inline bool operator==( const model & lhs, const model & rhs )
   {
     return ( lhs.package_name == rhs.package_name ) &&
-      ( lhs.prefix == rhs.prefix ) &&
-      ( lhs.files == rhs.files ) &&
-      ( lhs.directories == rhs.directories );
+           ( lhs.prefix == rhs.prefix ) &&
+           ( lhs.files == rhs.files ) &&
+           ( lhs.directories == rhs.directories );
   }
 
   inline bool operator!=( const model & lhs, const model & rhs )

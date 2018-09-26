@@ -14,6 +14,13 @@
 
 #include <iostream>
 
+/**
+ * @todo Invent a new acces file for "debug mode" or "non internal package"
+ *       to access directly to the file on disk ...
+ *       (use full for project with loat of packages needs to be verif)
+ * @todo Add "package_name" combinaison and then check to prevent possible "same file_erc path"
+ */
+
 namespace erc {
 
   //using inventory = std::unordered_multimap<std::string, const erc::package *>;

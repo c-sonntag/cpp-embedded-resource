@@ -44,6 +44,9 @@ namespace erc_maker {
     void parse_tag_package_name( const std::string & tag_text );
     void parse_tag_prefix( const std::string & tag_text );
 
+   private:
+    bool compil_regex( directory::regex_tag & rt );
+
    public:
     void parse_tag_file( const tinyxml2::XMLElement & e );
     void parse_tag_directory( const tinyxml2::XMLElement & e );
@@ -157,23 +160,6 @@ namespace erc_maker {
 
   // ---- ---- ---- ----
 
-  inline bool check_regex( const std::string & r )
-  {
-    try
-    {
-      std::regex myregex( r );
-    }
-    catch ( const std::regex_error & )
-    {
-      return false;
-      //if ( e.code() == std::regex_constants::error_badrepeat )
-      //  std::cerr << "Repeat was not preceded by a valid regular expression.\n";
-      //else std::cerr << "Some other regex exception happened.\n";
-    }
-    return true;
-  }
-
-  // ---- ----
 
   void internal_parser::parse_attributes_erc( const tinyxml2::XMLElement & e )
   {
@@ -215,6 +201,32 @@ namespace erc_maker {
     content.prefix = tag_text;
   }
 
+  // ---- ---- ---- ----
+
+
+  inline bool internal_parser::compil_regex( directory::regex_tag & rt )
+  {
+    rt.set = false;
+    if ( !rt.str.empty() )
+    {
+      try
+      {
+        rt.rgx = std::regex( rt.str );
+        rt.set = true;
+      }
+      catch ( const std::regex_error & )
+      {
+        return false;
+        //if ( e.code() == std::regex_constants::error_badrepeat )
+        //  std::cerr << "Repeat was not preceded by a valid regular expression.\n";
+        //else std::cerr << "Some other regex exception happened.\n";
+      }
+    }
+    return true;
+  }
+
+  // ---- ----
+
   void internal_parser::parse_tag_file( const tinyxml2::XMLElement & e )
   {
     // const file f( file( basic_link_tag_inheritance( e ) ) );
@@ -229,18 +241,16 @@ namespace erc_maker {
 
     directory d( basic_link_tag_inheritance( e ) );
 
-    SET_FROM_ATTRIBUTE_STR( d.regex_patern, "regex_patern" )
-    SET_FROM_ATTRIBUTE_STR( d.regex_extension, "regex_extension" )
+    SET_FROM_ATTRIBUTE_STR( d.regex_patern.str, "regex_patern" )
+    SET_FROM_ATTRIBUTE_STR( d.regex_extension.str, "regex_extension" )
 
     std::list<std::string> regex_xml_errors;
 
-    if ( !d.regex_patern.empty() )
-      if ( !check_regex( d.regex_patern ) )
-        regex_xml_errors.emplace_back( "Invalid regex_patern : " + d.regex_patern );
+    if ( !compil_regex( d.regex_patern ) )
+      regex_xml_errors.emplace_back( "Invalid regex_patern : " + d.regex_patern.str );
 
-    if ( !d.regex_extension.empty() )
-      if ( !check_regex( d.regex_extension ) )
-        regex_xml_errors.emplace_back( "Invalid regex_extension : " + d.regex_extension );
+    if ( !compil_regex( d.regex_extension ) )
+      regex_xml_errors.emplace_back( "Invalid regex_extension : " + d.regex_extension.str );
 
     if ( !regex_xml_errors.empty() )
       throw regex_xml_errors;
@@ -261,7 +271,7 @@ namespace erc_maker {
     catch ( const std::exception & e )
     {
       throw std::runtime_error( "[embedded_rc::erc_maker::erc_package_file_parser] errors on file '" + erc_package_filepath + "' : \n"
-        + std::string( e.what() ) );
+                                + std::string( e.what() ) );
     }
 
   }

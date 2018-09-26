@@ -4,6 +4,7 @@
 #include <iostream>
 #include <exception>
 #include <vector>
+#include <sstream>
 
 void help()
 {
@@ -12,12 +13,14 @@ void help()
             << std::endl
             << "   ./embedded_resource_packager  " << std::endl
             << "      [-h|--help] |" << std::endl
+            << "      [--inventory-name <inventory_name>]" << std::endl
             << "      [--input-package <erc_xml_package_filepath>]" << std::endl
             << "      [--input-packages <erc_xml_packages_filepaths...>]" << std::endl
             << "      [--work-dir <directory_path>]" << std::endl
             << "      [--get-for-cmake-target]" << std::endl
             << "" << std::endl
             << "   -h|--help : Print this message" << std::endl
+            << "  --inventory-name <inventory_name>                : Inventory name need top link package" << std::endl
             << "  --input-package <erc_xml_package_filepath>       : ERC Package to be parsed and evaluate" << std::endl
             << "  --input-packages <erc_xml_packages_filepaths...> : ERC Packages to be evaluate (only until generation)" << std::endl
             << "  --work-dir <directory_path>                      : Directory to generate files" << std::endl
@@ -85,8 +88,14 @@ struct ParseCommand
       throw std::runtime_error( "One option need an argument" );
 
     //
-    if ( parsed.input_packages.empty() || parsed.inventory_name.empty() || parsed.work_dir.empty() )
-      throw std::runtime_error( "Need '--inventory-name', ('--input-package' or '--input-packages') and '--work-dir' params" );
+    if ( parsed.input_packages.empty() || parsed.inventory_name.empty() || parsed.work_dir.empty() ) {
+      std::stringstream ss;
+      ss << "Need args : ";
+      if ( parsed.inventory_name.empty() ) ss << "'--inventory-name' ";
+      if ( parsed.input_packages.empty() ) ss << "('--input-package' or '--input-packages') ";
+      if ( parsed.work_dir.empty() ) ss << "'--work-dir' ";
+      throw std::runtime_error( ss.str() );
+    }
   }
 };
 

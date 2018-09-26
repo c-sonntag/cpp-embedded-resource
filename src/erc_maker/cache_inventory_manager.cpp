@@ -10,6 +10,8 @@
 #include <regex>
 #include <cstring>
 
+#define CACHE_FOR_FILE 0
+
 namespace erc_maker {
 
 
@@ -32,9 +34,19 @@ namespace erc_maker {
 
   // ---- ---- ---- ----
 
-  bool cache_inventory_manager::same_inventory() const
+  bool cache_inventory_manager::same_inventory( const erc_inventory::prepared_packages_t & pps ) const
   {
-    return packages_absolutes_paths_hash == cache.packages_absolutes_paths_hash;
+    //C
+    if ( packages_absolutes_paths_hash != cache.packages_absolutes_paths_hash )
+      return false;
+
+    //
+    for ( const erc_prepared_package & pp : pps )
+      if ( !have_same_package_files( pp ) )
+        return false;
+
+    //
+    return true;
   }
 
   bool cache_inventory_manager::have_same_package_files( const erc_prepared_package & pp ) const
@@ -43,15 +55,15 @@ namespace erc_maker {
     return ( find_it != cache.packages_files_identifier_hash.end() );;
   }
 
-  bool cache_inventory_manager::have_same_file( const erc_file_identifier & file_id ) const
-  {
-    //
-    const auto find_it( cache.files.find( file_id.file_unique_identifier.hex ) );
-    if ( find_it == cache.files.end() )
-      return false;
-    //
-    return find_it->second == file_id.valid_input_file;
-  }
+  //  bool cache_inventory_manager::have_same_file( const erc_file_identifier & file_id ) const
+  //  {
+  //    //
+  //    const auto find_it( cache.files.find( file_id.file_unique_identifier.hex ) );
+  //    if ( find_it == cache.files.end() )
+  //      return false;
+  //    //
+  //    return find_it->second == file_id.valid_input_file;
+  //  }
 
   // ---- ---- ---- ----
 
@@ -134,6 +146,7 @@ namespace erc_maker {
       }
 
       //
+      #if CACHE_FOR_FILE == 1
       {
         const uint32_t number_of_files_entries( input_for<uint32_t>( input ) );
         for ( uint i( 0 ); i < number_of_files_entries && input.good(); ++i )
@@ -155,6 +168,7 @@ namespace erc_maker {
           cache.files.emplace( entry_hash.hex, entry_information );
         }
       }
+      #endif
 
     }
     catch ( const std::exception & e )
@@ -203,6 +217,7 @@ namespace erc_maker {
         output_for( output, pp.files_identifier_hash.digest );
 
       //
+      #if CACHE_FOR_FILE == 1
       output_for<uint32_t>( output, static_cast<uint32_t>( inventory.files_identifier_p.size() ) );
       for ( const erc_file_identifier * const file_id : inventory.files_identifier_p )
       {
@@ -210,6 +225,7 @@ namespace erc_maker {
         const file_cache_information entry_information( file_id->valid_input_file );
         output_for( output, entry_information );
       }
+      #endif
     }
     catch ( const std::exception & e )
     { throw std::runtime_error( "[embedded_rc::erc_maker::cache_inventory_manager::save_cache_file] " + std::string( e.what() ) ); }

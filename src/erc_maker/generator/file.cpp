@@ -1,5 +1,6 @@
 #include <erc_maker/src_generator.h>
 
+#include <erc_maker/file_system.h>
 #include <erc_maker/src_internal_names.h>
 
 #include <erc/compress.h>
@@ -168,6 +169,12 @@ namespace erc_maker {
              << "  }" << endl
              << "}" << endl
              << endl;
+
+      //
+      output.close();
+
+      //
+      set_write_datetime(output_src_file, file_id.valid_input_file.path);
 
     }
     catch ( const std::exception & e )

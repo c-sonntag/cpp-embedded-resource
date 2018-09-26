@@ -58,9 +58,9 @@ namespace erc_maker {
     void save_into( const std::string & erc_working_directorypath ) const;
 
    public:
-    bool same_inventory() const;
+    bool same_inventory(const erc_inventory::prepared_packages_t & pp) const;
     bool have_same_package_files( const erc_prepared_package & pp ) const;
-    bool have_same_file( const erc_file_identifier & file_id ) const;
+    //bool have_same_file( const erc_file_identifier & file_id ) const;
 
   };
 

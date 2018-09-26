@@ -25,7 +25,8 @@ namespace erc_maker {
     const std::string inventory_name;
 
    public:
-    const std::list<erc_prepared_package> prepared_packages;
+    using prepared_packages_t = std::list<erc_prepared_package>;
+    const prepared_packages_t prepared_packages;
     //const hash256 inventory_unique_identifier;
 
    public:

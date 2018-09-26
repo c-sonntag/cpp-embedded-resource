@@ -5,7 +5,6 @@
 
 #include <string>
 
-
 struct ParsedCommand
 {
   std::vector<std::string> input_packages;
