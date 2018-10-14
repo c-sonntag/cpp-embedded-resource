@@ -21,7 +21,7 @@ namespace erc_maker {
     {}
 
     inline virtual hash256 hash() const
-    { return prefix + "/" + path + ":" + ( compress ? "1" : "0" ); }
+    { return prefix + path + ":" + ( compress ? "1" : "0" ); }
   };
 
   inline bool operator==( const basic_link & lhs, const basic_link & rhs )

@@ -8,7 +8,6 @@
 #include <fstream>
 #include <sstream>
 
-
 namespace erc_maker {
 
   inline const char * named_boolean_str( const bool value )
@@ -99,7 +98,7 @@ namespace erc_maker {
 
   // ---- ---- ---- ----
 
-  void src_generator::generate_file( const erc_file_identifier & file_id, const std::string & output_src_file )
+  void src_generator::generate_file( const erc_prepared_package & pp, const erc_file_identifier & file_id, const std::string & output_src_file )
   {
 
     //
@@ -146,9 +145,16 @@ namespace erc_maker {
       }
 
       //
+      const std::string erc_file_path(
+        pp.package.content.prefix
+        + file_id.valid_input_file.file.prefix
+        + file_id.valid_input_file.file.path
+      );
+
+      //
       erc::embedded_file ef
       {
-        file_id.valid_input_file.file.path,
+        erc_file_path,
         {
           file_id.valid_input_file.property,
           packing_size,
@@ -174,7 +180,7 @@ namespace erc_maker {
       output.close();
 
       //
-      set_write_datetime(output_src_file, file_id.valid_input_file.path);
+      set_write_datetime( output_src_file, file_id.valid_input_file.path );
 
     }
     catch ( const std::exception & e )

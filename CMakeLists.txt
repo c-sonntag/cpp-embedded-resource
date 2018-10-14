@@ -184,6 +184,6 @@ find_program(
 
 # --- BUILDS TESTS ---
 if(${EMBEDDEDRESOURCE_BUILD_TESTS} AND EXISTS ${ERC_BINARY_PACKAGER})
-  #add_subdirectory("tests/")
+  add_subdirectory("tests/")
 endif()
 

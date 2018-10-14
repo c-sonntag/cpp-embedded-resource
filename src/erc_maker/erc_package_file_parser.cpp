@@ -11,7 +11,6 @@
 
 #include <tinyxml2.h>
 
-
 namespace erc_maker {
 
   static const std::regex valid_filename( "[^\\\\/:*?!\"<>|^\n\t]+" );
@@ -168,6 +167,19 @@ namespace erc_maker {
 
   // ---- ----
 
+  std::string normalize_prefix( const std::string & p )
+  {
+    if ( !std::regex_match( p, valid_path ) )
+      throw "incompatible prefix path \"" + std::string( p ) + "\"";
+    std::string normalized( generic_string_path( p ) );
+    if ( !normalized.empty() )
+      if ( normalized.back() != '/' )
+        normalized += "/";
+    return normalized;
+  }
+
+  // ---- ----
+
   inline basic_link internal_parser::basic_link_tag_inheritance( const tinyxml2::XMLElement & e )
   {
     basic_link bl;
@@ -177,9 +189,9 @@ namespace erc_maker {
     bl.compress = e.BoolAttribute( "compress", default_config.compress );
 
     //
-    const char * const att_prefix( e.Attribute( "prefix", "" ) );
+    const char * const att_prefix( e.Attribute( "prefix" ) );
     if ( att_prefix )
-      bl.prefix = std::string( att_prefix );
+      bl.prefix = normalize_prefix( std::string( att_prefix ) );
 
     //
     return bl;
@@ -196,9 +208,7 @@ namespace erc_maker {
 
   void internal_parser::parse_tag_prefix( const std::string & tag_text )
   {
-    if ( !std::regex_match( tag_text, valid_path ) )
-      throw "incompatible \"" + tag_text + "\"";
-    content.prefix = tag_text;
+    content.prefix = normalize_prefix( tag_text );
   }
 
   // ---- ---- ---- ----

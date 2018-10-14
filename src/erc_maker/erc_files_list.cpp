@@ -90,14 +90,16 @@ namespace erc_maker {
         fs::file_time_type::clock::to_time_t( fs::last_write_time( f_absolute_path ) )
       };
 
-      auto find_it( base.files_found.find( f.path ) );
+      const std::string f_composed_path( generic_string_path( f.prefix + f.path ) );
+
+      auto find_it( base.files_found.find( f_composed_path ) );
       if ( find_it != base.files_found.end() )
       {
         same_filepath.emplace( find_it->first );
         find_it->second = file_property_found( f, property, generic_string_path( f_absolute_path ) );
       }
       else
-        base.files_found.emplace( f.path, file_property_found( f, property, generic_string_path( f_absolute_path ) ) );
+        base.files_found.emplace( f_composed_path, file_property_found( f, property, generic_string_path( f_absolute_path ) ) );
     }
     else
       base.files_not_found.emplace( f.path );

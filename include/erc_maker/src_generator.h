@@ -52,7 +52,7 @@ namespace erc_maker {
     generation_rapport rapport;
 
    private:
-    void generate_file( const erc_file_identifier & file_id, const std::string & output_src_file );
+    void generate_file( const erc_prepared_package & pp, const erc_file_identifier & file_id, const std::string & output_src_file );
     void generate_package( const erc_prepared_package & pp, const std::string & output_src_file );
     void generate_inventory( const std::string & output_src_file );
 

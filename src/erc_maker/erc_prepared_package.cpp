@@ -4,7 +4,7 @@ namespace erc_maker {
 
 
   std::string erc_prepared_package::generate_unique_identifier() const
-  { return package.erc_package_absolute_filepath + ":" + package.content.package_name; }
+  { return package.erc_package_absolute_filepath + ":" + package.content.package_name + ":" + package.content.prefix; }
 
   hash256 erc_prepared_package::make_hash_for( const erc_maker::file & file ) const
   { return hash256( package_unique_identifier.hex + ":" + file.hash().hex ); }

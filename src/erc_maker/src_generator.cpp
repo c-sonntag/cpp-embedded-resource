@@ -118,7 +118,7 @@ namespace erc_maker {
             rapport.lock_filepath_list.push_back( { file_id.valid_input_file.path, erc_embedded_filepath_str } );
           else
           {
-            generate_file( file_id, erc_embedded_filepath_str );
+            generate_file( pp, file_id, erc_embedded_filepath_str );
             unlock_file( erc_embedded_filepath_str );
           }
         }
