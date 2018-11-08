@@ -1,6 +1,7 @@
+# embedded-resource - C++ Resource Manager
 
+For C++14
 
-
-## About file dependencies
-
-@todo File are marked by date-modifaication value, you can force modification watch with flag "checksum" 
+Copyright (C) 2018 Tous droits réservés, Christophe-Alexandre Sonntag (http://u4a.at)
+Distribué selon les termes de la Licence : GNU LESSER GENERAL PUBLIC LICENSE (LGPL)
+Distributed under the terms of the GNU LESSER GENERAL PUBLIC LICENSE (LGPL)
