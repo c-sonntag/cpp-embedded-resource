@@ -27,6 +27,7 @@ namespace erc {
   {
     if ( proper_data_p != nullptr )
       delete proper_data_p;
+    proper_data_p = nullptr;
   }
 
 }
