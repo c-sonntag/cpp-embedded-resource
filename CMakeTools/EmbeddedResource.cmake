@@ -97,7 +97,7 @@ function(ERC_ADD_RESOURCES target_name )
 
   #
   ##
-  set(work_absolute_directory "${CMAKE_CURRENT_BINARY_DIR}/embedded_resource_generation")
+  set(work_absolute_directory "${CMAKE_CURRENT_BINARY_DIR}/_erc")
   file(MAKE_DIRECTORY ${work_absolute_directory})
 
   #
