@@ -3,7 +3,7 @@
 A C ++ Resource Manager using CMake with ".erc" configuration file,
 allowing several packaging resource approaches.
 
-![Compress and pack](http://libs.u4a.at/EmbeddedResource/compress-and-pack-style-paint.jpg)
+![Compress and pack](http://libs.u4a.at/EmbeddedResource/compress-and-pack-detour+style-paint.jpg)
 
 ## Modern ! 
 Written in C++ 14 ( Const-Correctness, Move-Semantics, constexpr, etc... ).
