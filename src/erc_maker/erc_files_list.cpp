@@ -117,8 +117,6 @@ namespace erc_maker {
         d_path.is_absolute() ? d_path : ( fs::absolute( erc_directory_path / d_path ) )
       )
     );
-
-
     if( fs::is_directory( d_absolute_path ) )
     {
       for( const fs::path& p : fs::directory_iterator( d_absolute_path ) )
