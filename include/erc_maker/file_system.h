@@ -26,7 +26,6 @@ namespace erc_maker {
 
   inline fs::path keep_basename( const fs::path& p )
   {
-    std::string f( p.filename().string() );
     if( p.filename() == "." )
       return p.parent_path();
     return p;
