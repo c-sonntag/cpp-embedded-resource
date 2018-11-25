@@ -9,7 +9,7 @@ allowing several packaging resource approaches.
 Written in C++ 14 ( Const-Correctness, Move-Semantics, constexpr, etc... ).
 
 ## Documentation
-<https://libs.u4a.at/EmbeddedResource/html/>
+<http://libs.u4a.at/EmbeddedResource/html/>
 
 ## Internal Dependent library :
 * <https://github.com/abseil/googletest>
