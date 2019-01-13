@@ -1,6 +1,7 @@
 #pragma once
 
 #include <erc/types.h>
+#include <erc/istream.hpp>
 
 #include <string>
 #include <cstring>
@@ -22,7 +23,7 @@ namespace erc {
     {}
   };
 
-  inline bool operator==( const file_property & lhs, const file_property & rhs )
+  inline bool operator ==( const file_property& lhs, const file_property& rhs )
   {
     return ( lhs.filename == rhs.filename ) &&
            ( lhs.extension == rhs.extension ) &&
@@ -30,7 +31,7 @@ namespace erc {
            ( lhs.last_modification == rhs.last_modification );
   }
 
-  inline bool operator!=( const file_property & lhs, const file_property & rhs )
+  inline bool operator !=( const file_property& lhs, const file_property& rhs )
   { return !( lhs == rhs );  }
 
   // ---- ----
@@ -59,7 +60,7 @@ namespace erc {
     {}
   };
 
-  inline bool operator==( const embedded_data_property & lhs, const embedded_data_property & rhs )
+  inline bool operator ==( const embedded_data_property& lhs, const embedded_data_property& rhs )
   {
     return ( lhs.file == rhs.file ) &&
            // ( lhs.offset == rhs.offset ) &&
@@ -68,7 +69,7 @@ namespace erc {
            ( lhs.raw_data == rhs.raw_data );
   }
 
-  inline bool operator!=( const embedded_data_property & lhs, const embedded_data_property & rhs )
+  inline bool operator !=( const embedded_data_property& lhs, const embedded_data_property& rhs )
   { return !( lhs == rhs );  }
 
   // ---- ----
@@ -77,40 +78,41 @@ namespace erc {
   {
     const std::string path;
     const embedded_data_property property;
-    const unsigned char * const data;
+    const unsigned char* const data;
 
     inline embedded_file() = default;
-    inline embedded_file( const  std::string _path, const embedded_data_property _property, const unsigned char * const _data ) :
+    inline embedded_file( const std::string _path, const embedded_data_property _property, const unsigned char* const _data ) :
       path( std::move( _path ) ), property( std::move( _property ) ), data( std::move( _data ) )
     {}
 
    private:
-    mutable const std::string * proper_data_p = nullptr;
+    mutable const std::string* proper_data_p = nullptr;
 
    public:
-    const std::string & get_proper_data() const;
+    const std::string& get_proper_data() const;
+    erc::imemstream get_proper_imemstream() const;
     void unallocate_proper_data() const;
   };
 
-  inline bool operator==( const embedded_file & lhs, const embedded_file & rhs )
+  inline bool operator ==( const embedded_file& lhs, const embedded_file& rhs )
   {
     bool same_data( false );
 
-    if ( ( lhs.data == nullptr ) || ( rhs.data == nullptr ) )
+    if( ( lhs.data == nullptr ) || ( rhs.data == nullptr ) )
       same_data = true;
-    else if ( lhs.property.size != rhs.property.size )
+    else if( lhs.property.size != rhs.property.size )
       same_data = false;
-    else if ( ( lhs.data != nullptr ) && ( rhs.data != nullptr ) )
+    else if( ( lhs.data != nullptr ) && ( rhs.data != nullptr ) )
       same_data = ( std::memcmp( lhs.data, rhs.data, lhs.property.size ) == 0 );
 
-    if ( !same_data )
+    if( !same_data )
       return false;
 
     return ( lhs.path == rhs.path ) &&
            ( lhs.property == rhs.property );
   }
 
-  inline bool operator!=( const embedded_file & lhs, const embedded_file & rhs )
+  inline bool operator !=( const embedded_file& lhs, const embedded_file& rhs )
   { return !( lhs == rhs );  }
 
 }

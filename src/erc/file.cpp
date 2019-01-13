@@ -4,13 +4,13 @@
 
 namespace erc {
 
-  const std::string & embedded_file::get_proper_data() const
+  const std::string& embedded_file::get_proper_data() const
   {
     //
-    if ( proper_data_p == nullptr )
+    if( proper_data_p == nullptr )
     {
-      const std::string * const data_str_p( new std::string( data, data + property.size ) );
-      if ( property.compressed )
+      const std::string* const data_str_p( new std::string( data, data + property.size ) );
+      if( property.compressed )
       {
         proper_data_p = new std::string( erc::decompress_string( *data_str_p ) );
         delete data_str_p;
@@ -23,9 +23,14 @@ namespace erc {
     return *proper_data_p;
   }
 
+  erc::imemstream embedded_file::get_proper_imemstream() const
+  {
+    return erc::imemstream( get_proper_data() );
+  }
+
   void embedded_file::unallocate_proper_data() const
   {
-    if ( proper_data_p != nullptr )
+    if( proper_data_p != nullptr )
       delete proper_data_p;
     proper_data_p = nullptr;
   }
